@@ -1,0 +1,120 @@
+.body {
+  background: #7e8bd4;
+  color: rgb(194, 37, 37);
+  justify-content: center;
+}
+
+hr {
+  width: 100%;
+}
+
+a {
+  cursor: pointer;
+  color: #33a033;
+}
+
+a:hover {
+  color: rgb(221, 83, 83);
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    column-width: 200px;
+    justify-content: center;
+    align-items: center;
+}
+
+.options {
+  display: flex;
+  justify-content: center;
+  border-radius: 5%;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+/* css for a form for product post */
+.container {  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 2px 2px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    ". . . . ."
+    ". . . . .";
+}
+
+
+button {
+  cursor: pointer;
+  margin-top: 5px;
+  color: white;
+  background-color: #ececcd;
+  border-radius: 6px;
+  border: 1px solid;
+  padding: 5px;
+}
+button:hover {
+  color: #33a033;
+  background-color: white;
+}
+
+input {
+  margin-bottom: 5px;
+}
+
+
+label {
+  margin-top: 5px;
+  width: 50px;
+}
+
+.product-card {
+  width:auto; /* Adjust width as needed for your layout */
+  margin: 1px;
+  border: 1px solid #ddd;
+  padding: 2px;
+  text-align: center;
+}
+h1 {
+  color: blue;
+  font-size: 50px;
+  font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+  margin: 10px;
+}
+
+h2 {
+  color: rgb(27, 44, 145);
+}
+
+.add-product {
+  background-color: blue;
+  margin: 10px;
+  display: table-column-group;
+}
+
+.delete-product {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  display: inline-block;
+}
+
+.update-product {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  display: grid;
+}
+
+.user {
+  display: flex;
+  flex-direction: row;
+  margin: 2px ;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+}

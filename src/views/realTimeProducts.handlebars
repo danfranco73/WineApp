@@ -1,0 +1,50 @@
+<div class="container">
+  <form id="add-product-form" method="post" action="api/products">
+    <input type="text" id="title" placeholder="Nombre" />
+    <input type="text" id="description" placeholder="Descripción" />
+    <input type="text" id="price" placeholder="Precio" />
+    <input type="text" id="stock" placeholder="Stock" />
+    <input type="text" id="category" placeholder="Categoria" />
+    <input type="text" id="code" placeholder="Codigo" />
+    <button type="submit">Agregar</button>
+  </form>
+  <form id="delete-product-form">
+    <input type="text" id="id" placeholder="Id del producto" />
+    <button type="submit">Eliminar</button>
+  </form>
+  <div class="title">
+    <br />
+    <h1>realTimeProducts</h1>
+        <div class="options">
+      <button id="pageDown">Anterior</button>
+      <button id="pageUp">Siguiente</button>
+      <button id="page">Pagina</button>
+      <button id="limit">Limitar</button>
+      <button id="sort">Ordenar</button>
+      <button id="query">Categoria</button>
+    </div>
+
+  </div>
+</div>
+<br />
+<div id="products-list">
+  <div class="container">
+    {{#each products}}
+      <div class="product-card" id="products-container">
+        <h3>{{this.title}}</h3>
+        <hr />
+        <p>Id: {{this._id}}</p>
+        <p>Descripción: {{this.description}}</p>
+        <p>Precio: {{this.price}}</p>
+        <p>Stock: {{this.stock}}</p>
+        <p>Codigo: {{this.code}}</p>
+        <p>Categoria: {{this.category}}</p>
+        <p>Imagen: {{this.thumbnails}}</p>
+      </div>
+    {{/each}}
+  </div>
+
+</div>
+
+<script src="socket.io/socket.io.js"></script>
+<script src="/js/realTimeProducts.js"></script>

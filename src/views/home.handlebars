@@ -1,0 +1,29 @@
+{{! muestro los productos en mi bd }}
+<div class="title">
+  <h1>Productos</h1>
+  <div class="options">
+    <button id="pageDown">Anterior</button>
+    <button id="pageUp">Siguiente</button>
+    <button id="page">Pagina</button>
+    <button id="limit">Limitar</button>
+    <button id="sort">Ordenar</button>
+    <button id="query">Categoria</button>
+  </div>
+</div>
+<br />
+
+<div id="productList" action="showProducts()">
+  <div class="container">
+    {{#each products}}
+      <div class="product-card">
+        <h3>{{this.title}}</h3>
+        <hr />
+        <p>Categoria: {{this.category}}</p>
+        <p>Descripción: {{this.description}}</p>
+        <p>Precio: $ {{this.price}}</p>
+      </div>
+    {{/each}}
+  </div>
+</div>
+
+<script src="/js/home.js"></script>

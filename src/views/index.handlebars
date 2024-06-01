@@ -1,0 +1,35 @@
+<div class="box">
+  <h1>Bienvenido {{user.first_name}}</h1>
+  <div class="options">
+    {{! botton de logout }}
+    <form class="box" method="get" action="/api/sessions/logout">
+      <button type="submit">Logout</button>
+    </form>
+    <form class="box" method="get" action="/api/sessions/restore">
+      <button type="submit">Change Password</button>
+    </form>
+  </div>
+  <hr />
+  <form class="user">
+    <p><b>Nombre:</b> {{user.first_name}}</p>
+    <p><b>Apellido:</b> {{user.last_name}}</p>
+    <p><b>Email:</b> {{user.email}}</p>
+    {{!--  <p><b>Age:</b> {{user.age}}</p> --}}
+  </form>
+</div>
+{{! show all the products }}
+<h1>Productos</h1>
+<hr />
+{{#if isValid}}
+  <div class="container">
+    {{#each products}}
+      <div class="product-card">
+        <h3>{{title}}</h3>
+        <hr />
+        <p>Categoria: {{this.category}}</p>
+        <p>Descripción: {{this.description}}</p>
+        <p>Precio: $ {{this.price}}</p>
+      </div>
+    {{/each}}
+  </div>
+{{/if}}
