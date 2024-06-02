@@ -10,7 +10,6 @@ const userMailingPass = config.USER_MAILING_PASS;
 
 const mailingRouter = Router();
 
-
 // mail test
 mailingRouter.get("/send-email", (req, res) => {
   const transporter = nodemailer.createTransport({
