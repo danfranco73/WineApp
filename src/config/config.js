@@ -1,14 +1,14 @@
 // Exporting the configuration object based on the environment
 // and the options passed to the program
 import dotenv from 'dotenv';
-// import { Command } from 'commander';
+import { Command } from 'commander';
 
-/* const program = new Command();
+const program = new Command();
 
 program
+    .option('-pr, --prod', 'prod')
     .option('-p, --port <type>', 'Port')
     .option('-m, --mongodb_url <type>', 'MongoDB URL')
-    .option('-j, --jwt_secret <type>', 'JWT Secret')
     .option('-pe, --persistence <type>', 'Persistence')
     .option('-an, --admin_name <type>', 'Admin Name')
     .option('-ae, --admin_email <type>', 'Admin Email')
@@ -18,16 +18,17 @@ program
     .option('-as, --account_sid <type>', 'Account SID')
     .option('-at, --auth_token <type>', 'Auth Token');
 program.parse(process.argv);
- */
-// const options = program.opts();
 
-const env = "development";
+const options = program.opts();
+
+const env = options.prod ? 'prod' : 'dev';
 
 dotenv.config({
-    path: env === 'production' ? '.env.prod' : '.env.dev',
+    path: `src/config/.env.${env}`,
+
 });
 
-// console.log('options', program.opts());
+ //console.log('options', program.opts());
 
 export default {
     PORT: process.env.PORT,
