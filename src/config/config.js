@@ -6,7 +6,7 @@ import { Command } from 'commander';
 const program = new Command();
 
 program
-    .option('-pr, --prod', 'prod')
+    .option('-pr, --prod', 'enviroment')
     .option('-p, --port <type>', 'Port')
     .option('-m, --mongodb_url <type>', 'MongoDB URL')
     .option('-pe, --persistence <type>', 'Persistence')
@@ -24,11 +24,9 @@ const options = program.opts();
 const env = options.prod ? 'prod' : 'dev';
 
 dotenv.config({
-    path: `src/config/.env.${env}`,
+    path: `src/config/.env/.env.${env}`,
 
 });
-
- //console.log('options', program.opts());
 
 export default {
     PORT: process.env.PORT,
@@ -38,7 +36,7 @@ export default {
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
     USER_MAILING: process.env.USER_MAILING,
-    USER_MAILING_PASS: process.env.USER_MAILING_PASS ,
-    ACCOUNT_SID: process.env.ACCOUNT_SID ,
+    USER_MAILING_PASS: process.env.USER_MAILING_PASS,
+    ACCOUNT_SID: process.env.ACCOUNT_SID,
     AUTH_TOKEN: process.env.AUTH_TOKEN,
 };
