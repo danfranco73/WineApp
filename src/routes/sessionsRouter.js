@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 import UserManager from '../dao/managers/userManager.js';
+import { admin } from '../services/middlewares/auth.js';
 
 
 const router = Router();
@@ -67,8 +68,8 @@ router
             res.redirect("/login");
         }
     })
-    // ruta "current" para obtener el usuario actual logueado usando el middleware de autorización
-    .get("/current", /* passport.authenticate("jwt", { session: false }) ,*/(req, res) => {
+    // "current" endpoint to get the current user only if it is logged in (admin is allowed to see all users)
+    .get("/current", admin ,(req, res) => {
         const user = req.session.user;
         const userDTO = {
             email: user.email,
@@ -90,7 +91,7 @@ router
                 user: userDTO
             });
     })
-    // Ruta para obtener un usuario por uid
+    // get user by id
     .get("/:uid", async (req, res) => {
         const user = await sessionService.getUserById(req.params.uid);
         if (!user) return res.sendStatus(404);

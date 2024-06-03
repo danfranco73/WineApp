@@ -1,6 +1,8 @@
 import { Router } from "express";
 import upload from "../services/utils/utilMulter.js";
 import ProductsManagerDB from "../dao/managers/ProductsManagerDB.js";
+import {admin} from "../services/middlewares/auth.js";
+
 
 const productManager = new ProductsManagerDB();
 const router = Router();
@@ -36,7 +38,7 @@ router.get("/:pid", async (req, res) => {
 });
 
 // Add a new product with image upload (assuming upload.single is configured)
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", upload.single("image"), admin , async (req, res) => {
   const { title, description, code, price, stock, category } = req.body;
   try {
     const newProduct = {
@@ -56,7 +58,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 });
 
 // Update a product by ID
-router.put("/:pid", async (req, res) => {
+router.put("/:pid", admin, async (req, res) => {
   const { pid } = req.params;
   const { title, description, code, price, stock, category } = req.body;
   try {
@@ -79,7 +81,7 @@ router.put("/:pid", async (req, res) => {
 });
 
 // Delete a product by ID
-router.delete("/:pid", async (req, res) => {
+router.delete("/:pid",admin, async (req, res) => {
   const { pid } = req.params;
   try {
     await productManager.deleteProduct(pid);

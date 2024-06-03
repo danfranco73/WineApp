@@ -34,6 +34,11 @@ class CartManagerDB {
     return await this.cartService.deleteProductFromCart(cid, pid);
   }
 
+  async purchaseCart(cid) {
+    return await this.cartService.purchaseCart(cid);
+  }
+
+
   async updateProductQuantity(cid, pid, quantity) {
     return await this.cartService.updateProductQuantity(cid, pid, quantity);
   }

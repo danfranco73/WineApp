@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { auth, logged } from "../services/middlewares/auth.js";
+import { auth, logged , admin , userAuth} from "../services/middlewares/auth.js";
 import productManager from "../dao/managers/ProductsManagerDB.js";
 // import { getMessages } from "../dao/managers/ChatManagerDB.js"; // Assuming chatManager exists
 
@@ -68,7 +68,7 @@ router
     }
   })
   // Real Time Products with similar logic to index
-  .get("/realTimeProducts", async (req, res) => {
+  .get("/realTimeProducts", admin, async (req, res) => {
     try {
       const productsData = await products.getProducts();
       renderWithLayout(res, "realTimeProducts", {
@@ -81,7 +81,7 @@ router
     }
   })
   // Chat page with separate function for fetching messages
-  .get("/chat", async (req, res) => {
+  .get("/chat", userAuth, async (req, res) => {
     try {
       const messages = await getMessages();
       renderWithLayout(res, "chat", {

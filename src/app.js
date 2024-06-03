@@ -21,6 +21,7 @@ import initializatePassport from "./config/passportConfig.js";
 import sessionRouter from "./routes/sessionsRouter.js";
 import mongoSingleton from "./services/middlewares/mongoSingleton.js";
 import config from "./config/config.js";
+import ticketRouter from "./routes/ticketRouter.js";
 
 // Constants
 const PORT = config.PORT;
@@ -75,6 +76,7 @@ app
 app
   .use("/api/products", productsRouter)
   .use("/api/carts", cartsRouter)
+  .use("/api/tickets", ticketRouter)
   .use("/", viewsRouter)
   .use("/api/sessions", sessionRouter)
   .use("/api/mailing", mailingRouter)

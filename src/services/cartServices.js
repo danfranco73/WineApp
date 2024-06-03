@@ -1,5 +1,6 @@
 import cartModel from "../dao/models/cartModel.js";
 import ProductService from "./productServices.js";
+import ticketService from "./ticketServices.js";
 
 const productService = new ProductService();
 
@@ -104,6 +105,36 @@ export default class CartService {
             console.log(error);
         }
     }
+    // check if the product has enough stock to be added to the cart and substract from it , if it doesn't have enough stock, it will not be added to the cart
+    async purchaseCart(cid) {
+        try {
+            const cart = await cartModel.findById(cid);
+            const products = cart.products;
+            const productsNotPurchased = [];
+            for (const product of products) {
+                const stock = product.product.stock;
+                if (stock < product.quantity) {
+                    productsNotPurchased.push(product.product._id);
+                } else {
+                    product.product.stock -= product.quantity;
+                    await productService.updateProduct(product.product._id, product.product);
+                }
+            }
+            const ticket = {
+                code: Math.random().toString(36).slice(2, 9),
+                amount: cart.products.reduce((acc, p) => acc + p.product.price * p.quantity, 0),
+                purchaser: cart.user,
+                cart: cart,
+            };
+            await ticketService.addTicket(ticket);
+            cart.products = cart.products.filter((p) => productsNotPurchased.includes(p.product._id));
+            await this.updateCart(cid, cart);
+            return productsNotPurchased;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     // update the quantity of a product in a cart
     async updateProductQuantity(cid, pid, quantity) {
         try {

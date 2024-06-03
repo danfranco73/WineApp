@@ -1,5 +1,6 @@
 import { Router } from "express";
 import CartManagerDB from "../dao/managers/CartManagerDB.js";
+import { userAuth } from "../services/middlewares/auth.js";
 
 const cartManager = new CartManagerDB();
 
@@ -23,7 +24,7 @@ router.post("/", async (req, res) => {
   });
 });
 // update a cart adding a product with pid
-router.put("/:cid/product/:pid", async (req, res) => {
+router.put("/:cid/product/:pid", userAuth ,async (req, res) => {
   const { cid, pid } = req.params;
   const cart = await cartManager.addProductToCart(cid, pid);
   res.send({
@@ -32,7 +33,7 @@ router.put("/:cid/product/:pid", async (req, res) => {
   });
 });
 // modify quantity of a product in a cart by cid and pid in the database in my ecommerce mongodb
-router.patch("/:cid/product/:pid", async (req, res) => {
+router.patch("/:cid/product/:pid", userAuth ,async (req, res) => {
   const { cid, pid } = req.params;
   const quantity = req.body.quantity;
   const cart = await cartManager.updateProductQuantity(cid, pid, quantity);
@@ -50,6 +51,17 @@ router.get("/:cid", async (req, res) => {
     payload: cart,
   });
 });
+
+// purchase a cart by cid in the database in my ecommerce mongodb
+router.post("/:cid/purchase", async (req, res) => {
+  const { cid } = req.params;
+  const cart = await cartManager.purchaseCart(cid);
+  res.send({
+    status: "success",
+    payload: cart,
+  });
+});
+
 // delete a cart by id 
 router.delete("/:cid", async (req, res) => {
   const id = req.params.cid;
@@ -77,5 +89,6 @@ router.delete("/:cid/clear", async (req, res) => {
     payload: cart,
   });
 });
+
 
 export default router;
