@@ -58,7 +58,13 @@ router
             }
             console.log("User logged in correctly en el sessionRouter", user);
             req.session.user = user; // save user in session
-            res
+            if (user.role === "admin") {
+                return res
+                    .cookie("jwt", user.token, { httpOnly: true, maxAge: 3600000 }) // 1 hour
+                    .status(200)
+                    .redirect("/realTimeProducts")
+            }
+            return res
                 .cookie("jwt", user.token, { httpOnly: true, maxAge: 3600000 }) // 1 hour
                 .status(200)
                 .redirect("/")
@@ -71,28 +77,21 @@ router
     // "current" endpoint to get the current user only if it is logged in (admin is allowed to see all users)
     .get("/current", (req, res) => {
         const user = req.session.user;
-        const userDTO = {
-            email: user.email,
-            uid: user._id,
-            name: user.first_name,
-            surname: user.last_name,
-        }
-        if (!req.session.user) {
-            return res
-                .status(401)
-                .send({
-                    status: "error",
-                    message: "User not logged in"
-                });
-        }
-
-        if (req.session.user.role === "admin") {
+        if (!user) return res.sendStatus(401);
+        if (user.role === "admin") {
             return res
                 .json({
                     status: "User is admin",
                     user: user,
                 });
         } else {
+            const userDTO = {
+                email: user.email,
+                uid: user._id,
+                name: user.first_name,
+                surname: user.last_name,
+                role: user.role,
+            };
             return res
                 .json({
                     status: "User is not admin",
