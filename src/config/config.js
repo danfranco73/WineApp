@@ -24,7 +24,7 @@ const options = program.opts();
 const env = options.prod ? 'prod' : 'dev';
 
 dotenv.config({
-    path: `src/config/.env/.env.${env}`,
+    path: `.env/.env.${env}`,
 
 });
 

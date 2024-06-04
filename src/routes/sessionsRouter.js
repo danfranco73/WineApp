@@ -69,7 +69,7 @@ router
         }
     })
     // "current" endpoint to get the current user only if it is logged in (admin is allowed to see all users)
-    .get("/current", admin ,(req, res) => {
+    .get("/current", (req, res) => {
         const user = req.session.user;
         const userDTO = {
             email: user.email,
@@ -85,12 +85,22 @@ router
                     message: "User not logged in"
                 });
         }
-        res
-            .json({
-                status: "success",
-                user: userDTO
-            });
+
+        if (req.session.user.role === "admin") {
+            return res
+                .json({
+                    status: "User is admin",
+                    user: user,
+                });
+        } else {
+            return res
+                .json({
+                    status: "User is not admin",
+                    user: userDTO,
+                });
+        }
     })
+
     // get user by id
     .get("/:uid", async (req, res) => {
         const user = await sessionService.getUserById(req.params.uid);
