@@ -22,6 +22,8 @@ import sessionRouter from "./routes/sessionsRouter.js";
 import mongoSingleton from "./services/middlewares/mongoSingleton.js";
 import config from "./config/config.js";
 import ticketRouter from "./routes/ticketRouter.js";
+import chatRouter from "./routes/chatRouter.js";
+import { userAuth } from "./services/middlewares/auth.js";
 
 // Constants
 const PORT = config.PORT;
@@ -80,4 +82,5 @@ app
   .use("/", viewsRouter)
   .use("/api/sessions", sessionRouter)
   .use("/api/mailing", mailingRouter)
-  .use("/api/sms", smsRouter);
+  .use("/api/sms", smsRouter)
+  .use("api/chat",userAuth ,chatRouter);

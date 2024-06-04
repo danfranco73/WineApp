@@ -1,8 +1,7 @@
 import { Router } from "express";
-import { auth, logged , admin , userAuth} from "../services/middlewares/auth.js";
+import { auth, logged , admin } from "../services/middlewares/auth.js";
 import productManager from "../dao/managers/ProductsManagerDB.js";
-// import { getMessages } from "../dao/managers/ChatManagerDB.js"; // Assuming chatManager exists
-
+import chatManager from "../dao/managers/chatManager.js";
 const products = new productManager();
 const router = Router();
 
@@ -81,9 +80,9 @@ router
     }
   })
   // Chat page with separate function for fetching messages
-  .get("/chat", userAuth, async (req, res) => {
+  .get("/chat", async (req, res) => {
     try {
-      const messages = await getMessages();
+      const messages = await chatManager.getMessages();
       renderWithLayout(res, "chat", {
         title: "Chat",
         messages,
