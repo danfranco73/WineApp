@@ -1,5 +1,6 @@
 import { Router } from "express";
 import CartManagerDB from "../dao/managers/CartManagerDB.js";
+import { auth } from "../services/middlewares/auth.js";
 import { userAuth } from "../services/middlewares/auth.js";
 
 
@@ -8,7 +9,7 @@ const cartManager = new CartManagerDB();
 const router = Router();
 
 // get the carts from the database in my ecommerce mongodb
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   const carts = await cartManager.getCarts();
   res.send({
     status: "success",
@@ -18,14 +19,16 @@ router.get("/", async (req, res) => {
 // add a new cart
 router.post("/", async (req, res) => {
   const cart = req.body;
+  const purchaser = req.session.user;
   const newCart = await cartManager.addCart(cart);
   res.send({
     status: "success",
+    purchaser: purchaser,
     payload: newCart,
   });
 });
 // update a cart adding a product with pid
-router.put("/:cid/product/:pid", userAuth ,async (req, res) => {
+router.put("/:cid/product/:pid", async (req, res) => {
   const { cid, pid } = req.params;
   const cart = await cartManager.addProductToCart(cid, pid);
   res.send({
@@ -53,10 +56,10 @@ router.get("/:cid", async (req, res) => {
   });
 });
 
-// router to end the purchase of a cart by cid in the database
-router.post("/:cid/purchase", async (req, res) => {
+// router to finish the purchase of a cart by cid in the database on ly if the user is authenticated and is the cart owner
+router.patch("/:cid/purchase"/* , userAuth */, async (req, res) => {
   const { cid } = req.params;
-  const cart = await cartManager.purchaseCart(cid);
+  const cart = await cartManager.purchaseCart(cid, req.session.user);
   res.send({
     status: "success",
     payload: cart,

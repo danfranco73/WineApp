@@ -61,8 +61,8 @@ export default class CartService {
             console.log(error);
         }
     }
-    // adding a product by pid into a cart by cid 
-    async addProductToCart(cid, pid) {
+    // adding a product by pid into a cart by cid  
+    async addProductToCart(cid, pid ) {
         try {
             const cart = await this.carts.findById(cid);
             const product = await productService.getProductById(pid);
@@ -124,7 +124,7 @@ export default class CartService {
             }
             await ticketService.addTicket({
                 products: productsNotToBuy,
-                total: productsToBuy.reduce((acc, p) => acc + p.product.price * p.quantity, 0),
+                Amount: productsToBuy.reduce((acc, p) => acc + p.product.price * p.quantity, 0),
             });
             await this.clearCart(cid);
             return productsToBuy;
@@ -132,8 +132,6 @@ export default class CartService {
             console.log(error);
         }
     }
-
-
 
     // update the quantity of a product in a cart
     async updateProductQuantity(cid, pid, quantity) {

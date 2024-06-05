@@ -22,9 +22,9 @@ router.post("/", async (req, res) => {
     });
 });
 // get a ticket by id
-router.get("/:id", async (req, res) => {
+router.get("/:tid", async (req, res) => {
     const { id } = req.params;
-    const ticket = await ticketManager.getTicketById(id);
+    const ticket = await ticketManager.getTicketById(tid);
     res.send({
         status: "success",
         payload: ticket,
