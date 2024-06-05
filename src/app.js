@@ -35,7 +35,7 @@ const app = express();
 mongoose.connect(uri)
   .then(() => console.log('Connected to MongoDB'))
   .catch(error => console.log(error));
-  
+
 mongoSingleton();
 
 // Connection to local port 
@@ -76,11 +76,11 @@ app
 
 // Routes
 app
+  .use("/api/sessions", sessionRouter)
   .use("/api/products", productsRouter)
   .use("/api/carts", cartsRouter)
   .use("/api/tickets", ticketRouter)
   .use("/", viewsRouter)
-  .use("/api/sessions", sessionRouter)
   .use("/api/mailing", mailingRouter)
   .use("/api/sms", smsRouter)
-  .use("api/chat",userAuth ,chatRouter);
+  .use("api/chat", userAuth, chatRouter);

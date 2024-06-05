@@ -34,18 +34,19 @@ addProductForm.addEventListener("submit", (e) => {
     category,
     code,
   };
-  renderProducts(product);
+  console.log(newProduct);
+  // renderProducts(newProduct);
   socket.emit("newProduct", newProduct);
 });
 
-// envio un producto a modificar al servidor en su emit "updateProduct"
+// send a delete product to the server
 const deleteProductForm = document.getElementById("delete-product-form");
 
 deleteProductForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const _id = document.getElementById("id").value;
   socket.emit("deleteProduct", _id);
-  // muestro mi listado de productos actualizado
+  // show the product list
   const productsList = document.getElementById("products-list");
   productsList.innerHTML = "";
   products.forEach((product) => {

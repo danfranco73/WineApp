@@ -94,7 +94,7 @@ export default class CartService {
     // delete a product in my cart 
     async deleteProductFromCart(cid, pid) {
         try {
-            const cart = await cartModel.findById(cid);
+            const cart = await this.carts.findById(cid);
             const productIndex = cart.products.findIndex((p) => p._id == pid);
             if (productIndex !== -1) {
                 cart.products.splice(productIndex, 1);
@@ -105,35 +105,35 @@ export default class CartService {
             console.log(error);
         }
     }
-    // check if the product has enough stock to be added to the cart and substract from it , if it doesn't have enough stock, it will not be added to the cart
+    // check if the product has enough stock to be added to the cart and substract from it , if it doesn't have enough stock, it will not be added to the cart. finally, it will create a ticket with the products that were not purchased and clear the cart
+
     async purchaseCart(cid) {
         try {
-            const cart = await cartModel.findById(cid);
+            const cart = await this.carts.findById(cid).lean();
             const products = cart.products;
-            const productsNotPurchased = [];
+            const productsToBuy = [];
+            const productsNotToBuy = [];
             for (const product of products) {
                 const stock = product.product.stock;
-                if (stock < product.quantity) {
-                    productsNotPurchased.push(product.product._id);
-                } else {
+                if (stock >= product.quantity) {
                     product.product.stock -= product.quantity;
-                    await productService.updateProduct(product.product._id, product.product);
+                    productsToBuy.push(product);
+                } else {
+                    productsNotToBuy.push(product);
                 }
             }
-            const ticket = {
-                code: Math.random().toString(36).slice(2, 9),
-                amount: cart.products.reduce((acc, p) => acc + p.product.price * p.quantity, 0),
-                purchaser: cart.user,
-                cart: cart,
-            };
-            await ticketService.addTicket(ticket);
-            cart.products = cart.products.filter((p) => productsNotPurchased.includes(p.product._id));
-            await this.updateCart(cid, cart);
-            return productsNotPurchased;
+            await ticketService.addTicket({
+                products: productsNotToBuy,
+                total: productsToBuy.reduce((acc, p) => acc + p.product.price * p.quantity, 0),
+            });
+            await this.clearCart(cid);
+            return productsToBuy;
         } catch (error) {
             console.log(error);
         }
     }
+
+
 
     // update the quantity of a product in a cart
     async updateProductQuantity(cid, pid, quantity) {

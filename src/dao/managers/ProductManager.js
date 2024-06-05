@@ -16,10 +16,7 @@ class ProductManager {
     return this.products;
   }
 
-  getProductById(id) {
-    const products = this.getProducts();
-    return this.products.find((product) => product.id === parseInt(id));
-  }
+
 
   addProduct(product) {
     const products = this.getProducts();
@@ -51,6 +48,11 @@ class ProductManager {
       console.log(error);
       throw error;
     }
+  }
+
+  getProductById(id) {
+    const products = this.getProducts();
+    return this.products.find((product) => product.id === parseInt(id));
   }
 
   deleteProduct(id) {

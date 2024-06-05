@@ -2,6 +2,7 @@ import { Router } from "express";
 import CartManagerDB from "../dao/managers/CartManagerDB.js";
 import { userAuth } from "../services/middlewares/auth.js";
 
+
 const cartManager = new CartManagerDB();
 
 const router = Router();
@@ -33,7 +34,7 @@ router.put("/:cid/product/:pid", userAuth ,async (req, res) => {
   });
 });
 // modify quantity of a product in a cart by cid and pid in the database in my ecommerce mongodb
-router.patch("/:cid/product/:pid", userAuth ,async (req, res) => {
+router.patch("/:cid/product/:pid", /* userAuth , */async (req, res) => {
   const { cid, pid } = req.params;
   const quantity = req.body.quantity;
   const cart = await cartManager.updateProductQuantity(cid, pid, quantity);
@@ -52,7 +53,7 @@ router.get("/:cid", async (req, res) => {
   });
 });
 
-// purchase a cart by cid in the database in my ecommerce mongodb
+// router to end the purchase of a cart by cid in the database
 router.post("/:cid/purchase", async (req, res) => {
   const { cid } = req.params;
   const cart = await cartManager.purchaseCart(cid);
