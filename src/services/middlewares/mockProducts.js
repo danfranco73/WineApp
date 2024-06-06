@@ -11,14 +11,16 @@ mockProducts
         try {
             for (let i = 0; i < 100; i++) {
                 const product = new Product({
+                    title: faker.commerce.productName(),
                     name: faker.commerce.productName(),
                     price: faker.commerce.price(),
+                    stock: faker.random.number(),
+                    code: faker.random.alphaNumeric(),
                     image: faker.image.imageUrl(),
                     description: faker.commerce.productDescription()
                 });
                 await product.save();
             }
-            // muestro en la consola que se han añadido los productos y los muestro en la respuesta de la petición
             console.log('Products added');
             const products = await Product.find();
             res.send(products);
