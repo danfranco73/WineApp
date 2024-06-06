@@ -2,6 +2,9 @@ import { Router } from 'express';
 import passport from 'passport';
 import userModel from '../dao/models/userModel.js';
 import { createHash, isValidPassword } from '../utils/functionsUtils.js';
+import customError from '../services/middlewares/errors/CustomErrors.js';
+import { generateUserErrorInfo } from '../services/middlewares/errors/info.js';
+import EErrors from '../services/middlewares/errors/enums.js';
 
 const router = Router();
 
@@ -9,7 +12,13 @@ router
     .post("/register", async (req, res) => {
         try {
             req.session.failRegister = false;
-            if (!req.body.email || !req.body.password) throw new Error("Register error!");
+            if (!req.body.email || !req.body.password) {
+                customError.createError({
+                    name: "Error",
+                    message: generateUserErrorInfo(req.body),
+                    code: EErrors.INVALID_TYPES_ERROR
+                });
+            };
             const newUser = {
                 first_name: req.body.first_name ?? "",
                 last_name: req.body.last_name ?? "",
@@ -91,7 +100,7 @@ router
     .get("/current", (req, res) => {
         const user = req.session.user;
         if (!user) return res.sendStatus(401);
-        
+
         // create a DTO to send only the necessary data
         const userDTO = {
             first_name: user.first_name,

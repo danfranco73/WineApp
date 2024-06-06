@@ -7,6 +7,7 @@ import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import cors from "cors";
+import compression from "express-compression";
 
 
 import smsRouter from "./services/utils/sms.js";
@@ -24,6 +25,8 @@ import config from "./config/config.js";
 import ticketRouter from "./routes/ticketRouter.js";
 import chatRouter from "./routes/chatRouter.js";
 import { userAuth } from "./services/middlewares/auth.js";
+import errorHandler from "./services/middlewares/errors/indexErrors.js";
+import mockProducts from "./services/middlewares/mockProducts.js";
 
 // Constants
 const PORT = config.PORT;
@@ -38,6 +41,13 @@ mongoose.connect(uri)
 
 mongoSingleton();
 
+// Log memory usage every second
+setInterval(() => {
+  const memoryUsage = process.memoryUsage();
+  console.log(`Memory Usage: ${memoryUsage.rss / 1024 / 1024} MB`); 
+}, 10000); // Log every 1 second (adjust as needed)
+
+
 // Connection to local port 
 const httpServer = app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
@@ -47,7 +57,11 @@ const io = new Server(httpServer);
 websocket(io);
 
 // Middlewares
+
 app
+  .use(compression({
+    brotli:{enabled:true,zlib:{}}
+  }))
   .use(express.json())
   .use(express.urlencoded({ extended: true }))
   .use(express.static("public"))
@@ -77,10 +91,12 @@ app
 // Routes
 app
   .use("/api/sessions", sessionRouter)
+  .use("/api/mock", mockProducts)
   .use("/api/products", productsRouter)
   .use("/api/carts", cartsRouter)
   .use("/api/tickets", ticketRouter)
   .use("/", viewsRouter)
   .use("/api/mailing", mailingRouter)
   .use("/api/sms", smsRouter)
-  .use("api/chat", userAuth, chatRouter);
+  .use("api/chat", userAuth, chatRouter)
+  .use(errorHandler);

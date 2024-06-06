@@ -17,9 +17,16 @@ const logged = function (req, res, next) {
 }
 
 // Only the admin can access the admin panel
-const admin = function (req, res, next) {
+const admin = function (req, res, next) { 
     if (req.session.user.role !== "admin") {
         return res.redirect("/");
+    }
+    next();
+}
+
+const isAdmin= function (req, res, next) {
+    if (req.session.user.role === "admin") {
+        return res.status(401).send("You don't have permission to perform this action.");
     }
     next();
 }
@@ -35,4 +42,4 @@ const userAuth = function (req, res, next) {
     next();
 }
 
-export { auth, logged, admin, userAuth };
+export { auth, logged, admin, userAuth , isAdmin };

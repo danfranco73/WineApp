@@ -1,7 +1,8 @@
 import { Router } from "express";
 import CartManagerDB from "../dao/managers/CartManagerDB.js";
 import { auth } from "../services/middlewares/auth.js";
-import { userAuth } from "../services/middlewares/auth.js";
+import { userAuth, isAdmin } from "../services/middlewares/auth.js";
+
 
 
 const cartManager = new CartManagerDB();
@@ -28,7 +29,7 @@ router.post("/", async (req, res) => {
   });
 });
 // update a cart adding a product with pid
-router.put("/:cid/product/:pid", async (req, res) => {
+router.put("/:cid/product/:pid", /* isAdmin, */ async (req, res) => {
   const { cid, pid } = req.params;
   const cart = await cartManager.addProductToCart(cid, pid);
   res.send({
@@ -52,7 +53,7 @@ router.get("/:cid", async (req, res) => {
   const cart = await cartManager.getCartById(cid);
   res.send({
     status: "success",
-    payload: cart,
+    payload: cart, 
   });
 });
 
