@@ -9,7 +9,6 @@ import passport from "passport";
 import cors from "cors";
 import compression from "express-compression";
 
-
 import smsRouter from "./services/utils/sms.js";
 import mailingRouter from "./services/utils/mailing.js";
 import websocket from "./services/utils/websockets.js";
@@ -45,7 +44,7 @@ mongoSingleton();
 setInterval(() => {
   const memoryUsage = process.memoryUsage();
   console.log(`Memory Usage: ${memoryUsage.rss / 1024 / 1024} MB`); 
-}, 10000); // Log every 1 second (adjust as needed)
+}, 6000000); // 6000000 ms = 100 minutes
 
 
 // Connection to local port 
