@@ -1,39 +1,19 @@
-import productModel from "../dao/models/productModel.js";
+import ProductRepository from "../dao/repository/productRepository.js";
 
 export default class ProductService {
     constructor() {
-        this.products = productModel;
+        this.products = new ProductRepository();
     }
 
-    async getProducts() {
-        const page = 1;
-        const limit = 10;
-        const sort = null;
-        const query = null;
-
-        try {
-            const options = {
-                page: parseInt(page),
-                limit: parseInt(limit),
-                lean: true,
-            };
-            let products;
-            if (sort) {
-                products = await this.products.paginate({}, options);
-                if (sort === "asc") {
-                    products.docs.sort((a, b) => a.price - b.price);
-                } else if (sort === "desc") {
-                    products.docs.sort((a, b) => b.price - a.price);
-                }
-            } else if (query) {
-                products = await this.products.paginate({ category: query }, options);
-            } else {
-                products = await this.products.paginate({}, options);
-            }
-            return products;
-        } catch (error) {
-            console.log(error);
+    async getProducts(query, page, limit, sort) {
+        const options = {
+            page: page ?? 1,
+            limit: limit ?? 10,
+            sort: sort ?? null,
+            lean: true,
         }
+        return await this.products.getProducts(query ?? {}, options);
+
     }
 
     async addProduct(product) {
