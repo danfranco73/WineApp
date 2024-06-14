@@ -26,6 +26,8 @@ import chatRouter from "./routes/chatRouter.js";
 import { userAuth } from "./services/middlewares/auth.js";
 import errorHandler from "./services/middlewares/errors/indexErrors.js";
 import mockProducts from "./services/middlewares/mockProducts.js";
+import {addLogger} from "./services/utils/logger.js";
+
 
 // Constants
 const PORT = config.PORT;
@@ -43,8 +45,8 @@ mongoSingleton();
 // Log memory usage every second
 setInterval(() => {
   const memoryUsage = process.memoryUsage();
-  console.log(`Memory Usage: ${memoryUsage.rss / 1024 / 1024} MB`); 
-}, 6000000); // 6000000 ms = 100 minutes
+  console.log(`Memory Usage: ${memoryUsage.rss / 1024 / 1024} MB`);
+}, 6000000);
 
 
 // Connection to local port 
@@ -56,10 +58,10 @@ const io = new Server(httpServer);
 websocket(io);
 
 // Middlewares
-
 app
+  .use(addLogger)
   .use(compression({
-    brotli:{enabled:true,zlib:{}}
+    brotli: { enabled: true, zlib: {} }
   }))
   .use(express.json())
   .use(express.urlencoded({ extended: true }))
@@ -99,3 +101,4 @@ app
   .use("/api/sms", smsRouter)
   .use("api/chat", userAuth, chatRouter)
   .use(errorHandler);
+  

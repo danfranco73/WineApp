@@ -1,16 +1,16 @@
 import { Router } from "express";
-import CartManagerDB from "../dao/managers/CartManagerDB.js";
+import CartController from "../controllers/cartController.js";
 import { auth } from "../services/middlewares/auth.js";
-import { userAuth, isAdmin } from "../services/middlewares/auth.js";
+import { userAuth, isNotAdmin, admin } from "../services/middlewares/auth.js";
 
 
 
-const cartManager = new CartManagerDB();
+const cartManager = new CartController();
 
 const router = Router();
 
 // get the carts from the database in my ecommerce mongodb
-router.get("/", auth, async (req, res) => {
+router.get("/", admin, async (req, res) => {
   const carts = await cartManager.getCarts();
   res.send({
     status: "success",
@@ -28,8 +28,8 @@ router.post("/", async (req, res) => {
     payload: newCart,
   });
 });
-// update a cart adding a product with pid
-router.put("/:cid/product/:pid", /* isAdmin, */ async (req, res) => {
+// update a cart adding a product with pid if user is not admin 
+router.put("/:cid/product/:pid", isNotAdmin,  async (req, res) => {
   const { cid, pid } = req.params;
   const cart = await cartManager.addProductToCart(cid, pid);
   res.send({
@@ -38,7 +38,7 @@ router.put("/:cid/product/:pid", /* isAdmin, */ async (req, res) => {
   });
 });
 // modify quantity of a product in a cart by cid and pid in the database in my ecommerce mongodb
-router.patch("/:cid/product/:pid", /* userAuth , */async (req, res) => {
+router.patch("/:cid/product/:pid", userAuth ,async (req, res) => {
   const { cid, pid } = req.params;
   const quantity = req.body.quantity;
   const cart = await cartManager.updateProductQuantity(cid, pid, quantity);

@@ -34,7 +34,7 @@ addProductForm.addEventListener("submit", (e) => {
     category,
     code,
   };
-  console.log(newProduct);
+  logger.info(newProduct);
   // renderProducts(newProduct);
   socket.emit("newProduct", newProduct);
 });

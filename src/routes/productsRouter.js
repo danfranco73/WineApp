@@ -1,10 +1,9 @@
 import { Router } from "express";
 import upload from "../services/utils/utilMulter.js";
-import ProductsManagerDB from "../dao/managers/ProductsManagerDB.js";
 import {admin} from "../services/middlewares/auth.js";
+import productController from "../controllers/productController.js";
 
-
-const productManager = new ProductsManagerDB();
+const productManager = new productController();
 const router = Router();
 
 const handleError = (res, message) => {
@@ -13,7 +12,7 @@ const handleError = (res, message) => {
 
 // Get all products with pagination, sorting, and searching
 router.get("/", async (req, res) => {
-  const { limit = 10, page = 1, sort, query } = req.query;
+  const { limit = 10, page = 1, sort = null, query = {} } = req.query;
   try {
     const products = await productManager.getProducts({ page, limit, sort, query });
     res.send({ status: "success", payload: products });
@@ -37,7 +36,7 @@ router.get("/:pid", async (req, res) => {
   }
 });
 
-// Add a new product with image upload (assuming upload.single is configured)
+// Add a new product with image upload (admin only)
 router.post("/", upload.single("image"), admin , async (req, res) => {
   const { title, description, code, price, stock, category } = req.body;
   try {

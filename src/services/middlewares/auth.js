@@ -23,11 +23,16 @@ const admin = function (req, res, next) {
     }
     next();
 }
-
-const isAdmin= function (req, res, next) {
-    if (req.session.user.role === "admin") {
-        return res.status(401).send("You don't have permission to perform this action.");
+ // if the user is admin cannot acces to the user panel
+const isNotAdmin= function (req, res, next) {
+    // check if user is logged
+    if(!req.session || !req.session.user){
+        return res.status(401).send("You must be logged in to perform this action.");
     }
+    // check if user is admin
+    if(req.session.user.role === "admin"){
+        return res.status(403).send("You don't have permission to perform this action.");
+    }   
     next();
 }
 
@@ -42,4 +47,4 @@ const userAuth = function (req, res, next) {
     next();
 }
 
-export { auth, logged, admin, userAuth , isAdmin };
+export { auth, logged, admin, userAuth , isNotAdmin };

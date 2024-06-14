@@ -1,4 +1,4 @@
-import cartModel from "../dao/models/cartModel.js";
+import CartRepository from "../dao/repository/cartRepository.js";
 import ProductService from "./productServices.js";
 import ticketService from "./ticketServices.js";
 
@@ -6,12 +6,12 @@ const productService = new ProductService();
 
 export default class CartService {
     constructor() {
-        this.carts = cartModel;
+        this.carts = new CartRepository();
     }
     // getting all the carts from the database in my ecommerce mongodb
     async getCarts() {
         try {
-            const carts = await this.carts.find().populate("products.product");
+            const carts = await this.carts.getCarts();
             return carts;
         } catch (error) {
             console.log(error);
@@ -20,8 +20,7 @@ export default class CartService {
     // adding a new cart to the database in my ecommerce mongodb
     async addCart(cart) {
         try {
-            const newCart = new this.carts(cart);
-            await newCart.save();
+            const newCart = await this.carts.addCart(cart);
             return newCart;
         } catch (error) {
             console.log(error);
@@ -29,76 +28,56 @@ export default class CartService {
     }
 
     // updating a cart in the database 
-    async updateCart(id, cart) {
+    async updateCart(cid, cart) {
         try {
-            const updatedCart = await this.carts.findByIdAndUpdate(
-                id,
-                cart, {
-                new: true,
-            });
+            const updatedCart = await this.carts.updateCart(cid, cart);
             return updatedCart;
         } catch (error) {
             console.log(error);
         }
     }
     // deleting a cart in the database in my ecommerce mongodb
-    async deleteCart(id) {
+    async deleteCart(cid) {
         try {
-            await this.carts.findByIdAndDelete(id);
+            await this.carts.deleteCart(cid);
         } catch (error) {
             console.log(error);
         }
     }
     // getting a cart by id in the database in my ecommerce mongodb
-    async getCartById(id) {
+    async getCartById(cid) {
         try {
-            const cart = await this.carts
-                .findById(id)
-                .populate("products.product") // not working
-                .lean();
+            const cart = await this.carts.getCartById(cid);
             return cart;
         } catch (error) {
             console.log(error);
         }
     }
-    // adding a product by pid into a cart by cid  
-    async addProductToCart(cid, pid ) {
-        try {
-            const cart = await this.carts.findById(cid);
-            const product = await productService.getProductById(pid);
-            if (product === null) {
-                return null;
-            }
-            const productIndex = cart.products.findIndex((p) => p.product._id == pid);
-            if (productIndex !== -1) {
-                cart.products[productIndex].quantity += 1;
-                await this.updateCart(cid, cart);
-                return cart;
-            }
-            cart.products.push({ product: product, quantity: 1 });
-            await this.updateCart(cid, cart);
+    // adding a product to a cart
+    async addProductToCart(cid, pid, quantity) {
+        try{
+            const cart = await this.carts.addProductToCart(cid, pid, quantity);
             return cart;
-        }
-        catch (error) {
-            console.log(error);
-        }
-    }
-    // deletea cart by id in the database in my ecommerce mongodb
-    async deleteCart(_id) {
-        try {
-            await this.carts.findByIdAndDelete(_id);
         } catch (error) {
             console.log(error);
-        }
+        }       
     }
+
     // delete a product in my cart 
     async deleteProductFromCart(cid, pid) {
         try {
-            const cart = await this.carts.findById(cid);
-            const productIndex = cart.products.findIndex((p) => p._id == pid);
-            if (productIndex !== -1) {
-                cart.products.splice(productIndex, 1);
-            }
+            const cart = await this.carts.deleteProductFromCart(cid, pid);
+            return cart;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    // clear all products from a cart
+    async clearCart(cid) {
+        try {
+            const cart = await this.carts.getCartById(cid);
+            cart.products = [];
             await this.updateCart(cid, cart);
             return cart;
         } catch (error) {
@@ -106,10 +85,9 @@ export default class CartService {
         }
     }
     // check if the product has enough stock to be added to the cart and substract from it , if it doesn't have enough stock, it will not be added to the cart. finally, it will create a ticket with the products that were not purchased and clear the cart
-
     async purchaseCart(cid) {
         try {
-            const cart = await this.carts.findById(cid).lean();
+            const cart = await this.carts.getCartById(cid);
             const products = cart.products;
             const productsToBuy = [];
             const productsNotToBuy = [];
@@ -132,26 +110,14 @@ export default class CartService {
             console.log(error);
         }
     }
-
     // update the quantity of a product in a cart
     async updateProductQuantity(cid, pid, quantity) {
         try {
-            const cart = await cartModel.findById(cid);
+            const cart = await this.carts.getCartById(cid);
             const productIndex = cart.products.findIndex((p) => p._id == pid);
             if (productIndex !== -1) {
                 cart.products[productIndex].quantity = quantity;
             }
-            await this.updateCart(cid, cart);
-            return cart;
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    // clear all products from a cart
-    async clearCart(cid) {
-        try {
-            const cart = await cartModel.findById(cid);
-            cart.products = [];
             await this.updateCart(cid, cart);
             return cart;
         } catch (error) {

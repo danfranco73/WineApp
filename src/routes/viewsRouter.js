@@ -2,6 +2,7 @@ import { Router } from "express";
 import { auth, logged , admin } from "../services/middlewares/auth.js";
 import productManager from "../dao/managers/ProductsManagerDB.js";
 import chatManager from "../dao/managers/chatManager.js";
+import {logger} from "../services/utils/logger.js";
 const products = new productManager();
 const router = Router();
 
@@ -90,6 +91,16 @@ router
     } catch (e) {
       renderError(res);
     }
-  });
+  })
+  // adding a endpoint testin the logger
+  .get('/loggerTest', (req, res) => {
+    logger.debug('debug');
+    logger.http('http');
+    logger.info('info');
+    logger.warning('warning');
+    logger.error('error');
+    logger.fatal('fatal');
+    res.send('Logger test');
+});
 
 export default router;

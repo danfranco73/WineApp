@@ -1,5 +1,6 @@
 import ProductRepository from "../dao/repository/productRepository.js";
 
+
 export default class ProductService {
     constructor() {
         this.products = new ProductRepository();
@@ -18,18 +19,16 @@ export default class ProductService {
 
     async addProduct(product) {
         try {
-            const newProduct = new this.products(product);
-            await newProduct.save();
-            return newProduct;
+            return await this.products.addProduct(product);
         }
         catch (error) {
             console.log(error);
         }
     }
 
-    async getProductById(id) {
+    async getProductById(pid) {
         try {
-            const product = await this.products.findById(id);
+            const product = await this.products.getProductById(pid);
             return product;
         } catch (error) {
             console.log(error);
