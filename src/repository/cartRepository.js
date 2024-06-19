@@ -1,5 +1,5 @@
-import CartDAO from "../cartDAO.js";
-import CartDTO from "../dto/cartDTO.js";
+import CartDAO from "../dao/cartDAO.js";
+import CartDTO from "../dao/dto/cartDTO.js";
 
 export default class CartRepository {
     constructor() {

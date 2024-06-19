@@ -1,7 +1,7 @@
 import EErrors from "./enums.js";
 
 // CustomError class swith cause and code
-export default (error, req, res, next) => {
+const errorHandler = function (error, req, res, next) {
     console.log(error.cause);
     switch (error.code) {
         case EErrors.ROUTING_ERROR:
@@ -14,3 +14,5 @@ export default (error, req, res, next) => {
             return res.status(500).send("Internal server error");
     }
 }
+
+export default errorHandler;

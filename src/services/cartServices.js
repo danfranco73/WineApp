@@ -1,4 +1,4 @@
-import CartRepository from "../dao/repository/cartRepository.js";
+import CartRepository from "../repository/cartRepository.js";
 import ProductService from "./productServices.js";
 import ticketService from "./ticketServices.js";
 
@@ -11,68 +11,59 @@ export default class CartService {
     // getting all the carts from the database in my ecommerce mongodb
     async getCarts() {
         try {
-            const carts = await this.carts.getCarts();
-            return carts;
+            return await this.carts.getCarts();
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
     // adding a new cart to the database in my ecommerce mongodb
     async addCart(cart) {
         try {
-            const newCart = await this.carts.addCart(cart);
-            return newCart;
+            return await this.carts.addCart(cart);
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
-
     // updating a cart in the database 
     async updateCart(cid, cart) {
         try {
-            const updatedCart = await this.carts.updateCart(cid, cart);
-            return updatedCart;
+            return await this.carts.updateCart(cid, cart);
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
     // deleting a cart in the database in my ecommerce mongodb
     async deleteCart(cid) {
         try {
-            await this.carts.deleteCart(cid);
+            return await this.carts.deleteCart(cid);
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
     // getting a cart by id in the database in my ecommerce mongodb
     async getCartById(cid) {
         try {
-            const cart = await this.carts.getCartById(cid);
-            return cart;
+            return await this.carts.getCartById(cid);
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
     // adding a product to a cart
     async addProductToCart(cid, pid, quantity) {
-        try{
-            const cart = await this.carts.addProductToCart(cid, pid, quantity);
-            return cart;
+        try {
+            return await this.carts.addProductToCart(cid, pid, quantity);
         } catch (error) {
-            console.log(error);
-        }       
+            next(error);
+        }
     }
-
     // delete a product in my cart 
     async deleteProductFromCart(cid, pid) {
         try {
-            const cart = await this.carts.deleteProductFromCart(cid, pid);
-            return cart;
+            return await this.carts.deleteProductFromCart(cid, pid);
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
-
     // clear all products from a cart
     async clearCart(cid) {
         try {
@@ -81,7 +72,7 @@ export default class CartService {
             await this.updateCart(cid, cart);
             return cart;
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
     // check if the product has enough stock to be added to the cart and substract from it , if it doesn't have enough stock, it will not be added to the cart. finally, it will create a ticket with the products that were not purchased and clear the cart
@@ -107,7 +98,7 @@ export default class CartService {
             await this.clearCart(cid);
             return productsToBuy;
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
     // update the quantity of a product in a cart
@@ -121,7 +112,7 @@ export default class CartService {
             await this.updateCart(cid, cart);
             return cart;
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
 }
