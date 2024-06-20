@@ -8,6 +8,8 @@ import cookieParser from "cookie-parser";
 import passport from "passport";
 import cors from "cors";
 import compression from "express-compression";
+import cluster from "cluster";
+import { cpus } from "os";
 
 import smsRouter from "./services/utils/sms.js";
 import mailingRouter from "./services/utils/mailing.js";
@@ -26,79 +28,91 @@ import chatRouter from "./routes/chatRouter.js";
 import { userAuth } from "./services/middlewares/auth.js";
 import errorHandler from "./services/middlewares/errors/indexErrors.js";
 import mockProducts from "./services/middlewares/mockProducts.js";
-import {addLogger} from "./services/utils/logger.js";
+import { addLogger } from "./services/utils/logger.js";
 
 
-// Constants
-const PORT = config.PORT;
+const numCPUs = cpus().length;
 
-// App
-const app = express();
+if (cluster.isPrimary) {
+  for (let i = 0; i < cpus().length; i++) {
+    cluster.fork();
+  }
+  cluster.on('disconnect', worker => {
+    console.log(`Worker ${worker.id} disconnected, creating a new one`);
+    cluster.fork();
+  }
 
-// Connection to MongoDB
-mongoose.connect(uri)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(error => console.log(error));
+  )
+} else {
+  // Constants
+  const PORT = config.PORT;
 
-mongoSingleton();
+  // App
+  const app = express();
 
-// Log memory usage every second
-setInterval(() => {
-  const memoryUsage = process.memoryUsage();
-  console.log(`Memory Usage: ${memoryUsage.rss / 1024 / 1024} MB`);
-}, 6000000);
+  // Connection to MongoDB
+  mongoose.connect(uri)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(error => console.log(error));
 
+  mongoSingleton();
 
-// Connection to local port 
-const httpServer = app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
-// Websockets
-const io = new Server(httpServer);
-websocket(io);
+  // Log memory usage every 10 minutes
+  setInterval(() => {
+    const memoryUsage = process.memoryUsage();
+    console.log(`Memory Usage: ${memoryUsage.rss / 1024 / 1024} MB`);
+  }, 6000000);
 
-// Middlewares
-app
-  .use(addLogger)
-  .use(compression({
-    brotli: { enabled: true, zlib: {} }
-  }))
-  .use(express.json())
-  .use(express.urlencoded({ extended: true }))
-  .use(express.static("public"))
-  .use(cors()) //  CORS enabled for all origins
-  // Handlebars
-  .engine("handlebars", handlebars.engine())
-  .set("views", "./src/views")
-  .set("view engine", "handlebars")
-  // Session
-  .use(cookieParser())
-  .use(session({
-    store: MongoStore.create({
-      mongoUrl: uri,
-      ttl: 600,
-    }),
-    secret: "secretPrhase",
-    resave: true,
-    saveUninitialized: true
-  }));
+  // Connection to local port 
+  const httpServer = app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}(PID ${process.pid})`);
+  });
+  // Websockets
+  const io = new Server(httpServer);
+  websocket(io);
 
-// Passport 
-initializatePassport()
-app
-  .use(passport.initialize())
-  .use(passport.session())
+  // Middlewares
+  app
+    .use(addLogger)
+    .use(compression({
+      brotli: { enabled: true, zlib: {} }
+    }))
+    .use(express.json())
+    .use(express.urlencoded({ extended: true }))
+    .use(express.static("public"))
+    .use(cors()) //  CORS enabled for all origins
+    // Handlebars
+    .engine("handlebars", handlebars.engine())
+    .set("views", "./src/views")
+    .set("view engine", "handlebars")
+    // Session
+    .use(cookieParser())
+    .use(session({
+      store: MongoStore.create({
+        mongoUrl: uri,
+        ttl: 600,
+      }),
+      secret: "secretPrhase",
+      resave: true,
+      saveUninitialized: true
+    }));
 
-// Routes
-app
-  .use("/api/sessions", sessionRouter)
-  .use("/api/mock", mockProducts)
-  .use("/api/products", productsRouter)
-  .use("/api/carts", cartsRouter)
-  .use("/api/tickets", ticketRouter)
-  .use("/", viewsRouter)
-  .use("/api/mailing", mailingRouter)
-  .use("/api/sms", smsRouter)
-  .use("api/chat", userAuth, chatRouter)
-  .use(errorHandler);
-  
+  // Passport 
+  initializatePassport()
+  app
+    .use(passport.initialize())
+    .use(passport.session())
+
+  // Routes
+  app
+    .use("/api/sessions", sessionRouter)
+    .use("/api/mock", mockProducts)
+    .use("/api/products", productsRouter)
+    .use("/api/carts", cartsRouter)
+    .use("/api/tickets", ticketRouter)
+    .use("/", viewsRouter)
+    .use("/api/mailing", mailingRouter)
+    .use("/api/sms", smsRouter)
+    .use("api/chat", userAuth, chatRouter)
+    .use(errorHandler);
+}
