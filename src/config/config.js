@@ -9,6 +9,8 @@ program
     .option('-pr, --prod', 'enviroment')
     .option('-p, --port <type>', 'Port')
     .option('-m, --mongodb_url <type>', 'MongoDB URL')
+    .option('-mu, --mongodb_user <type>', 'MongoDB User')
+    .option('-mp, --mongodb_pass <type>', 'MongoDB Pass')
     .option('-pe, --persistence <type>', 'Persistence')
     .option('-an, --admin_name <type>', 'Admin Name')
     .option('-ae, --admin_email <type>', 'Admin Email')
@@ -24,13 +26,16 @@ const options = program.opts();
 const env = options.prod ? 'prod' : 'dev';
 
 dotenv.config({
-    path: `.env/.env.${env}`,
+    path: `.env/env.${env}`,
 
 });
+
 
 export default {
     PORT: process.env.PORT,
     MONGODB_URL: process.env.MONGODB_URI,
+    MONGODB_USER: process.env.MONGODB_USER,
+    MONGODB_PASS: process.env.MONGODB_PASS,
     PERSISTENCE: process.env.PERSISTENCE,
     ADMIN_USERNAME: process.env.ADMIN_USERNAME,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,

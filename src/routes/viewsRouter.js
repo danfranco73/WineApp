@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { auth, logged , admin } from "../services/middlewares/auth.js";
-import productManager from "../dao/managers/ProductsManagerDB.js";
+import productController from "../controllers/productController.js";
 import chatManager from "../dao/managers/chatManager.js";
 import {logger} from "../services/utils/logger.js";
 import CartService from "../services/cartServices.js";
-const products = new productManager();
+const products = new productController();
 const router = Router();
 
  
@@ -57,7 +57,7 @@ router
   .get("/home", async (req, res) => {
     const { page, limit, sort, query } = req.query;
     try {
-      const productsData = await products.getProducts(page, limit, sort, query);
+      const productsData = await products.getProducts(req.query);
       renderWithLayout(res, "home", {
         title: "Product List",
         status: "success",
