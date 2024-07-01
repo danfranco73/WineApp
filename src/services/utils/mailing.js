@@ -2,7 +2,7 @@ import { Router } from "express";
 import nodemailer from "nodemailer";
 import config from "../../config/config.js";
 import path from "path";
-import __dirname from "./utils.js";
+import {__dirname} from "./utils.js";
 
 // Constants from the environment for user mailing
 const userMailing = config.USER_MAILING;
@@ -28,7 +28,7 @@ mailingRouter.get("/send-email", (req, res) => {
   });
 
   const mailOptions = {
-    from: "Dan Franco <{process.env.USER_MAILING}>",
+    from: "Dan Franco <{userMailing}>",
     to: "danielfrancotucu@hotmail.com",
     subject: "Sending Email using nodemailer",
     html: `
@@ -41,7 +41,7 @@ mailingRouter.get("/send-email", (req, res) => {
     attachments: [
       {
         filename: "Pictest.jpg",
-        path: path.join(__dirname, "public/img/Pictest.jpg"),
+        path: path.join(__dirname, "public", "img", "Pictest.jpg"),
         cid: "Enduro 4ever!"
       }
     ]

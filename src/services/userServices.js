@@ -78,4 +78,33 @@ export default class UserService {
             throw new Error('Error deleting user');
         }
     }
+
+    async forgotPassword(email) {
+        const user = await userModel.findOne({ email }).lean();
+        if (!user) {
+            throw new Error("User not found");
+        }
+        const token = generateTokenJwt({ email, id: user._id }); // Generate JWT token
+        user.resetPasswordToken = token; // Store token in user document
+        user.resetPasswordExpires = Date.now() + 3600000; // Set expiration (1 hour)
+        await userModel.updateOne({ email }, user);
+        return user;
+    }
+
+    async resetPassword(token, password) {
+        const user = await userModel.findOne({
+            resetPasswordToken: token,// Find user by token
+            resetPasswordExpires: { $gt: Date.now() },// Check if token is expired0
+        }).lean();
+        if (!user) {
+            throw new Error("Invalid or expired token");
+        }
+        if (password === user.password) {
+            throw new Error("New password cannot be the same as the old password");
+        }
+        user.password = createHash(password);// Hash new password
+        user.resetPasswordToken = undefined;// Clear token and expiration
+        user.resetPasswordExpires = undefined;// Update user document
+        return await userModel.updateOne({ email: user.email }, user);// Return user
+    }
 }

@@ -1,7 +1,7 @@
 // this file contains a middleware that adds a logger to the request object
 
 import winston from 'winston';
-import __dirname from './utils.js';
+import {__dirname} from './utils.js';
 
 // custom error levels and colors
 const customErrLevels = {

@@ -38,6 +38,10 @@ const productSchema = mongoose.Schema({
     require: false,
     default: [],
   },
+  owner:{
+    type: String, // user _id or email
+    default:"admin"
+  }
 });
 
 productSchema.plugin(paginate);

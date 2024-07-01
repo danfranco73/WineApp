@@ -9,7 +9,7 @@ const router = Router();
 
 // Get all products with pagination, sorting, and searching
 router
-  .get("/", async (req, res) => {
+  .get("/", async (req, res, next) => {
     const { limit = 10, page = 1, sort = null, query = {} } = req.query;
     try {
       const products = await productManager.getProducts({ page, limit, sort, query });
@@ -20,7 +20,7 @@ router
   })
 
   // Get a product by ID
-  .get("/:pid", async (req, res) => {
+  .get("/:pid", async (req, res, next) => {
     const { pid } = req.params;
     try {
       const product = await productManager.getProductById(pid);
@@ -35,7 +35,7 @@ router
   })
 
   // Add a new product with image upload (admin only)
-  .post("/", upload.single("image"), admin, async (req, res) => {
+  .post("/", upload.single("image"), admin, async (req, res, next) => {
     const { title, description, code, price, stock, category } = req.body;
     try {
       const newProduct = {
@@ -55,7 +55,7 @@ router
   })
 
   // Update a product by ID
-  .put("/:pid", admin, async (req, res) => {
+  .put("/:pid", admin, async (req, res, next) => {
     const { pid } = req.params;
     const { title, description, code, price, stock, category } = req.body;
     try {
@@ -78,7 +78,7 @@ router
   })
 
   // Delete a product by ID
-  .delete("/:pid", admin, async (req, res) => {
+  .delete("/:pid", admin, async (req, res, next) => {
     const { pid } = req.params;
     try {
       await productManager.deleteProduct(pid);

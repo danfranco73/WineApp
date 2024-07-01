@@ -15,7 +15,7 @@ import smsRouter from "./services/utils/sms.js";
 import mailingRouter from "./services/utils/mailing.js";
 import websocket from "./services/utils/websockets.js";
 import uri from "./config/mongoUri.js";
-import __dirname from "./services/utils/utils.js";
+// import {__dirname} from "./services/utils/utils.js";
 import productsRouter from "./routes/productsRouter.js";
 import cartsRouter from "./routes/cartsRouter.js";
 import viewsRouter from "./routes/viewsRouter.js";
@@ -29,6 +29,7 @@ import { userAuth } from "./services/middlewares/auth.js";
 import errorHandler from "./services/middlewares/errors/indexErrors.js";
 import mockProducts from "./services/middlewares/mockProducts.js";
 import { addLogger } from "./services/utils/logger.js";
+
 
 
 const numCPUs = cpus().length;

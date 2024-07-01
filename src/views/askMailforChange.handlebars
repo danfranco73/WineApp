@@ -1,0 +1,16 @@
+<h1>Forgot Password</h1>
+<form method="POST" action="/api/sessions/forgotPassword">
+  <div>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+  </div>
+  <button type="submit">Send Reset Link</button>
+</form>
+
+{{#if success}}
+  <div class="success">Reset link sent successfully!</div>
+{{/if}}
+
+{{#if error}}
+  <div class="error">{{error}}</div>
+{{/if}}

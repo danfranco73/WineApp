@@ -1,13 +1,13 @@
 import passport from "passport";
 import jwt, { ExtractJwt } from "passport-jwt";
 import GitHubStrategy from "passport-github2";
-
+import config from "./config.js";
 import userModel from "../dao/models/userModel.js";
 
 const jwtStrategy = jwt.Strategy;
 
-const CLIENT_ID = "Iv1.35dc8198b4c5ce6f";
-const SECRET_ID = "41717b2b005f59abdfadca1347d346123ee67e3f";
+const CLIENT_ID = config.CLIENT_ID;
+const SECRET_ID = config.SECRET_ID;
 
 const initializatePassport = () => {
 

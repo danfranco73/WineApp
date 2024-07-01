@@ -1,19 +1,20 @@
 import { Router } from "express";
-import { auth, logged , admin } from "../services/middlewares/auth.js";
-import productController from "../controllers/productController.js";
+import { auth, logged, admin } from "../services/middlewares/auth.js";
+import ProductService from "../services/productServices.js";
 import chatManager from "../dao/managers/chatManager.js";
-import {logger} from "../services/utils/logger.js";
+import { logger } from "../services/utils/logger.js";
 import CartService from "../services/cartServices.js";
-const products = new productController();
+import UserService from "../services/userServices.js";
+import { ne } from "faker/lib/locales.js";
+const products = new ProductService();
+const user = new UserService();
 const router = Router();
 
- 
-const renderWithLayout = (res, view, locals) => 
+const renderWithLayout = (res, view, locals) =>
   res.render(view, { layout: "main", style: "style.css", ...locals });
 
 const renderError = (res, redirect = "/login") => {
-  res.status(500).redirect
-    (redirect);
+  res.status(500).redirect(redirect);
 };
 
 router
@@ -25,7 +26,8 @@ router
         title: "Ecommerce Users",
         products: productsData.docs,
         user: req.session.user,
-        isValid: productsData.page > 0 && productsData.page <= productsData.totalPages,
+        isValid:
+          productsData.page > 0 && productsData.page <= productsData.totalPages,
       });
     } catch (e) {
       renderError(res);
@@ -75,7 +77,8 @@ router
       renderWithLayout(res, "realTimeProducts", {
         title: "Real Time Products",
         products: productsData.docs,
-        isValid: productsData.page > 0 && productsData.page <= productsData.totalPages,
+        isValid:
+          productsData.page > 0 && productsData.page <= productsData.totalPages,
       });
     } catch (e) {
       renderError(res);
@@ -107,14 +110,39 @@ router
     }
   })
   // adding a endpoint testin the logger
-  .get('/loggerTest', (req, res) => {
-    logger.debug('debug');
-    logger.http('http');
-    logger.info('info');
-    logger.warning('warning');
-    logger.error('error');
-    logger.fatal('fatal');
-    res.send('Logger test');
-});
+  .get("/loggerTest", (req, res) => {
+    logger.debug("debug");
+    logger.http("http");
+    logger.info("info");
+    logger.warning("warning");
+    logger.error("error");
+    logger.fatal("fatal");
+    res.send("Logger test");
+  })
+
+  // route for forgot password and send an email with token to reset password only valid for 1 hour
+  .get("/forgotPassword", async (req, res) => {
+    renderWithLayout(res, "forgotPassword", {
+      title: "Forgot Password",
+    });
+  })
+// askMailforChange
+  .post("/askMailforChange", async (req, res) => {
+    try {
+      const { email } = req.body;
+      await user.forgotPassword(email);
+      res.redirect("/login");
+    } catch (e) {
+      renderError(res);
+    }
+  })
+
+  // route to reset password
+  .get("/resetPassword", async (req, res) => {
+    renderWithLayout(res, "resetPassword", {
+      title: "Reset Password",
+      token: req.query.token, // get token from query
+    });
+  });
 
 export default router;
