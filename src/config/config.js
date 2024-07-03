@@ -34,7 +34,10 @@ dotenv.config({
 });
 
 
+
 export default {
+    APP_NAME: "WineApp",
+    SERVER: "local",
     PORT: process.env.PORT,
     MONGODB_URL: process.env.MONGODB_URI,
     MONGODB_USER: process.env.MONGODB_USER,

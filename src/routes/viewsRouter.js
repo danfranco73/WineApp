@@ -1,12 +1,11 @@
 import { Router } from "express";
-import { auth, logged, admin } from "../services/middlewares/auth.js";
-import ProductService from "../services/productServices.js";
+import productController from "../controllers/productController.js";
 import chatManager from "../dao/managers/chatManager.js";
 import { logger } from "../services/utils/logger.js";
 import CartService from "../services/cartServices.js";
 import UserService from "../services/userServices.js";
-import { ne } from "faker/lib/locales.js";
-const products = new ProductService();
+
+const products = new productController();
 const user = new UserService();
 const router = Router();
 
@@ -18,8 +17,7 @@ const renderError = (res, redirect = "/login") => {
 };
 
 router
-  // Index with auth middleware
-  .get("/", auth, async (req, res) => {
+   .get("/", async (req, res) => {
     try {
       const productsData = await products.getProducts();
       renderWithLayout(res, "index", {
@@ -33,15 +31,15 @@ router
       renderError(res);
     }
   })
-  // Login with logged middleware (presumably checks if logged in)
-  .get("/login", logged, (req, res) => {
+
+  .get("/login", (req, res) => {
     renderWithLayout(res, "login", {
       title: "Ecommerce Login",
       failLogin: req.session.failLogin ?? false,
       resgisterSuccess: req.session.resgisterSuccess ?? false,
     });
   })
-  // Register with no middleware
+  
   .get("/register", (req, res) => {
     renderWithLayout(res, "register", {
       title: "Ecommerce Register",
@@ -71,14 +69,12 @@ router
     }
   })
   // Real Time Products with similar logic to index
-  .get("/realTimeProducts", admin, async (req, res) => {
+  .get("/realTimeProducts", async (req, res) => {
     try {
       const productsData = await products.getProducts();
       renderWithLayout(res, "realTimeProducts", {
         title: "Real Time Products",
         products: productsData.docs,
-        isValid:
-          productsData.page > 0 && productsData.page <= productsData.totalPages,
       });
     } catch (e) {
       renderError(res);

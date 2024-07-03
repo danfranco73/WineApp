@@ -49,6 +49,7 @@ export default class UserService {
             if (!isValidPassword(logUser, password)) {
                 throw new Error('Password incorrect');
             }       
+            console.log(logUser);
             delete logUser.password;
             logUser.token = generateTokenJwt(logUser);
             return logUser;

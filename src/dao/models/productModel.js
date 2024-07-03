@@ -31,17 +31,17 @@ const productSchema = mongoose.Schema({
   },
   category: {
     type: String,
-    require: true,
+    require: null,
   },
   thumbnails: {
     type: Array,
     require: false,
     default: [],
   },
-  owner:{
-    type: String, // user _id or email
-    default:"admin"
-  }
+  owner: {
+    type: String,
+    default: "admin",
+  },
 });
 
 productSchema.plugin(paginate);

@@ -26,6 +26,11 @@ class CartController {
     }
 
     async addProductToCart(cid, pid, quantity) {
+        const user = req.session.user;
+        const product = await this.productService.getProductById(pid);
+        if (user.role === "premium" && product.owner === user.email) {
+            throw new Error("You cannot add your own product to your cart");
+        }
         return await this.cartService.addProductToCart(cid, pid, quantity);
     }
     

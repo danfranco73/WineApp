@@ -10,7 +10,6 @@ const CLIENT_ID = config.CLIENT_ID;
 const SECRET_ID = config.SECRET_ID;
 
 const initializatePassport = () => {
-
   passport
     // using jwt strategy
     .use(
@@ -62,30 +61,26 @@ const initializatePassport = () => {
           }
         }
       )
-    )
+    );
   passport.serializeUser((user, done) => {
     done(null, user._id);
-  })
+  });
   passport.deserializeUser(async (id, done) => {
     let user = await userModel.findById(id);
     done(null, user);
   });
-}
+};
 
 const cookieExtractor = (req) => {
   let token = null;
   if (req && req.cookies) {
-    token = req.cookies.auth || req.cookies.jwt ? null : req.cookies.auth || req.cookies.jwt;
+    token =
+      req.cookies.auth || req.cookies.jwt
+        ? null
+        : req.cookies.auth || req.cookies.jwt;
   }
   return token;
-}
+};
 
-
-/*
-datos sensibles
-Owned by: @danfranco73
-App ID: 888863
-Client ID: Iv1.35dc8198b4c5ce6f
-Client Secret: 41717b2b005f59abdfadca1347d346123ee67e3f*/
-
-export default initializatePassport ; SECRET_ID;
+export default initializatePassport;
+SECRET_ID;

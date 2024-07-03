@@ -23,7 +23,6 @@ class productController {
     }
 
     async deleteProduct(pid) {
-        const user = req.session.user; // from viewsRouter.js
         const product = await this.productService.getProductById(pid);
         if(!product) {
             throw new Error("Product not found");
@@ -31,9 +30,7 @@ class productController {
         if(user.role === "premium" && product.owner !== user.email) {
             throw new Error("You are not allowed to delete this product");
         }
-        await this.productService.deleteProduct(pid);
-
-        return product;
+        return await this.productService.deleteProduct(pid);
     }
 }
 

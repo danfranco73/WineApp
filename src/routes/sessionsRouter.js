@@ -5,6 +5,7 @@ import nodemailer from "nodemailer";
 import UserService from "../services/userServices.js";
 import config from "../config/config.js";
 import verifyToken from "../services/utils/verifyToken.js";
+import { handleRole } from "../services/middlewares/roles.js";
 
 const router = Router();
 const sessionService = new UserService();
@@ -37,7 +38,7 @@ router
     res.redirect("/login");
   })
 
-  // register user and return user
+  // register new user
   .post("/register", async (req, res) => {
     try {
       req.session.failRegister = false;
@@ -63,9 +64,9 @@ router
         console.error("User invalid credentials ");
         return res.redirect("/login");
       }
-      console.log("User logged in correctly en el sessionRouter", user);
+      console.log("User logged in correctly", user);
       req.session.user = user; // save user in session
-      if (user.role === "admin") {
+      if (user.role === "admin" || user.role === "premium") {
         return res
           .cookie("jwt", user.token, { httpOnly: true, maxAge: 3600000 }) // 1 hour
           .status(200)
@@ -114,6 +115,22 @@ router
       status: "success",
       user: user,
     });
+  })
+  // endpoint to update user role (from premium to user or viceverse) by uid (only if the user logged in is an admin)
+  .put("/premium/:uid", verifyToken, handleRole(["admin"]), async (req, res) => {
+    try {
+      const uid = req.params.uid;
+      const user = await sessionService.getUserById(uid);
+      user.role = user.role === "premium" ? "user" : "premium";
+      const updatedUser = await sessionService.updateUser(user._id, user);
+      res.status(200).send({
+        status: "success",
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Error updating user role" });
+    }
   })
 
   // endpoint for password reset and send email with token

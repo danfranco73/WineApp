@@ -1,6 +1,11 @@
 import { Router } from "express";
 import CartController from "../controllers/cartController.js";
-import { auth } from "../services/middlewares/auth.js";
+import verifyToken from "../services/utils/verifyToken.js";
+import {
+  handleRole,
+  checkRole,
+  checkOwnership,
+} from "../services/middlewares/roles.js";
 import { userAuth, isNotAdmin, admin } from "../services/middlewares/auth.js";
 
 const cartManager = new CartController();
@@ -9,7 +14,7 @@ const router = Router();
 
 // get the carts from the database in my ecommerce mongodb
 router
-  .get("/", async (req, res) => {
+  .get("/", verifyToken, async (req, res) => {
     const carts = await cartManager.getCarts();
     res.send({
       status: "success",
@@ -18,7 +23,7 @@ router
   })
 
   // add a new cart
-  .post("/", async (req, res) => {
+  .post("/", verifyToken, async (req, res) => {
     const cart = req.body;
     const purchaser = req.session.user;
     const newCart = await cartManager.addCart(cart);
@@ -29,25 +34,20 @@ router
     });
   })
 
-  // update a cart adding a product with pid if user is not admin 
-  .put("/:cid/product/:pid", isNotAdmin, async (req, res) => {
+  // update a cart adding a product with pid if user is not admin
+  .put("/:cid/product/:pid", verifyToken, async (req, res) => {
     const { cid, pid } = req.params;
-    const cart = await cartManager.addProductToCart(cid, pid);
-    res.send({
-      status: "success",
-      payload: cart,
-    });
-  })
-
-  // modify quantity of a product in a cart by cid and pid in the database in my ecommerce mongodb
-  .patch("/:cid/product/:pid", userAuth, async (req, res) => {
-    const { cid, pid } = req.params;
-    const quantity = req.body.quantity;
-    const cart = await cartManager.updateProductQuantity(cid, pid, quantity);
-    res.send({
-      status: "success",
-      payload: cart,
-    });
+    const isOwner = await checkOwnership(pid, req.session.user.email);
+    if (req.user.role === "premium") {
+      if (!isOwner) {
+        const cart = await cartManager.addProductToCart(cid, pid);
+        res.send({
+          status: "success",
+          payload: cart,
+        });
+      }
+      res.status(403).send("Forbidden");
+    }
   })
 
   // getting cart by cid in the database in my ecommerce mongodb
@@ -61,7 +61,7 @@ router
   })
 
   // router to finish the purchase of a cart by cid in the database on ly if the user is authenticated and is the cart owner
-  .patch("/:cid/purchase"/* , userAuth */, async (req, res) => {
+  .patch("/:cid/purchase" /* , userAuth */, async (req, res) => {
     const { cid } = req.params;
     const cart = await cartManager.purchaseCart(cid, req.session.user);
     res.send({
@@ -70,7 +70,7 @@ router
     });
   })
 
-  // delete a cart by id 
+  // delete a cart by id
   .delete("/:cid", async (req, res) => {
     const id = req.params.cid;
     await cartManager.deleteCart(id);
@@ -99,6 +99,5 @@ router
       payload: cart,
     });
   });
-
 
 export default router;
