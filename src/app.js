@@ -32,7 +32,7 @@ import { addLogger } from "./services/utils/logger.js";
 
 
 
-/* const numCPUs = cpus().length;
+const numCPUs = cpus().length;
 
 if (cluster.isPrimary) {
   for (let i = 0; i < cpus().length; i++) {
@@ -44,7 +44,7 @@ if (cluster.isPrimary) {
   }
 
   )
-} else { */
+} else { 
   // Constants
   const PORT = config.PORT;
 
@@ -116,4 +116,4 @@ if (cluster.isPrimary) {
     .use("/api/sms", smsRouter)
     .use("api/chat", userAuth, chatRouter)
     .use(errorHandler);
-/* } */
+}
