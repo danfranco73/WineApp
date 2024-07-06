@@ -75,7 +75,7 @@ if (cluster.isPrimary) {
         openapi: '3.0.0',
         info: {
             title: 'Documentación WineAPP API',
-            description: 'Documentacion habilitada API para WineAPP',
+            description: 'Documentacion habilitada API para ecommerce WineAPP',
             version: '1.0.0',
         },
     },
