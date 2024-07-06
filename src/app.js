@@ -9,13 +9,14 @@ import passport from "passport";
 import cors from "cors";
 import compression from "express-compression";
 import cluster from "cluster";
-import { cpus } from "os";
+import { cpus, version } from "os";
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express';
 
 import smsRouter from "./services/utils/sms.js";
 import mailingRouter from "./services/utils/mailing.js";
 import websocket from "./services/utils/websockets.js";
 import uri from "./config/mongoUri.js";
-// import {__dirname} from "./services/utils/utils.js";
 import productsRouter from "./routes/productsRouter.js";
 import cartsRouter from "./routes/cartsRouter.js";
 import viewsRouter from "./routes/viewsRouter.js";
@@ -30,9 +31,7 @@ import errorHandler from "./services/middlewares/errors/indexErrors.js";
 import mockProducts from "./services/middlewares/mockProducts.js";
 import { addLogger } from "./services/utils/logger.js";
 
-
-
-const numCPUs = cpus().length;
+/* const numCPUs = cpus().length;
 
 if (cluster.isPrimary) {
   for (let i = 0; i < cpus().length; i++) {
@@ -45,6 +44,8 @@ if (cluster.isPrimary) {
 
   )
 } else { 
+  */
+
   // Constants
   const PORT = config.PORT;
 
@@ -68,6 +69,20 @@ if (cluster.isPrimary) {
   const httpServer = app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}(PID ${process.pid})`);
   });
+   // Swagger
+   const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Documentación WineAPP API',
+            description: 'Documentacion habilitada API para WineAPP',
+            version: '1.0.0',
+        },
+    },
+    apis: ['./src/docs/**/*.yaml'],
+  };
+  const specs = swaggerJsdoc(swaggerOptions);
+
   // Websockets
   const io = new Server(httpServer);
   websocket(io);
@@ -107,7 +122,7 @@ if (cluster.isPrimary) {
   // Routes
   app
     .use("/api/sessions", sessionRouter)
-    .use("/api/mock", mockProducts)
+    // .use("/api/mock", mockProducts)
     .use("/api/products", productsRouter)
     .use("/api/carts", cartsRouter)
     .use("/api/tickets", ticketRouter)
@@ -115,5 +130,6 @@ if (cluster.isPrimary) {
     .use("/api/mailing", mailingRouter)
     .use("/api/sms", smsRouter)
     .use("api/chat", userAuth, chatRouter)
-    .use(errorHandler);
-}
+    .use(errorHandler)
+    .use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
+/* } */

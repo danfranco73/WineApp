@@ -1,0 +1,59 @@
+openapi: "3.0.1"
+info:
+  title: "WineApp API"
+  version: "1.0.0"
+  description: "API for managing carts in WineApp"
+paths:
+  /api/carts:
+    get:
+      summary: "Get all carts"
+      tags:
+        - "carts"
+      responses:
+          200:
+            description: "List of carts"
+            content:
+              application/json:
+                schema:
+                  type: "array"
+                  items:
+                    $ref: "#/components/schemas/carts"
+    post:
+      summary: "Create a new cart"
+      tags:
+        - "carts"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/carts"
+      responses:
+        201:
+          description: "Cart created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/carts"
+components:
+  schemas:
+    carts:
+      type: "object"
+      properties:
+        _id:
+          type: "object"
+          format: "int64"
+        owner:
+          type: "string"
+        products:
+          type: "array"
+        price:
+          type: "number"
+        quantity:
+          type: "integer"
+          format: "int32"
+      required:
+        - name
+        - description
+        - price
+        - quantity

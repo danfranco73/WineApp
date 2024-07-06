@@ -1,15 +1,8 @@
 import { Router } from "express";
 import upload from "../services/utils/utilMulter.js";
-import { admin } from "../services/middlewares/auth.js";
 import productController from "../controllers/productController.js";
 import verifyToken from "../services/utils/verifyToken.js";
-import {
-  isAdmin,
-  isUser,
-  isPremium,
-  handleRole,
-  checkOwnership,
-} from "../services/middlewares/roles.js";
+import { handleRole, checkOwnership } from "../services/middlewares/roles.js";
 
 const productManager = new productController();
 const router = Router();
@@ -55,8 +48,7 @@ router
     handleRole(["admin", "premium"]),
     upload.single("image"),
     async (req, res, next) => {
-      const { title, description, code, price, stock, category, owner } =
-        req.body;
+      const { title, description, code, price, stock, category } = req.body;
       try {
         const newProduct = {
           title,
@@ -100,7 +92,7 @@ router
     }
   })
 
-  // Delete a product by ID
+  // Delete a product by pid (admin and Premium only)
   .delete(
     "/:pid",
     verifyToken,
@@ -109,17 +101,14 @@ router
       const { pid } = req.params;
       const email = req.user.email;
       let isOwner = true;
-
       if (req.user.role === "premium") {
         isOwner = await checkOwnership(pid, email);
       }
       if (!isOwner) {
-        return res
-          .status(403)
-          .send({
-            status: "error",
-            message: "No tienes permiso para eliminar este producto",
-          });
+        return res.status(403).send({
+          status: "error",
+          message: "No tienes permiso para eliminar este producto",
+        });
       }
       try {
         await productManager.deleteProduct(pid);

@@ -10,11 +10,7 @@ export default class ProductService {
     }
 
     async addProduct(product) {
-        const user = req.session.user; // from viewsRouter.js
-        if(user.role === "premium") {
-            product.owner = user.email; // from viewsRouter.js
-        }
-        const newProduct = await this.products.addProduct(product);
+         const newProduct = await this.products.addProduct(product);
         return newProduct;
     }
 
