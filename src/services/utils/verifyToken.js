@@ -17,7 +17,8 @@ const verifyToken = (req, res, next) => {
   const headerToken = req.headers.authorization ? req.headers.authorization.split(' ')[1]: undefined;
   const cookieToken = req.cookies && req.cookies[`${config.APP_NAME}_cookie`] ? req.cookies[`${config.APP_NAME}_cookie`]: undefined;
   const queryToken = req.query.access_token ? req.query.access_token: undefined;
-  const receivedToken = headerToken || cookieToken || queryToken;
+  const paramsToken = req.params.token ? req.params.token: undefined;
+  const receivedToken = headerToken || cookieToken || queryToken || paramsToken;
 
   if (!receivedToken) return res.status(401).send({ origin: config.SERVER, payload: 'Se requiere token' });
 
@@ -27,21 +28,5 @@ const verifyToken = (req, res, next) => {
       next();
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export default verifyToken;

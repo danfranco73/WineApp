@@ -28,7 +28,7 @@ mailingRouter.get("/send-email", (req, res) => {
   });
 
   const mailOptions = {
-    from: "Dan Franco <{userMailing}>",
+    from: "Dan Franco <${userMailing}>",
     to: "danielfrancotucu@hotmail.com",
     subject: "Sending Email using nodemailer",
     html: `

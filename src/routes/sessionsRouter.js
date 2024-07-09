@@ -117,21 +117,26 @@ router
     });
   })
   // endpoint to update user role (from premium to user or viceverse) by uid (only if the user logged in is an admin)
-  .put("/premium/:uid", verifyToken, handleRole(["admin"]), async (req, res) => {
-    try {
-      const uid = req.params.uid;
-      const user = await sessionService.getUserById(uid);
-      user.role = user.role === "premium" ? "user" : "premium";
-      const updatedUser = await sessionService.updateUser(user._id, user);
-      res.status(200).send({
-        status: "success",
-        user: updatedUser,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "Error updating user role" });
+  .put(
+    "/premium/:uid",
+    verifyToken,
+    handleRole(["admin"]),
+    async (req, res) => {
+      try {
+        const uid = req.params.uid;
+        const user = await sessionService.getUserById(uid);
+        user.role = user.role === "premium" ? "user" : "premium";
+        const updatedUser = await sessionService.updateUser(user._id, user);
+        res.status(200).send({
+          status: "success",
+          user: updatedUser,
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Error updating user role" });
+      }
     }
-  })
+  )
 
   // endpoint for password reset and send email with token
   .post("/forgotPassword", async (req, res) => {
@@ -210,21 +215,14 @@ router
     }
   })
   //
-  .get("/resetPassword/:token", async (req, res) => {
-    const token = req.params.token; // Extract token from URL parameter
-    const decodedToken = verifyToken(token); // Replace with your token verification function
-
+  .get("/resetPassword/:token", verifyToken, async (req, res) => {
     try {
-      if (!decodedToken) {
+      const token = req.params.token;
+      const user = await sessionService.getUserByEmail(req.user.email);
+      if (!user) {
         return res.status(400).send({ error: "Invalid or expired token" });
-      } else {
-        // Finding the user associated with the token
-        const user = await sessionService.getUserByEmail(decodedToken.email);
-        if (!user) {
-          return res.status(400).send({ error: "Invalid or expired token" });
-        }
-        res.render("resetPassword", { token: token });
       }
+      res.render("resetPassword", { token });
     } catch (error) {
       console.error(error);
       res.status(500).send({ error: "Error processing reset request" });

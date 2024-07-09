@@ -31,7 +31,7 @@ import errorHandler from "./services/middlewares/errors/indexErrors.js";
 import mockProducts from "./services/middlewares/mockProducts.js";
 import { addLogger } from "./services/utils/logger.js";
 
-/* const numCPUs = cpus().length;
+const numCPUs = cpus().length;
 
 if (cluster.isPrimary) {
   for (let i = 0; i < cpus().length; i++) {
@@ -44,7 +44,7 @@ if (cluster.isPrimary) {
 
   )
 } else { 
-  */
+
 
   // Constants
   const PORT = config.PORT;
@@ -132,4 +132,4 @@ if (cluster.isPrimary) {
     .use("api/chat", userAuth, chatRouter)
     .use(errorHandler)
     .use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
-/* } */
+}
