@@ -11,9 +11,13 @@ const customErrLevels = {
 
 // development logger with only one transport, for console
 const devLogger = winston.createLogger({
-    transports: [
-        new winston.transports.Console({ level: 'debug' }),
-    ]
+    level: 'debug',
+    format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+    ),
+    // the only transport should be for console and an array
+    transports: [new winston.transports.Console()]
 });
 
 // production logger with 2 transports, one for console and one for file

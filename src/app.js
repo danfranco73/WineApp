@@ -28,10 +28,10 @@ import ticketRouter from "./routes/ticketRouter.js";
 import chatRouter from "./routes/chatRouter.js";
 import { userAuth } from "./services/middlewares/auth.js";
 import errorHandler from "./services/middlewares/errors/indexErrors.js";
-import mockProducts from "./services/middlewares/mockProducts.js";
+// import mockProducts from "./services/middlewares/mockProducts.js";
 import { addLogger } from "./services/utils/logger.js";
 
-const numCPUs = cpus().length;
+/* const numCPUs = cpus().length;
 
 if (cluster.isPrimary) {
   for (let i = 0; i < cpus().length; i++) {
@@ -43,31 +43,26 @@ if (cluster.isPrimary) {
   }
 
   )
-} else { 
-
-
+}  else { */
   // Constants
   const PORT = config.PORT;
-
   // App
   const app = express();
-
   // Connection to MongoDB
   mongoose.connect(uri)
     .then(() => console.log('Connected to MongoDB'))
     .catch(error => console.log(error));
-
+  // Singleton
   mongoSingleton();
-
   // Log memory usage every 10 minutes
   setInterval(() => {
     const memoryUsage = process.memoryUsage();
     console.log(`Memory Usage: ${memoryUsage.rss / 1024 / 1024} MB`);
   }, 6000000);
-
   // Connection to local port 
   const httpServer = app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}(PID ${process.pid})`);
+    // paso por el log el puerto y solo la cantidad de procesos que se están ejecutando
+    console.log(`Server listening on port ${PORT} `);
   });
    // Swagger
    const swaggerOptions = {
@@ -82,11 +77,9 @@ if (cluster.isPrimary) {
     apis: ['./src/docs/**/*.yaml'],
   };
   const specs = swaggerJsdoc(swaggerOptions);
-
   // Websockets
   const io = new Server(httpServer);
   websocket(io);
-
   // Middlewares
   app
     .use(addLogger)
@@ -132,4 +125,4 @@ if (cluster.isPrimary) {
     .use("api/chat", userAuth, chatRouter)
     .use(errorHandler)
     .use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
-}
+/* } */

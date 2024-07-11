@@ -50,7 +50,7 @@ a:hover {
 button {
   cursor: pointer;
   margin-top: 5px;
-  color: white;
+  color: rgb(21, 46, 106);
   background-color: #ececcd;
   border-radius: 6px;
   border: 1px solid;

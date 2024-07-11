@@ -6,7 +6,7 @@ export default class ProductService {
     }
 
     async getProducts(query, options) {
-        return await this.products.getProducts(query ?? {}, options);
+        return await this.products.getProducts(query, options);
     }
 
     async addProduct(product) {

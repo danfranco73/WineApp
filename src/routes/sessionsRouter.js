@@ -1,6 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import nodemailer from "nodemailer";
+import mongoose from "mongoose";
 
 import UserService from "../services/userServices.js";
 import config from "../config/config.js";
@@ -141,7 +142,15 @@ router
   // endpoint for password reset and send email with token
   .post("/forgotPassword", async (req, res) => {
     try {
-      const userMail = await sessionService.forgotPassword(req.body.email);
+      const userMail = await sessionService.getUserByEmail(req.body.email);
+      if (!userMail) {
+        return res.status(404).send({
+          status: "error",
+          message: "User not found",
+        });
+      }
+      const token = sessionService.forgotPassword(userMail.email);
+     
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         service: "gmail",
@@ -156,17 +165,15 @@ router
         },
       });
       const mailOptions = {
-        from: "Dan Franco <{userMailing}>",
+        from: `<${config.USER_MAILING}>`,
         to: userMail.email,
         subject: "Reset password",
-        html: `
-                <div>
+        html: ` <div>
                 <h1>Reset password</h1>
                 <br>
                 <p>Click on the link below to reset your password</p>
                 <a href="http://localhost:8080/api/sessions/resetPassword/${userMail.resetPasswordToken}">Reset password</a>
-                </div>
-                `,
+                </div> `,
       };
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
@@ -188,44 +195,23 @@ router
       });
     }
   })
-
   // reset password endpoint
-  .post("/resetPassword", async (req, res) => {
+  .get("/resetPassword/:token", verifyToken, async (req, res) => {
     try {
-      const user = await sessionService.resetPassword(
-        req.body.token,
-        req.body.password
-      );
+      const user = await sessionService.getUserByEmail(req.user.email);
       if (!user) {
-        return res.send({
+        return res.status(404).send({
           status: "error",
-          message: "Error resetting password",
+          message: "User or token not invalid",
         });
       }
-      res.send({
-        status: "success",
-        message: "Password reset",
-      });
+      res.render("resetPassword", { token: req.params.token });
     } catch (error) {
-      console.error(error.message);
-      res.send({
+      console.error(error);
+      res.status(500).send({
         status: "error",
         message: "Error resetting password",
       });
-    }
-  })
-  //
-  .get("/resetPassword/:token", verifyToken, async (req, res) => {
-    try {
-      const token = req.params.token;
-      const user = await sessionService.getUserByEmail(req.user.email);
-      if (!user) {
-        return res.status(400).send({ error: "Invalid or expired token" });
-      }
-      res.render("resetPassword", { token });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send({ error: "Error processing reset request" });
     }
   });
 

@@ -116,21 +116,12 @@ router
     res.send("Logger test");
   })
 
-  // route for forgot password and send an email with token to reset password only valid for 1 hour
-  .get("/forgotPassword", async (req, res) => {
-    renderWithLayout(res, "forgotPassword", {
-      title: "Forgot Password",
-    });
-  })
+
 // askMailforChange
-  .post("/askMailforChange", async (req, res) => {
-    try {
-      const { email } = req.body;
-      await user.forgotPassword(email);
-      res.redirect("/login");
-    } catch (e) {
-      renderError(res);
-    }
+  .get("/askMailforChange", async (req, res) => {
+    renderWithLayout(res, "askMailforChange", {
+      title: "Ask Mail for Change",
+    });
   })
 
   // route to reset password
