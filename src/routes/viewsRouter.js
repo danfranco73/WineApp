@@ -125,11 +125,14 @@ router
   })
 
   // route to reset password
-  .get("/resetPassword", async (req, res) => {
+  .get("/resetPassword/:token", async (req, res) => {
+    const token = req.query.token;
+    const user = await user.getUserByToken(token);
+    const userNew = await user.resetPassword(user);
     renderWithLayout(res, "resetPassword", {
       title: "Reset Password",
-      token: req.query.token, // get token from query
-    });
+      user: userNew,
+    });    
   });
 
 export default router;

@@ -1,5 +1,7 @@
 import userModel from "../dao/models/userModel.js";
 import generateTokenJwt from "./utils/generateTokenJwt.js";
+import config from "../config/config.js";
+import jwt from "jsonwebtoken";
 import { createHash, isValidPassword } from "./utils/functionsUtils.js";
 
 export default class UserService {
@@ -65,13 +67,37 @@ export default class UserService {
     if (!user) {
       throw new Error("User not found");
     }
-    // generate token with all user data (including password and _id)
+    // generate token to reset password
     const token = generateTokenJwt(user);
-    user.token = token
-    // update user with token
+    user.resetPasswordToken = token;
     await userModel.findByIdAndUpdate(user._id, user);
-    // send email with token
     return token;
+  }
+  // get user by token
+  async getUserByToken(token) {
+    try {
+      const decoded = jwt.verify(token, config.SECRET_ID);
+      const user = await this.users.findById(decoded._id).lean();
+      console.log(user,"gubt");
+      return user;
+    } catch (error) {
+      console.error(error.message);
+      throw new Error("Error getting user by token");
+    }
+  }
+  // reset password
+  async resetPassword(user) {
+    try {
+      const userFound = await this.users.findById(user._id);
+      userFound.password = createHash(user.password);
+      userFound.resetPasswordToken = "";
+      await userFound.save();
+      return userFound;
+    }
+    catch (error) {
+      console.error(error.message);
+      throw new Error("Error reseting password");
+    }
   }
   // get user by id
   async getUserById(uid) {

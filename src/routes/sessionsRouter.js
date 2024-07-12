@@ -142,15 +142,16 @@ router
   // endpoint for password reset and send email with token
   .post("/forgotPassword", async (req, res) => {
     try {
-      const userMail = await sessionService.getUserByEmail(req.body.email);
+      const token = await sessionService.forgotPassword(req.body.email);
+      const userMail = await sessionService.getUserByToken(token);
+
       if (!userMail) {
         return res.status(404).send({
           status: "error",
           message: "User not found",
         });
       }
-      const token = sessionService.forgotPassword(userMail.email);
-     
+         
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         service: "gmail",
@@ -172,7 +173,7 @@ router
                 <h1>Reset password</h1>
                 <br>
                 <p>Click on the link below to reset your password</p>
-                <a href="http://localhost:8080/api/sessions/resetPassword/${userMail.resetPasswordToken}">Reset password</a>
+                <a href="http://localhost:8080/api/sessions/resetPassword/${token}">Reset password</a>
                 </div> `,
       };
       transporter.sendMail(mailOptions, (error, info) => {
@@ -196,16 +197,14 @@ router
     }
   })
   // reset password endpoint
-  .get("/resetPassword/:token", verifyToken, async (req, res) => {
+  .get("/resetPassword/:token",/*  verifyToken, */ async (req, res) => {
     try {
-      const user = await sessionService.getUserByEmail(req.user.email);
-      if (!user) {
-        return res.status(404).send({
-          status: "error",
-          message: "User or token not invalid",
-        });
-      }
-      res.render("resetPassword", { token: req.params.token });
+      const user = await sessionService.getUserByToken(req.params.token);
+      const userNew = await sessionService.resetPassword(user);
+      res.render("resetPassword", {
+        title: "Reset Password",
+        user: userNew,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).send({
