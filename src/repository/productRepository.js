@@ -1,5 +1,6 @@
 import ProductDAO from "../dao/productDAO.js";
 import ProductDTO from "../dao/dto/productDTO.js";
+import { query } from "express";
 
 
 export default class ProductRepository {
@@ -7,8 +8,8 @@ export default class ProductRepository {
         this.products = new ProductDAO();
     }
 
-    async getProducts(query, options) {
-        return await this.products.getAll(query, options);
+    async getProducts(page,limit,sort,quety) {
+        return await this.products.getAll(page,limit,sort,query);
     }
 
     async addProduct(product) {

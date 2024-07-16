@@ -13,7 +13,7 @@ const WebSocket = (serverIO) => {
   serverIO.on("connection", (socket) => {
     // Products List
     socket.on("getProducts", () => {
-      const products = productManager.getProducts(products).lean();
+      const products = productManager.getProducts(products)
       serverIO.emit("productList", products);
     });
     // Connect

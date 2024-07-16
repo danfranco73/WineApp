@@ -1,25 +1,29 @@
 import productModel from "./models/productModel.js";
 
 export default class ProductDAO {
-    async create(product) {
-        const newProduct = new productModel(product);
-        return await newProduct.save();
-    }
+  constructor() {
+    this.products = productModel;
+  }
 
-    async getAll(query, options) {
-        return await productModel.paginate(query, options);
-    }
+  async getAll(page,limit,sort,query) {
+    return await this.products.paginate(page,limit,sort,query);
+  }
 
-    async getById(pid) {
-        return await productModel.findOne({ _id: pid });
-    }
+  async create(product) {
+    return await this.products.save(product);
+  }
 
-    async update(pid, product) {
-        return await productModel.updateOne({ _id: pid }, product, { new: true });
-    }
+  async getById(pid) {
+    return await this.products.findById(pid);
+  }
 
-    async delete(pid) {
-        await productModel.deleteOne({ _id: pid });
-        return { message: "Product deleted successfully" };
-    }
+  async update(pid, product) {
+    return await this.products.findByIdAndUpdate(pid, product, {
+      new: true,
+    });
+  }
+
+  async delete(pid) {
+    return await this.products.findByIdAndDelete(pid);
+  }
 }

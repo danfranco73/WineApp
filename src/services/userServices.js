@@ -11,9 +11,8 @@ export default class UserService {
 
   async register(user) {
     try {
+      user.password = createHash(user.password); // hash password before saving
       const newUser = await this.users.create(user);
-      // hash password
-      newUser.password = createHash(user.password);
       return newUser;
     } catch (error) {
       console.error(error.message);
@@ -32,6 +31,9 @@ export default class UserService {
   }
   async updateUser(id, user) {
     try {
+      if (user.password) {
+        user.password = createHash(user.password); // hash password before saving
+      }
       const updatedUser = await this.users.findByIdAndUpdate(id, user, {
         new: true,
       });
@@ -52,9 +54,13 @@ export default class UserService {
         throw new Error("Password incorrect");
       }
       console.log(logUser);
-      delete logUser.password;
-      logUser.token = generateTokenJwt(logUser);
-      return logUser;
+      const passwordMatch = isValidPassword(logUser, password);
+      if (!passwordMatch) {
+        throw new Error("User invalid credentials 1");
+      }
+      const userWithoutPassword = { ...logUser,token:generateTokenJwt(logUser) }; // remove password from user
+      delete userWithoutPassword.password; // 
+      return userWithoutPassword; // return user without password
     } catch (error) {
       console.error(error.message);
       throw new Error("User invalid credentials 0");
@@ -69,8 +75,7 @@ export default class UserService {
     }
     // generate token to reset password
     const token = generateTokenJwt(user);
-    user.resetPasswordToken = token;
-    await userModel.findByIdAndUpdate(user._id, user);
+    await userModel.findByIdAndUpdate(user._id, { resetPasswordToken: token });
     return token;
   }
   // get user by token
@@ -81,7 +86,7 @@ export default class UserService {
       console.log(user,"gubt");
       return user;
     } catch (error) {
-      console.error(error.message);
+      console.error("Error getting user by token:",error.message);
       throw new Error("Error getting user by token");
     }
   }
@@ -95,7 +100,7 @@ export default class UserService {
       return userFound;
     }
     catch (error) {
-      console.error(error.message);
+      console.error("Error reseting password:",error.message);
       throw new Error("Error reseting password");
     }
   }
@@ -105,7 +110,8 @@ export default class UserService {
       const user = await this.users.findById(uid).lean();
       return user;
     } catch (error) {
-      console.error(error.message);
+      console.error("Error getting user by id:",error.message);
+      throw new Error("Error getting user by id");
     }
   }
 
@@ -114,7 +120,7 @@ export default class UserService {
       const user = await this.users.findByIdAndDelete(id);
       return user;
     } catch (error) {
-      console.error(error.message);
+      console.error("Error deleting user:",error.message);
       throw new Error("Error deleting user");
     }
   }

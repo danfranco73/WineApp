@@ -2,37 +2,40 @@
 import ProductService from "../services/productServices.js";
 
 class productController {
-    constructor() {
-        this.productService = new ProductService();
-    }
+  constructor() {
+    this.productService = new ProductService();
+  }
 
-    async getProducts() {
-        return await this.productService.getProducts();
+  async getProducts(page,limit,sort,query) {
+    try {
+      return await this.productService.getProducts(page,limit,sort,query);
+    } catch (error) {
+      throw new Error(error);
     }
+  }
 
-    async addProduct(product) {
-        return await this.productService.addProduct(product);
-    }
+  async addProduct(product) {
+    return await this.productService.addProduct(product);
+  }
 
-    async getProductById(pid) {
-        return await this.productService.getProductById(pid);
-    }
+  async getProductById(pid) {
+    return await this.productService.getProductById(pid);
+  }
 
-    async updateProduct(pid, product) {
-        return await this.productService.updateProduct(pid, product);
-    }
+  async updateProduct(pid, product) {
+    return await this.productService.updateProduct(pid, product);
+  }
 
-    async deleteProduct(pid) {
-        const product = await this.productService.getProductById(pid);
-        if(!product) {
-            throw new Error("Product not found");
-        }
-        if(user.role === "premium" && product.owner !== user.email) {
-            throw new Error("You are not allowed to delete this product");
-        }
-        return await this.productService.deleteProduct(pid);
+  async deleteProduct(pid) {
+    const product = await this.productService.getProductById(pid);
+    if (!product) {
+      throw new Error("Product not found");
     }
+    if (user.role === "premium" && product.owner !== user.email) {
+      throw new Error("You are not allowed to delete this product");
+    }
+    return await this.productService.deleteProduct(pid);
+  }
 }
 
 export default productController;
-

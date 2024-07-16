@@ -10,22 +10,23 @@ const user = new UserService();
 const router = Router();
 
 const renderWithLayout = (res, view, locals) =>
-  res.render(view, { layout: "main", style: "style.css", ...locals });
+  res.render(view, { layout: "main", ...locals });
 
 const renderError = (res, redirect = "/login") => {
   res.status(500).redirect(redirect);
 };
 
 router
-   .get("/", async (req, res) => {
+  .get("/", async (req, res) => {
     try {
-      const productsData = await products.getProducts();
+      const productsData = await products.getProducts().then((data) => {
+        return data;
+      });
+      console.log(productsData.docs);
       renderWithLayout(res, "index", {
-        title: "Ecommerce Users",
+        title: "Ecommerce Home",
         products: productsData.docs,
         user: req.session.user,
-        isValid:
-          productsData.page > 0 && productsData.page <= productsData.totalPages,
       });
     } catch (e) {
       renderError(res);
@@ -39,7 +40,7 @@ router
       resgisterSuccess: req.session.resgisterSuccess ?? false,
     });
   })
-  
+
   .get("/register", (req, res) => {
     renderWithLayout(res, "register", {
       title: "Ecommerce Register",
@@ -55,9 +56,10 @@ router
   })
   // Home page with query params for pagination, sorting, etc.
   .get("/home", async (req, res) => {
-    const { page, limit, sort, query } = req.query;
+    const { page = 1, limit = 10, sort = null, query = {} } = req.query;
     try {
       const productsData = await products.getProducts(req.query);
+      console.log(productsData.docs);
       renderWithLayout(res, "home", {
         title: "Product List",
         status: "success",
@@ -68,13 +70,18 @@ router
       renderError(res);
     }
   })
+
   // Real Time Products with similar logic to index
   .get("/realTimeProducts", async (req, res) => {
+    const { page = 1, limit = 10, sort = null, query = {} } = req.query;
     try {
-      const productsData = await products.getProducts();
+      const productsData = await products.getProducts(req.query);
       renderWithLayout(res, "realTimeProducts", {
-        title: "Real Time Products",
+        title: "Real-Time Products",
         products: productsData.docs,
+        user: req.session.user,
+        isValid:
+          productsData.page > 0 && productsData.page <= productsData.totalPages,
       });
     } catch (e) {
       renderError(res);
@@ -116,23 +123,23 @@ router
     res.send("Logger test");
   })
 
-
-// askMailforChange
+  // askMailforChange
   .get("/askMailforChange", async (req, res) => {
     renderWithLayout(res, "askMailforChange", {
       title: "Ask Mail for Change",
     });
   })
 
-  // route to reset password
-  .get("/resetPassword/:token", async (req, res) => {
-    const token = req.query.token;
-    const user = await user.getUserByToken(token);
-    const userNew = await user.resetPassword(user);
-    renderWithLayout(res, "resetPassword", {
-      title: "Reset Password",
-      user: userNew,
-    });    
-  });
+  //  route to reset password
+  // .get("/resetPassword/:token", async (req, res) => {
+  //   const { token } = req.query.token;
+  //   const user = await user.getUserByToken(token);
+  //   const userNew = await user.resetPassword(user);
+  //   renderWithLayout(res, "resetPassword", {
+  //     title: "Reset Password",
+  //     userNew,
+  //     token,
+  //   });
+  // });
 
 export default router;

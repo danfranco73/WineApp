@@ -65,22 +65,19 @@ const initializatePassport = () => {
   passport.serializeUser((user, done) => {
     done(null, user._id);
   });
-  passport.deserializeUser(async (id, done) => {
-    let user = await userModel.findById(id);
-    done(null, user);
+  passport.deserializeUser((id, done) => {
+    userModel.findById(id, (err, user) => {
+      done(err, user);
+    });
   });
 };
 
 const cookieExtractor = (req) => {
   let token = null;
   if (req && req.cookies) {
-    token =
-      req.cookies.auth || req.cookies.jwt
-        ? null
-        : req.cookies.auth || req.cookies.jwt;
+    token = req.cookies.auth_token; // Access the 'auth_token' cookie
   }
   return token;
 };
 
 export default initializatePassport;
-SECRET_ID;

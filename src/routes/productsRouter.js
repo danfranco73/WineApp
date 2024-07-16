@@ -10,19 +10,15 @@ const router = Router();
 // Get all products with pagination, sorting, and searching
 router
   .get("/", async (req, res, next) => {
-    const { limit = 10, page = 1, sort = null, query = {} } = req.query;
+    const { page, limit, sort, query } = req.query;
     try {
-      const products = await productManager.getProducts({
-        page,
-        limit,
-        sort,
-        query,
-      });
+      const products = await productManager.getProducts(page, limit, sort, query);
       res.send({ status: "success", payload: products });
     } catch (error) {
       next(error);
     }
   })
+  
 
   // Get a product by ID
   .get("/:pid", verifyToken, async (req, res, next) => {

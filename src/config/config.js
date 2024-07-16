@@ -33,8 +33,6 @@ dotenv.config({
 
 });
 
-
-
 export default {
     APP_NAME: "WineApp",
     SERVER: "local",

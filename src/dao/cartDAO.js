@@ -34,6 +34,12 @@ export default class CartDAO {
         return await cartModel.updateOne({ _id: cid }, cart, { new: true });
     }
 
+    async removeProduct(cid, pid) {
+        const cart = await cartModel.findOne({ _id: cid });
+        cart.products = cart.products.filter((p) => p.product !== pid);
+        return await cart.save();
+    }
+    
     async delete(cid) {
         await cartModel.deleteOne({ _id: cid });
         return { message: "Cart deleted successfully" };

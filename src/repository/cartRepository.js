@@ -16,14 +16,14 @@ export default class CartRepository {
     }
 
     async addCart(cart) {
-        const newCart = new CartDTO(cart);
         try {
-            return await this.carts.create(newCart);
+          const newCart = new CartDTO(cart); // Create the newCart object
+          return await this.carts.create(newCart);
+        } catch (error) {
+          console.log(error);
         }
-        catch (error) {
-            console.log(error);
-        }
-    }
+      }
+      
 
     async getCartById(cid) {
         try {
@@ -54,6 +54,14 @@ export default class CartRepository {
         }
     }
 
+    async deleteProductFromCart(cid, pid) {
+        try {
+            const cart = await this.carts.removeProduct(cid, pid);
+            return cart;
+        } catch (error) {
+            console.log(error);
+        }
+    }
     async deleteCart(cid) {
         try {
             await this.carts.delete(cid);

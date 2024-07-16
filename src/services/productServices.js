@@ -5,8 +5,9 @@ export default class ProductService {
         this.products = new ProductRepository();
     }
 
-    async getProducts(query, options) {
-        return await this.products.getProducts(query, options);
+    async getProducts(page,limit,sort,query) {
+    
+        return await this.products.getProducts(page,limit,sort,query);
     }
 
     async addProduct(product) {

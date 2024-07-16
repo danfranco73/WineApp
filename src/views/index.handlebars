@@ -4,29 +4,31 @@
     <form class="box" method="get" action="/api/sessions/logout">
       <button type="submit">Logout</button>
     </form>
-    <form class="box" method="get" action="/api/sessions/restore">
+    <form class="box" method="get" action="/api/sessions/forgotPassword">
       <button type="submit">Change Password</button>
     </form>
   </div>
   <hr />
   <form class="user">
-    <p><b>Nombre:</b> {{user.first_name}}</p>
-    <p><b>Apellido:</b> {{user.last_name}}</p>
-    <p><b>Email:</b> {{user.email}}</p>
+    <p><b> Apellido:</b> {{user.last_name}}</p>
+    <br />
+    <p><b> Email:</b> {{user.email}}</p>
+    <br />
+    <p><b> Role:</b> {{user.role}}</p>
   </form>
 </div>
 <h1>Productos</h1>
 <hr />
-{{#if isValid}}
-  <div class="container">
-    {{#each products}}
-      <div class="product-card">
-        <h3>{{title}}</h3>
-        <hr />
-        <p>Categoria: {{this.category}}</p>
-        <p>Descripción: {{this.description}}</p>
-        <p>Precio: $ {{this.price}}</p>
-      </div>
-    {{/each}}
+<div class="container">
+ {{#each products}}
+  <div class="product-card">
+    <h3>{{title}}</h3>
+    <hr />
+    <p>Categoria: {{this.category}}</p>
+    <p>Descripción: {{this.description}}</p>
+    <p>Stock: {{this.stock}}</p>
+    <p>Precio: $ {{this.price}}</p>
   </div>
-{{/if}}
+{{/each}}
+
+</div>

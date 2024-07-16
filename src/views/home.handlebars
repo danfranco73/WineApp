@@ -12,16 +12,20 @@
 </div>
 <br />
 
-<div id="productList" action="showProducts()">
+<div id="productList" action="">
   <div class="container">
     {{#each products}}
-      <div class="product-card">
-        <h3>{{this.title}}</h3>
-        <hr />
-        <p>Categoria: {{this.category}}</p>
-        <p>Descripción: {{this.description}}</p>
-        <p>Precio: $ {{this.price}}</p>
-      </div>
+        <div class="product-card" id="products-container">
+          <h3>{{this.title}}</h3>
+          <hr />
+          <p>Id: {{this._id}}</p>
+          <p>Descripción: {{this.description}}</p>
+          <p>Precio: {{this.price}}</p>
+          <p>Stock: {{this.stock}}</p>
+          <p>Codigo: {{this.code}}</p>
+          <p>Categoria: {{this.category}}</p>
+          <p>Imagen: {{this.thumbnails}}</p>
+        </div>
     {{/each}}
   </div>
 </div>

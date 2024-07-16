@@ -1,8 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import nodemailer from "nodemailer";
-import mongoose from "mongoose";
-
+import jwt from "jsonwebtoken";
 import UserService from "../services/userServices.js";
 import config from "../config/config.js";
 import verifyToken from "../services/utils/verifyToken.js";
@@ -34,7 +33,6 @@ router
   // logout and destroy session and redirect to login and show message and delet cookie
   .get("/logout", (req, res) => {
     req.session.destroy();
-    console.log("User logged out");
     res.clearCookie("jwt");
     res.redirect("/login");
   })
@@ -45,7 +43,7 @@ router
       req.session.failRegister = false;
       const user = await sessionService.register(req.body);
       console.log("User registered correctly", user);
-      res.status(201).redirect("/login");
+      res.status(200).redirect("/login");
     } catch (error) {
       res.status(400).send({
         status: "error",
@@ -69,12 +67,12 @@ router
       req.session.user = user; // save user in session
       if (user.role === "admin" || user.role === "premium") {
         return res
-          .cookie("jwt", user.token, { httpOnly: true, maxAge: 3600000 }) // 1 hour
+          .cookie("jwt", user.token, { httpOnly: true, maxAge: 3600000, secure: true }) // 1 hour
           .status(200)
           .redirect("/realTimeProducts");
       }
       return res
-        .cookie("jwt", user.token, { httpOnly: true, maxAge: 3600000 }) // 1 hour
+        .cookie("jwt", user.token, { httpOnly: true, maxAge: 3600000,secure: true }) // 1 hour
         .status(200)
         .redirect("/");
     } catch (error) {
@@ -151,7 +149,7 @@ router
           message: "User not found",
         });
       }
-         
+
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         service: "gmail",
@@ -187,7 +185,6 @@ router
           });
         }
       });
-      res.render("askMailforChange", { success: true });
     } catch (error) {
       console.error(error.message);
       res.send({
@@ -197,20 +194,46 @@ router
     }
   })
   // reset password endpoint
-  .get("/resetPassword/:token",/*  verifyToken, */ async (req, res) => {
+  .get(
+    "/resetPassword/:token",
+     async (req, res) => {
+      try {
+        const token = req.params.token;
+        const user = await sessionService.getUserByToken(token);
+        if (!user) {
+          return res.status(404).send({
+            status: "error",
+            message: "User or token not invalid",
+          });
+        }
+        res.render("resetPassword", {
+          title: "Reset Password",
+          token: token,
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({
+          status: "error",
+          message: "Error resetting password",
+        });
+      }
+    }
+  )
+  // reset password endpoint
+  .post("/resetPassword", async (req, res) => {
     try {
-      const user = await sessionService.getUserByToken(req.params.token);
+      const { token, password } = req.body;
+      const user = await sessionService.getUserByToken(token);
+      if (!user) {
+        return res.status(400).send({ status: "error", message: "Invalid or expired token" });
+      }
+      user.password = password;
       const userNew = await sessionService.resetPassword(user);
-      res.render("resetPassword", {
-        title: "Reset Password",
-        user: userNew,
-      });
+      console.log("Password has been reset for user:", userNew);
+      res.send({ status: "success", message: "Password has been reset successfully" });
     } catch (error) {
-      console.error(error);
-      res.status(500).send({
-        status: "error",
-        message: "Error resetting password",
-      });
+      console.error("Error resetting password:", error.message);
+      res.status(500).send({ status: "error", message: "Error resetting password" });
     }
   });
 
