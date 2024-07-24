@@ -14,7 +14,7 @@ const router = Router();
 
 // get the carts from the database in my ecommerce mongodb
 router
-  .get("/", verifyToken,  async (req, res) => {
+  .get("/", /* verifyToken, */  async (req, res) => {
     const carts = await cartManager.getCarts();
     res.status(200).send({
       status: "success",

@@ -16,7 +16,7 @@ const testUser2 = {
   first_name: "Max",
   last_name: "Dan",
   age: 25,
-  email: "maxdan28@mail.com", // change this email to a new one for testing
+  email: "maxdan29@mail.com", // change this email to a new one for testing
   password: "12345",
 };
 const testUser3 = {

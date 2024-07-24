@@ -47,6 +47,13 @@ const userSchema = mongoose.Schema({
     require: true,
     default: "user",
   },
+  documents: {
+    type: [{name: String, reference: String}],
+  },
+  last_connection: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 userSchema.pre("save", function (next) {

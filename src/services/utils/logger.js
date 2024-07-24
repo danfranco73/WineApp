@@ -23,8 +23,8 @@ const devLogger = winston.createLogger({
 // production logger with 2 transports, one for console and one for file
 const prodLogger = winston.createLogger({
     transports: [
-        new winston.transports.Console({ level: 'info' }),
-        new winston.transports.File({ level: 'error', filename: __dirname + '/error.log' })
+        new winston.transports.Console({ level: 'http' }),
+        new winston.transports.File({ level: 'warning', filename: __dirname + '/error.log' })
     ]
 });
 
@@ -46,7 +46,7 @@ const logger = process.env.NODE_ENV === 'development' ? devLogger : prodLogger;
 // this is how we can use the custom logger
 const addLogger = (req, res, next) => {
     req.logger = logger; // or prodLogger or customLogger (must be defined first)
-    req.logger.http(`${new Date().toDateString()} ${req.method} ${req.url}`);
+    req.logger.warn(`${new Date().toDateString()} ${req.method} ${req.url}`);
     next();
 }
 

@@ -9,7 +9,7 @@ import passport from "passport";
 import cors from "cors";
 import compression from "express-compression";
 import cluster from "cluster";
-import { cpus, version } from "os";
+import { cpus } from "os";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUiExpress from "swagger-ui-express";
 
@@ -31,7 +31,7 @@ import errorHandler from "./services/middlewares/errors/indexErrors.js";
 // import mockProducts from "./services/middlewares/mockProducts.js";
 import { addLogger } from "./services/utils/logger.js";
 
-/* const numCPUs = cpus().length;
+const numCPUs = cpus().length;
 
 if (cluster.isPrimary) {
   for (let i = 0; i < cpus().length; i++) {
@@ -43,7 +43,7 @@ if (cluster.isPrimary) {
   }
 
   )
-}  else { */
+}  else {
 // Constants
 const PORT = config.PORT;
 // App
@@ -101,7 +101,7 @@ app
       store: MongoStore.create({
         mongoUrl: uri,
         ttl: 600,
-      }),
+      }), // 10 minutes
       secret: "secretPrhase",
       resave: true,
       saveUninitialized: true,
@@ -135,4 +135,4 @@ app
   .use("api/chat", userAuth, chatRouter)
   .use(errorHandler)
   .use("/api/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
-/* } */
+}

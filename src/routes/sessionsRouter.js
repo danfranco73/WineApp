@@ -1,6 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import nodemailer from "nodemailer";
+import upload from "../services/utils/utilMulter.js";
 import jwt from "jsonwebtoken";
 import UserService from "../services/userServices.js";
 import config from "../config/config.js";
@@ -124,6 +125,13 @@ router
       try {
         const uid = req.params.uid;
         const user = await sessionService.getUserById(uid);
+        // si el usuario tiene un documents, se procede a pasar de user a premium sino NO
+        if (user.documents.length === 0) {
+          return res.status(400).send({
+            status: "error",
+            message: "User has no documents",
+          });
+        }
         user.role = user.role === "premium" ? "user" : "premium";
         const updatedUser = await sessionService.updateUser(user._id, user);
         res.status(200).send({
@@ -136,6 +144,34 @@ router
       }
     }
   )
+
+  // Crear un endpoint en el router de usuarios api/users/:uid/documents con el método POST que permita subir uno o múltiples archivos. Utilizar el middleware de Multer para poder recibir los documentos que se carguen y actualizar en el usuario su status para hacer saber que ya subió algún documento en particular.
+  .post("/:uid/documents",verifyToken,upload.array('docs',3), async (req, res) => {
+    try {
+      const user = await sessionService.getUserById(req.params.uid);
+      if (!user) {
+        return res.status(404).send({
+          status: "error",
+          message: "User not found",
+        });
+      }
+      const documents = req.files.map((file) => {
+        return {
+          name: file.originalname,
+          reference: file.filename,
+        };
+      });
+      user.documents = documents;
+      const updatedUser = await sessionService.updateUser(user._id, user);
+      res.status(200).send({
+        status: "success",
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Error uploading documents" });
+    }
+  })
 
   // endpoint for password reset and send email with token
   .post("/forgotPassword", async (req, res) => {
