@@ -68,12 +68,20 @@ router
       req.session.user = user; // save user in session
       if (user.role === "admin" || user.role === "premium") {
         return res
-          .cookie("jwt", user.token, { httpOnly: true, maxAge: 3600000, secure: true }) // 1 hour
+          .cookie("jwt", user.token, {
+            httpOnly: true,
+            maxAge: 3600000,
+            secure: true,
+          }) // 1 hour
           .status(200)
           .redirect("/realTimeProducts");
       }
       return res
-        .cookie("jwt", user.token, { httpOnly: true, maxAge: 3600000,secure: true }) // 1 hour
+        .cookie("jwt", user.token, {
+          httpOnly: true,
+          maxAge: 3600000,
+          secure: true,
+        }) // 1 hour
         .status(200)
         .redirect("/");
     } catch (error) {
@@ -116,23 +124,27 @@ router
       user: user,
     });
   })
-  // endpoint to update user role (from premium to user or viceverse) by uid (only if the user logged in is an admin)
-  .put(
-    "/premium/:uid",
+  // Crear un endpoint en el router de usuarios api/users/:uid/documents con el método POST que permita subir uno o múltiples archivos. Utilizar el middleware de Multer para poder recibir los documentos que se carguen y actualizar en el usuario su status para hacer saber que ya subió algún documento en particular.
+  .post(
+    "/:uid/documents",
     verifyToken,
-    handleRole(["admin"]),
+    upload.array("docs", 3),
     async (req, res) => {
       try {
-        const uid = req.params.uid;
-        const user = await sessionService.getUserById(uid);
-        // si el usuario tiene un documents, se procede a pasar de user a premium sino NO
-        if (user.documents.length === 0) {
-          return res.status(400).send({
+        const user = await sessionService.getUserById(req.params.uid);
+        if (!user) {
+          return res.status(404).send({
             status: "error",
-            message: "User has no documents",
+            message: "User not found",
           });
         }
-        user.role = user.role === "premium" ? "user" : "premium";
+        const documents = req.files.map((file) => {
+          return {
+            name: file.originalname,
+            reference: file.filename,
+          };
+        });
+        user.documents = documents;
         const updatedUser = await sessionService.updateUser(user._id, user);
         res.status(200).send({
           status: "success",
@@ -140,38 +152,10 @@ router
         });
       } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Error updating user role" });
+        res.status(500).json({ message: "Error uploading documents" });
       }
     }
   )
-
-  // Crear un endpoint en el router de usuarios api/users/:uid/documents con el método POST que permita subir uno o múltiples archivos. Utilizar el middleware de Multer para poder recibir los documentos que se carguen y actualizar en el usuario su status para hacer saber que ya subió algún documento en particular.
-  .post("/:uid/documents",verifyToken,upload.array('docs',3), async (req, res) => {
-    try {
-      const user = await sessionService.getUserById(req.params.uid);
-      if (!user) {
-        return res.status(404).send({
-          status: "error",
-          message: "User not found",
-        });
-      }
-      const documents = req.files.map((file) => {
-        return {
-          name: file.originalname,
-          reference: file.filename,
-        };
-      });
-      user.documents = documents;
-      const updatedUser = await sessionService.updateUser(user._id, user);
-      res.status(200).send({
-        status: "success",
-        user: updatedUser,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "Error uploading documents" });
-    }
-  })
 
   // endpoint for password reset and send email with token
   .post("/forgotPassword", async (req, res) => {
@@ -230,46 +214,50 @@ router
     }
   })
   // reset password endpoint
-  .get(
-    "/resetPassword/:token",
-     async (req, res) => {
-      try {
-        const token = req.params.token;
-        const user = await sessionService.getUserByToken(token);
-        if (!user) {
-          return res.status(404).send({
-            status: "error",
-            message: "User or token not invalid",
-          });
-        }
-        res.render("resetPassword", {
-          title: "Reset Password",
-          token: token,
-        });
-      } catch (error) {
-        console.error(error);
-        res.status(500).send({
+  .get("/resetPassword/:token", async (req, res) => {
+    try {
+      const token = req.params.token;
+      const user = await sessionService.getUserByToken(token);
+      if (!user) {
+        return res.status(404).send({
           status: "error",
-          message: "Error resetting password",
+          message: "User or token not invalid",
         });
       }
+      res.render("resetPassword", {
+        title: "Reset Password",
+        token: token,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        status: "error",
+        message: "Error resetting password",
+      });
     }
-  )
+  })
   // reset password endpoint
   .post("/resetPassword", async (req, res) => {
     try {
       const { token, password } = req.body;
       const user = await sessionService.getUserByToken(token);
       if (!user) {
-        return res.status(400).send({ status: "error", message: "Invalid or expired token" });
+        return res
+          .status(400)
+          .send({ status: "error", message: "Invalid or expired token" });
       }
       user.password = password;
       const userNew = await sessionService.resetPassword(user);
       console.log("Password has been reset for user:", userNew);
-      res.send({ status: "success", message: "Password has been reset successfully" });
+      res.send({
+        status: "success",
+        message: "Password has been reset successfully",
+      });
     } catch (error) {
       console.error("Error resetting password:", error.message);
-      res.status(500).send({ status: "error", message: "Error resetting password" });
+      res
+        .status(500)
+        .send({ status: "error", message: "Error resetting password" });
     }
   });
 

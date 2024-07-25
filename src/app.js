@@ -22,6 +22,7 @@ import cartsRouter from "./routes/cartsRouter.js";
 import viewsRouter from "./routes/viewsRouter.js";
 import initializatePassport from "./config/passportConfig.js";
 import sessionRouter from "./routes/sessionsRouter.js";
+import usersRouter from "./routes/usersRouter.js";
 import mongoSingleton from "./services/middlewares/mongoSingleton.js";
 import config from "./config/config.js";
 import ticketRouter from "./routes/ticketRouter.js";
@@ -125,6 +126,7 @@ app
 // Routes
 app
   .use("/api/sessions", sessionRouter)
+  .use("/api/users", usersRouter)
   // .use("/api/mock", mockProducts)
   .use("/api/products", productsRouter)
   .use("/api/carts", cartsRouter)

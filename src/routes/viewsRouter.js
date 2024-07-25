@@ -5,6 +5,7 @@ import { logger } from "../services/utils/logger.js";
 import CartService from "../services/cartServices.js";
 import UserService from "../services/userServices.js";
 
+
 const products = new productController();
 const user = new UserService();
 const router = Router();
@@ -103,7 +104,7 @@ router
   .get("/cart", async (req, res) => {
     try {
       const cartService = new CartService();
-      const cart = await cartService.getCart(req.session.user);
+      const cart = await cartService.getCarts(req.session.user);
       renderWithLayout(res, "cart", {
         title: "Cart",
         cart,
@@ -130,16 +131,20 @@ router
     });
   })
 
-  //  route to reset password
-  // .get("/resetPassword/:token", async (req, res) => {
-  //   const { token } = req.query.token;
-  //   const user = await user.getUserByToken(token);
-  //   const userNew = await user.resetPassword(user);
-  //   renderWithLayout(res, "resetPassword", {
-  //     title: "Reset Password",
-  //     userNew,
-  //     token,
-  //   });
-  // });
+  // upload documents
+  .get("/uploadDocuments", async (req, res) => {
+    renderWithLayout(res, "uploadDocuments", {
+      title: "Upload Documents",
+
+    });
+  })
+
+  // switchRole
+  .get("/switchRole", async (req, res) => {
+        renderWithLayout(res, "switchRole", {
+      title: "Switch Role",
+      uid: req.params.uid,      
+    });
+  })
 
 export default router;
