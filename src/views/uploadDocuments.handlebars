@@ -1,30 +1,22 @@
-<body>
-  <div class="container">
-    <div class="box">
-      <h1><span class="black">Upload</span></h1>
-      <p>Upload your documents:</p>
-      <form
-        id="uploadForm"
-        enctype="multipart/form-data"
-        method="POST"
-        action="/api/users/:uid/documents"
-      >
-        <label for="uid">Enter User ID:</label>
-        <input type="text" id="uid" name="uid" placeholder="Enter User ID" />
-        <input
-          type="file"
-          name="docs"
-          id="docs"
-          accept=".pdf,.docx,.txt"
-          multiple
-        />
-        <input type="file" name="profile" id="profile" accept="image/*" />
-        <input type="file" name="product" id="product" accept="image/*" />
-        <button type="submit">Upload Files</button>
-      </form>
-      <a href="/switchRole">Return to Switch Role page</a>
-    </div>
+<div class="container">
+  <div class="box">
+    <h1><span class="black">Upload Documents</span></h1>
+    <form
+      id="uploadForm"
+      enctype="multipart/form-data"
+      method="POST"
+      action="/api/users/:uid/documents"
+    >
+      <label for="uid">Enter User ID:</label>
+      <input type="text" id="uid" name="uid" placeholder="Enter User ID" />
+      <label for="files">Upload Files:</label>
+      <input type="file" name="files" id="files" multiple /> 
+      <button type="submit">Upload Files</button>
+    </form>
+    <div id="uploadStatus"></div>
+    <a href="/userProfile">Return to User page</a>
+     
   </div>
-</body>
+</div>
 
 <script src="/js/uploadDocs.js"></script>

@@ -5,7 +5,6 @@ import { logger } from "../services/utils/logger.js";
 import CartService from "../services/cartServices.js";
 import UserService from "../services/userServices.js";
 
-
 const products = new productController();
 const user = new UserService();
 const router = Router();
@@ -24,7 +23,7 @@ router
         return data;
       });
       console.log(productsData.docs);
-      renderWithLayout(res, "index", {
+      renderWithLayout(res, "home", {
         title: "Ecommerce Home",
         products: productsData.docs,
         user: req.session.user,
@@ -46,6 +45,13 @@ router
     renderWithLayout(res, "register", {
       title: "Ecommerce Register",
       failRegister: req.session.failRegister ?? false,
+    });
+  })
+  // user profile
+  .get("/userProfile", async (req, res) => {
+    renderWithLayout(res, "userProfile", {
+      title: "Profile",
+      user: req.session.user,
     });
   })
   // Restore password (unchanged)
@@ -133,18 +139,19 @@ router
 
   // upload documents
   .get("/uploadDocuments", async (req, res) => {
+    const uid = req.params.uid;
     renderWithLayout(res, "uploadDocuments", {
       title: "Upload Documents",
-
+      uid: req.params.uid,
     });
   })
 
   // switchRole
   .get("/switchRole", async (req, res) => {
-        renderWithLayout(res, "switchRole", {
+    renderWithLayout(res, "switchRole", {
       title: "Switch Role",
-      uid: req.params.uid,      
+      uid: req.params.uid,
     });
-  })
+  });
 
 export default router;

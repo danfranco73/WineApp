@@ -39,7 +39,7 @@ router
     "/:uid/documents",
     /*     verifyToken,
     checkUser, */
-    upload.array("docs", 3),
+    upload.array("files"),
     async (req, res) => {
       try {
         const user = await userRService.getUserById(req.params.uid);
@@ -63,7 +63,7 @@ router
         });
       } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Error uploading documents" });
+        res.status(500).send({ message: "Error uploading documents" });
       }
     }
   );

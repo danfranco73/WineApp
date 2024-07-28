@@ -1,12 +1,12 @@
 <div class="container">
   <div class="box">
     <h1>Switch Role</h1>
-    <form id="switchRoleForm" method="PUT" action="/api/users/premium/">
+    <form id="switchRoleForm" method="PUT" action="/api/users/premium/{{uid}}">
       <label for="uid">Enter User ID:</label>
-      <input type="text" id="uid" name="uid" placeholder="Enter User ID" />
+      <input type="text" id="uid" name="uid" value="{{uid}}"/> 
       <button type="submit">Switch Role</button>
     </form>
-    <a href="/uploadDocuments">Upload Documents</a>
+    <a href="/userProfile/{{uid}}">Return to User Profile</a>
   </div>
 </div>
 <script src="/js/switchRole.js"></script>

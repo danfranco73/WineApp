@@ -1,33 +1,12 @@
-{{! muestro los productos en mi bd }}
-<div class="title">
-  <h1>Productos</h1>
-  <div class="options">
-    <button id="pageDown">Anterior</button>
-    <button id="pageUp">Siguiente</button>
-    <button id="page">Pagina</button>
-    <button id="limit">Limitar</button>
-    <button id="sort">Ordenar</button>
-    <button id="query">Categoria</button>
+<head>
+  <title>Welcome to Our Winery</title>
+</head>
+<body>
+  <h1>Welcome to Our Winery</h1>
+  <p>Discover the world of exquisite wines.</p>
+  <div class="button-container">
+    <button><a href="/login" target="_self">Login</a></button>
+    <button><a href="/register" target="_self">Register</a></button>
+    <button id="browse-products">Browse Products</button>
   </div>
-</div>
-<br />
-
-<div id="productList" action="">
-  <div class="container">
-    {{#each products}}
-        <div class="product-card" id="products-container">
-          <h3>{{this.title}}</h3>
-          <hr />
-          <p>Id: {{this._id}}</p>
-          <p>Descripción: {{this.description}}</p>
-          <p>Precio: {{this.price}}</p>
-          <p>Stock: {{this.stock}}</p>
-          <p>Codigo: {{this.code}}</p>
-          <p>Categoria: {{this.category}}</p>
-          <p>Imagen: {{this.thumbnails}}</p>
-        </div>
-    {{/each}}
-  </div>
-</div>
-
-<script src="/js/home.js"></script>
+</body>

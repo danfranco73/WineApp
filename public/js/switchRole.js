@@ -15,7 +15,7 @@ switchRoleForm.addEventListener('submit', (event) => {
     .then(response => {
         if (response.ok) {
             alert('Role switched successfully!');
-            window.location.href = '/login'; 
+            window.location.href = '/userProfile'; 
         } else {
             response.json().then(data => {
                 alert(data.message);

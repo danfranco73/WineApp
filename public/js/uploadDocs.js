@@ -1,11 +1,13 @@
 const uploadForm = document.getElementById('uploadForm');
+const uploadStatus = document.getElementById('uploadStatus');
 
 uploadForm.addEventListener('submit', (event) => {
-  event.preventDefault(); // Prevent the form from submitting
+  event.preventDefault();
 
   const uid = document.getElementById('uid').value;
   const formData = new FormData(uploadForm);
 
+  // Add the uid to the FormData object
   formData.append('uid', uid);
 
   // File type validation
@@ -18,7 +20,7 @@ uploadForm.addEventListener('submit', (event) => {
   const profileFile = formData.get('profile');
   if (profileFile && !profileFile.type.startsWith('image/')) {
     alert('Please upload a valid image file for the profile.');
-    return; // Prevent submission
+    return; // Prevent submission 
   }
 
   const productFile = formData.get('product');
@@ -27,28 +29,28 @@ uploadForm.addEventListener('submit', (event) => {
     return; // Prevent submission
   }
 
-  // You might need to add a progress bar or indicator here
-  alert('Uploading documents...');
+  // Display upload status
+  uploadStatus.textContent = 'Uploading documents...';
 
-  fetch('/api/users/' + uid +'/documents', {
+  fetch('/api/users/' + uid + '/documents', {
     method: 'POST',
     body: formData
   })
   .then(response => {
     if (response.ok) {
       // Handle successful upload
-      alert('Documents uploaded successfully!');
+      uploadStatus.textContent = 'Documents uploaded successfully!';
       // Redirect to the appropriate page
-      window.location.href = '/login'; // Replace with your desired redirect
+      window.location.href = '/userProfile';
     } else {
       // Handle error
       response.json().then(data => {
-        alert(data.message);
+        uploadStatus.textContent = data.message;
       });
     }
   })
   .catch(error => {
     console.error('Error uploading documents:', error);
-    alert('An error occurred while uploading documents.');
+    uploadStatus.textContent = 'An error occurred while uploading documents.';
   });
 });

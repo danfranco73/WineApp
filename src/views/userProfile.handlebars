@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="box">
+    <h1>Profile</h1>
+    <h2>Welcome, {{user.first_name}}!</h2>
+
+    <p><strong>User ID:</strong> {{user._id}}</p>
+    <p><strong>Role:</strong> {{user.role}}</p>
+
+    {{#if user.documents}}
+      <h2>Uploaded Documents</h2>
+      <ul>
+        {{#each user.documents}}
+          <li>{{name}} ({{reference}})</li>
+        {{/each}}
+      </ul>
+    {{/if}}
+
+    {{#if user.profileImage}}
+      <img
+        src="/uploads/profiles/{{user.profileImage}}"
+        alt="Profile Picture"
+        width="200"
+      />
+    {{/if}}
+
+    {{#if user.isPremium}}
+      <p>You are a Premium user!</p>
+    {{/if}}
+
+    <a href="/switchRole">Switch Role</a>
+    <a href="/uploadDocuments">Upload Documents</a>
+    {{! botton de logout }}
+    <form class="box" method="get" action="/api/sessions/logout">
+      <button type="submit">Logout</button>
+    </form>
+
+  </div>
+</div>
