@@ -1,12 +1,34 @@
-<head>
-  <title>Welcome to Our Winery</title>
-</head>
-<body>
-  <h1>Welcome to Our Winery</h1>
-  <p>Discover the world of exquisite wines.</p>
-  <div class="button-container">
-    <button><a href="/login" target="_self">Login</a></button>
-    <button><a href="/register" target="_self">Register</a></button>
-    <button id="browse-products">Browse Products</button>
+<div class="container">
+  <div class="box">
+    <h1>Bienvenido {{user.first_name}}</h1>
+    <form class="user">
+      <p><b> Email:</b>{{user.email}}</p>
+      <p><b> Role:</b>{{user.role}}</p>
+    </form>
+    <div class="options">
+      <form class="box" method="get" action="/api/sessions/logout">
+        <button type="submit">Logout</button>
+        <button type="button" href="/askMailforChange">Change Password
+        </button>
+        <button type="button" href="/userProfile">Go to User page </button>
+      </form>
+    </div>
   </div>
-</body>
+</div>
+<div class="product-list">
+  {{#each products}}
+    {{#with this}}
+      <div class="product-card" id="products-container">
+        <h3>{{title}}</h3>
+        <hr />
+        <p>Id: {{_id}}</p>
+        <p class="product-description">Descripción: {{description}}</p>
+        <p class="product-price"> Precio: ${{price}}</p>
+        <p>Stock: {{stock}}</p>
+        <p>Codigo: {{code}}</p>
+        <p>Categoria: {{category}}</p>
+        <p>Imagen: {{thumbnails}}</p>
+      </div>
+    {{/with}}
+  {{/each}}
+</div>
