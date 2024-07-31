@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const limit = document.getElementById("limit");
   const sort = document.getElementById("sort");
   const query = document.getElementById("query");
-  const productList = document.getElementById("productList");
+  const productList = document.getElementById("product-list");
 
   pageDown.addEventListener("click", async () => {
     const response = await fetch("http://localhost:8080/api/products?page=1");

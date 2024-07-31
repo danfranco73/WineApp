@@ -14,19 +14,21 @@
       </form>
     </div>
   </div>
-  <form id="add-product-form" method="post" action="/api/products/">
-    <input type="text" id="title" placeholder="Nombre" />
-    <input type="text" id="description" placeholder="Descripción" />
-    <input type="text" id="price" placeholder="Precio" />
-    <input type="text" id="stock" placeholder="Stock" />
-    <input type="text" id="category" placeholder="Categoria" />
-    <input type="text" id="code" placeholder="Codigo" />
-    <button type="submit">Agregar Producto</button>
-  </form>
-  <form id="delete-product-form" method="delete" action="/api/products/:pid">
-    <input type="text" id="id" placeholder="Id del producto" />
-    <button type="submit">Eliminar Producto</button>
-  </form>
+  <div class="box-form">
+    <form  class="box" id="add-product-form" method="post" action="/api/products/">
+      <input type="text" id="title" placeholder="Nombre" />
+      <input type="text" id="description" placeholder="Descripción" />
+      <input type="text" id="price" placeholder="Precio" />
+      <input type="text" id="stock" placeholder="Stock" />
+      <input type="text" id="category" placeholder="Categoria" />
+      <input type="text" id="code" placeholder="Codigo" />
+      <button type="submit">Agregar Producto</button>
+    </form>
+    <form class="box" id="delete-product-form" method="delete" action="/api/products/:pid">
+      <input type="text" id="id" placeholder="Id del producto" />
+      <button type="submit">Eliminar Producto</button>
+    </form>
+  </div>
 </div>
 <div id="products-list">
   <div class="options">
@@ -50,6 +52,9 @@
           <p>Codigo: {{code}}</p>
           <p>Categoria: {{category}}</p>
           <p>Imagen: {{thumbnails}}</p>
+          <button type="button" class="add-to-cart" data-product-id="{{_id}}">
+            Agregar (1)
+          </button>
         </div>
       {{/with}}
     {{/each}}

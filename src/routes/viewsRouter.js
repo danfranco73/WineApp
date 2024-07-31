@@ -18,19 +18,17 @@ const renderError = (res, redirect = "/login") => {
 
 router
   .get("/", async (req, res) => {
-    try {
-      const productsData = await products.getProducts().then((data) => {
-        return data;
+    renderWithLayout(res, "welcome", {
+      title: "Ecommerce WineAPP",
+      status: "success",
+    });
+  })
+  .get("/index", async (req, res) => {
+
+      renderWithLayout(res, "index", {
+        title: "WineAPP Products",
+        status: "success",
       });
-      console.log(productsData.docs);
-      renderWithLayout(res, "home", {
-        title: "Ecommerce Home",
-        products: productsData.docs,
-        user: req.session.user,
-      });
-    } catch (e) {
-      renderError(res);
-    }
   })
 
   .get("/login", (req, res) => {
@@ -89,6 +87,18 @@ router
         user: req.session.user,
         isValid:
           productsData.page > 0 && productsData.page <= productsData.totalPages,
+      });
+    } catch (e) {
+      renderError(res);
+    }
+  })
+  // Product detail page with similar logic to home
+  .get("/product/:id", async (req, res) => {
+    try {
+      const product = await products.getProducts(req.params.id);
+      renderWithLayout(res, "product", {
+        title: product.name,
+        product,
       });
     } catch (e) {
       renderError(res);

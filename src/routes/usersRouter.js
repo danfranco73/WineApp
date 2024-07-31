@@ -12,7 +12,7 @@ router
   // endpoint to update user role (from premium to user or viceverse) by uid (only if the user logged in is an admin)
   .put(
     "/premium/:uid",
-    /*  verifyToken, handleRole("admin"), */ async (req, res) => {
+     verifyToken, handleRole("admin"), async (req, res) => {
       try {
         const uid = req.params.uid;
         const user = await userRService.getUserById(uid);

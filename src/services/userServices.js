@@ -3,6 +3,7 @@ import generateTokenJwt from "./utils/generateTokenJwt.js";
 import config from "../config/config.js";
 import jwt from "jsonwebtoken";
 import { createHash, isValidPassword } from "./utils/functionsUtils.js";
+import { use } from "chai";
 
 export default class UserService {
   constructor() {
@@ -46,21 +47,18 @@ export default class UserService {
   // login user from email and password and return token using jwt and user
   async login(email, password) {
     try {
-      const logUser = await this.getUserByEmail(email);
+      const logUser = await userModel.getUserByEmail(email);
+      const passUser = logUser.password;
       if (!logUser) {
         throw new Error("User not found");
       }
-      if (!isValidPassword(logUser, password)) {
+      if (!isValidPassword(passUser, password)) {
         throw new Error("Password incorrect");
       }
+      const token = generateTokenJwt(logUser);
+      logUser.token = token;
       console.log(logUser);
-      const passwordMatch = isValidPassword(logUser, password);
-      if (!passwordMatch) {
-        throw new Error("User invalid credentials 1");
-      }
-      const userWithoutPassword = { ...logUser,token:generateTokenJwt(logUser) }; // remove password from user
-      delete userWithoutPassword.password; // 
-      return userWithoutPassword; // return user without password
+      return logUser;
     } catch (error) {
       console.error(error.message);
       throw new Error("User invalid credentials 0");
@@ -83,10 +81,10 @@ export default class UserService {
     try {
       const decoded = jwt.verify(token, config.SECRET_ID);
       const user = await this.users.findById(decoded._id).lean();
-      console.log(user,"gubt");
+      console.log(user, "gubt");
       return user;
     } catch (error) {
-      console.error("Error getting user by token:",error.message);
+      console.error("Error getting user by token:", error.message);
       throw new Error("Error getting user by token");
     }
   }
@@ -98,9 +96,8 @@ export default class UserService {
       userFound.resetPasswordToken = "";
       await userFound.save();
       return userFound;
-    }
-    catch (error) {
-      console.error("Error reseting password:",error.message);
+    } catch (error) {
+      console.error("Error reseting password:", error.message);
       throw new Error("Error reseting password");
     }
   }
@@ -110,7 +107,7 @@ export default class UserService {
       const user = await this.users.findById(uid).lean();
       return user;
     } catch (error) {
-      console.error("Error getting user by id:",error.message);
+      console.error("Error getting user by id:", error.message);
       throw new Error("Error getting user by id");
     }
   }
@@ -120,7 +117,7 @@ export default class UserService {
       const user = await this.users.findByIdAndDelete(id);
       return user;
     } catch (error) {
-      console.error("Error deleting user:",error.message);
+      console.error("Error deleting user:", error.message);
       throw new Error("Error deleting user");
     }
   }

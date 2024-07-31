@@ -6,7 +6,7 @@ export default class ProductDAO {
   }
 
   async getAll(page,limit,sort,query) {
-    return await this.products.paginate(page,limit,sort,query);
+    return await this.products.find(query).lean().limit(limit).skip((page - 1) * limit).sort(sort);
   }
 
   async create(product) {

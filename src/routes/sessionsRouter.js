@@ -18,7 +18,7 @@ router
     (req, res) => {
       res.send({
         status: "success",
-        message: "Success",
+        message: "Correctly authenticated with github",
       });
     }
   )
@@ -28,7 +28,7 @@ router
     passport.authenticate("github", { failureRedirect: "/login" }),
     (req, res) => {
       req.session.user = req.user;
-      res.redirect("/");
+      res.redirect("/home");
     }
   )
   // logout and destroy session and redirect to login and show message and delet cookie
@@ -54,6 +54,11 @@ router
   })
   // login and create session and redirect to home
   .post("/login", async (req, res) => {
+    // prevent default login when update page
+    if (!req.body.email || !req.body.password) {
+      return res.redirect("/login");
+    }
+
     try {
       const user = await sessionService.login(
         req.body.email,
@@ -83,9 +88,10 @@ router
           secure: true,
         }) // 1 hour
         .status(200)
-        .redirect("/");
+        .redirect("/home");
     } catch (error) {
-      req.session.failLogin = true;
+      console.log(error);
+      // req.session.failLogin = true;
       console.error(error.message);
       res.redirect("/login");
     }

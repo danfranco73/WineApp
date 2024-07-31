@@ -7,8 +7,7 @@ export default class ProductRepository {
     constructor() {
         this.products = new ProductDAO();
     }
-
-    async getProducts(page,limit,sort,quety) {
+    async getProducts(page,limit,sort,query) {
         return await this.products.getAll(page,limit,sort,query);
     }
 
