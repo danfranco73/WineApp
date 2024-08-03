@@ -54,6 +54,10 @@ const userSchema = mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  active: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 userSchema.pre("save", function (next) {

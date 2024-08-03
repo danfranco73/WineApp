@@ -6,6 +6,7 @@ import CartService from "../services/cartServices.js";
 import UserService from "../services/userServices.js";
 
 const products = new productController();
+
 const user = new UserService();
 const router = Router();
 
@@ -19,7 +20,7 @@ const renderError = (res, redirect = "/login") => {
 router
   .get("/", async (req, res) => {
     renderWithLayout(res, "welcome", {
-      title: "Ecommerce WineAPP",
+      title: "WineAPP",
       status: "success",
     });
   })
@@ -61,7 +62,6 @@ router
   })
   // Home page with query params for pagination, sorting, etc.
   .get("/home", async (req, res) => {
-    const { page = 1, limit = 10, sort = null, query = {} } = req.query;
     try {
       const productsData = await products.getProducts(req.query);
       console.log(productsData.docs);

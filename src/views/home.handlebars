@@ -8,14 +8,15 @@
     <div class="options">
       <form class="box" method="get" action="/api/sessions/logout">
         <button type="submit">Logout</button>
-        <button type="button" href="/askMailforChange">Change Password
+        <button type="button" onclick="window.location.href='/askMailforChange'">Password
         </button>
-        <button type="button" href="/userProfile">Go to User page </button>
+        <button type="button" onclick="window.location.href='/userProfile'">Profile</button>
       </form>
     </div>
   </div>
 </div>
 <div class="product-list">
+  <h2>Productos</h2>
   {{#each products}}
     {{#with this}}
       <div class="product-card" id="products-container">

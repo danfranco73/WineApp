@@ -3,7 +3,6 @@ import generateTokenJwt from "./utils/generateTokenJwt.js";
 import config from "../config/config.js";
 import jwt from "jsonwebtoken";
 import { createHash, isValidPassword } from "./utils/functionsUtils.js";
-import { use } from "chai";
 
 export default class UserService {
   constructor() {
@@ -16,6 +15,7 @@ export default class UserService {
       const newUser = await this.users.create(user);
       return newUser;
     } catch (error) {
+      console.log(error);
       console.error(error.message);
       throw new Error("Error registering user");
     }
@@ -23,7 +23,7 @@ export default class UserService {
 
   async getUserByEmail(email) {
     try {
-      const user = await this.users.findOne({ email }).lean();
+      const user = await this.users.findOne({ email }).lean(); // lean to return plain js object
       return user;
     } catch (error) {
       console.error(error.message);
@@ -47,17 +47,15 @@ export default class UserService {
   // login user from email and password and return token using jwt and user
   async login(email, password) {
     try {
-      const logUser = await userModel.getUserByEmail(email);
-      const passUser = logUser.password;
+      const logUser = await this.getUserByEmail(email);
       if (!logUser) {
         throw new Error("User not found");
       }
-      if (!isValidPassword(passUser, password)) {
+      if (!isValidPassword(logUser, password)) {
         throw new Error("Password incorrect");
       }
       const token = generateTokenJwt(logUser);
       logUser.token = token;
-      console.log(logUser);
       return logUser;
     } catch (error) {
       console.error(error.message);
@@ -119,6 +117,16 @@ export default class UserService {
     } catch (error) {
       console.error("Error deleting user:", error.message);
       throw new Error("Error deleting user");
+    }
+  }
+
+  async inactiveUser(id) {
+    try {
+      const user = await this.users.findByIdAndUpdate(id, { active: false });
+      return user;
+    } catch (error) {
+      console.error("Error inactive user:", error.message);
+      throw new Error("Error inactive user");
     }
   }
 }

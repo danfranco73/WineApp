@@ -2,12 +2,16 @@
 * {
   box-sizing: border-box;
 }
+
 html, body {
-  background: purple;
+  /* background: url('../img/Bodega.jpeg')no-repeat center center fixed; Added background image */
+  background-size: cover; /* Cover the entire viewport */
+  background-color: #52ab4d;
   color: black;
   font-family: Arial, sans-serif; 
   margin: 0;
   padding: 0;
+  background-blend-mode: multiply; /* Use multiply for a darker effect */
 }
 
 hr {
@@ -31,7 +35,11 @@ hr {
 }
 
 h1, h2, p {
-  color: #f2f3e9; /* Darker text for contrast */
+  color: #eddcf1; /* Darker text for contrast */
+  background-color: #fff; /* Light background for text */
+  background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+  padding: 10px;
+  min-width: 300px;
 }
 
 a { color:white; 
@@ -44,12 +52,14 @@ a:hover {
 
 .box {
   justify-content: center;
+  justify-items: center;
   margin: 0 auto;
-  background-color: #9e33c2;
+  background-color: transparent;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  width: 50%; 
+  width: 80%;
+  min-width: 300px;
   margin-bottom: 20px;
 }
 
@@ -62,8 +72,9 @@ a:hover {
 /* form styling */
 form {
   width: 100%;
+  min-width: 300px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
 }
 
@@ -76,20 +87,27 @@ form {
 
 .options {
   display: flex;
-  flex-direction: row;
   gap: 10px;
   margin-bottom: 10px;
+  min-width: 310px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
 button {
-  background-color: #007bff; /* Blue button */
+  background-color: purple; /* Blue button */
   color: #fff; /* White text */
   padding: 10px 20px;
-  border: none;
+  max-height: 50px;
+  max-width: 150px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  width: fit-content; /* Adjust button width */
+  size-adjust: auto;
 }
 
 button:hover {
@@ -104,6 +122,7 @@ button:hover {
 
 .user p {
   margin: 0;
+  min-width: 200px;
 }
 
 /* Form Styling */
@@ -197,17 +216,33 @@ button:hover {
 }
 
 
-/* Mobile Responsiveness */
+/* Media Queries for Mobile Responsiveness */
 @media (max-width: 768px) {
+  .body {
+    background-color: #52ab4d;
+    justify-content: center;
+  }
+  .title {
+    flex-direction: column; /* Stack elements vertically */
+  }
+  .box {
+    width: 90%; /* Adjust width for mobile */
+  }
+  .product-list {
+    grid-template-columns: 1fr; /* Single column for mobile */
+  }
+  .product-card {
+    flex-direction: column; /* Stack elements vertically */
+  }
   .container {
-    width: 90%;
+    flex-direction: column; /* Stack elements vertically */
   }
 
   .box {
-    width: 90%;
+    width: 90%; /* Adjust width for mobile */
   }
 
   .product-list {
-    grid-template-columns: 1fr; /* Single column on mobile */
+    grid-template-columns: 1fr; /* Single column for mobile */
   }
 }

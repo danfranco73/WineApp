@@ -1,31 +1,32 @@
-{{!-- view handlebar de un carrito de compras --}}
-<div class="title">
-    <h1>Carrito de compras</h1>
+<div class="container">
+    <div class="box">
+        <h1>Carrito de compras</h1>
+        {{#if cart}}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each cart}}
+                        <tr>
+                            <td>{{title}}</td>
+                            <td>{{price}}</td>
+                            <td>{{quantity}}</td>
+                            <td>{{subtotal}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            <h2>Total: {{total}}</h2>
+        {{else}}
+            <h1>Carrito de compras vacío</hjson>
+        {{/if}}
+    </div>
 </div>
 
-{{#if cart}}
-    <table>
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each cart}}
-                <tr>
-                    <td>{{name}}</td>
-                    <td>{{price}}</td>
-                    <td>{{quantity}}</td>
-                    <td>{{subtotal}}</td>
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
-    <h2>Total: {{total}}</h2>
-{{else}}
-    <h1>Carrito de compras vacío</hjson>
-{{/if}}
 

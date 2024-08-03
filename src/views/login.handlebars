@@ -1,35 +1,37 @@
-{{!-- GET BACK BUTTOM --}}
+{{! GET BACK BUTTOM }}
 <div class="back">
   <a href="/">Home</a>
 </div>
 <div class="box">
-    <h1>Login</h1>
-    <hr>
-    <form class="box" method="post" action="/api/sessions/login">
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email">
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password">
-        <button type="submit">Login</button>
-    </form>
+  <h1>Login</h1>
+  <hr />
+  <form class="box" method="post" action="/api/sessions/login">
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" />
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" />
+    <button type="submit">Login</button>
+  </form>
+  <div class="button-container">
     <button type="button">
-        <a href="/askMailforChange" >
-        Change Password</a>
-    </button type="button">
-    <button type="button"><a href="/api/sessions/github">Entrar con Github</a></button>
-    <button type="button">
-        <a href="/register" target="_self">Register</a>
+      <a href="/askMailforChange">
+        Password</a>
     </button>
+    <button type="button"><a href="/api/sessions/github">Github</a></button>
+    <button type="button">
+      <a href="/register" target="_self">Register</a>
+    </button>
+  </div>
 </div>
 
 {{#if failLogin}}
-    <script type="text/javascript">
-        alert('Login Failed!');
-    </script>
+  <script type="text/javascript">
+    alert('Login Failed!');
+  </script>
 {{/if}}
 
 {{#if registerSuccess}}
-    <script type="text/javascript">
-        alert('Register Success!');
-    </script>
+  <script type="text/javascript">
+    alert('Register Success!');
+  </script>
 {{/if}}

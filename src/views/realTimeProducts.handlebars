@@ -1,16 +1,16 @@
 <div class="container">
   <div class="box">
-    <h1>Bienvenido {{user.first_name}}</h1>
+    <h1>Bienvenido  {{user.first_name}}</h1>
     <form class="user">
-      <p><b> Email:</b>{{user.email}}</p>
-      <p><b> Role:</b>{{user.role}}</p>
+      <p><b> Email:</b> {{user.email}}</p>
+      <p><b> Role:</b> {{user.role}}</p>
     </form>
     <div class="options">
       <form class="box" method="get" action="/api/sessions/logout">
         <button type="submit">Logout</button>
-        <button type="button" href="/askMailforChange">Change Password
+        <button type="button" onclick="window.location.href='/askMailforChange'">Password
         </button>
-        <button type="button" href="/userProfile">Go to User page </button>
+        <button type="button" onclick="window.location.href='/userProfile'">Profile </button>
       </form>
     </div>
   </div>
@@ -22,11 +22,11 @@
       <input type="text" id="stock" placeholder="Stock" />
       <input type="text" id="category" placeholder="Categoria" />
       <input type="text" id="code" placeholder="Codigo" />
-      <button type="submit">Agregar Producto</button>
+      <button type="submit">Agregar</button>
     </form>
     <form class="box" id="delete-product-form" method="delete" action="/api/products/:pid">
       <input type="text" id="id" placeholder="Id del producto" />
-      <button type="submit">Eliminar Producto</button>
+      <button type="submit">Eliminar</button>
     </form>
   </div>
 </div>

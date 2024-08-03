@@ -6,13 +6,13 @@ const auth = function (req, res, next) {
   return next();
 };
 
-// If the user is logged in, it will be redirected to the home page
+// check if the user is logged and if it is, continue, otherwise alert yo need to log in
 const logged = function (req, res, next) {
-  if (req.session.user) {
-    return res.redirect("/");
+  if (!req.session.user) {
+    return res.status(401).send("You need to log in to perform this action.");
   }
-  next();
-};
+  return next();
+}
 // VERIFICO QUE EL UID ES EL MISMO QUE ESTA LOGGEDO
 const checkUser = function (req, res, next) {
   if (req.session.user._id !== req.params.uid) {

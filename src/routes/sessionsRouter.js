@@ -41,6 +41,13 @@ router
   // register new user
   .post("/register", async (req, res) => {
     try {
+      const {email, password, ...rest} = req.body;
+      const userExists = await sessionService.getUserByEmail(email);
+      if (userExists) {
+        req.session.failRegister = true;
+        console.error("User already exists");
+        return res.redirect("/register");
+      }
       req.session.failRegister = false;
       const user = await sessionService.register(req.body);
       console.log("User registered correctly", user);
@@ -58,7 +65,6 @@ router
     if (!req.body.email || !req.body.password) {
       return res.redirect("/login");
     }
-
     try {
       const user = await sessionService.login(
         req.body.email,
@@ -66,7 +72,7 @@ router
       );
       if (!user) {
         req.session.failLogin = true;
-        console.error("User invalid credentials ");
+        console.error("User invalid credentials NO TOKEN ");
         return res.redirect("/login");
       }
       console.log("User logged in correctly", user);
@@ -130,7 +136,7 @@ router
       user: user,
     });
   })
-  // Crear un endpoint en el router de usuarios api/users/:uid/documents con el método POST que permita subir uno o múltiples archivos. Utilizar el middleware de Multer para poder recibir los documentos que se carguen y actualizar en el usuario su status para hacer saber que ya subió algún documento en particular.
+
   .post(
     "/:uid/documents",
     verifyToken,
@@ -265,6 +271,21 @@ router
         .status(500)
         .send({ status: "error", message: "Error resetting password" });
     }
+  })
+  // actualizo el active del usuario a false si es que no se loguea en 30 dias
+  .put("/inactive", async (req, res) => {
+    try {
+      const users = await sessionService.inactiveUsers();
+      res.send({
+        status: "success",
+        message: "Users updated",
+        users: users,
+      });
+    } catch (error) {
+      console.error("Error updating users:", error.message);
+      res
+        .status(500)
+        .send({ status: "error", message: "Error updating users" });
+    }
   });
-
 export default router;

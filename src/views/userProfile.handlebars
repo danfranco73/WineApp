@@ -26,12 +26,19 @@
     {{#if user.isPremium}}
       <p>You are a Premium user!</p>
     {{/if}}
-
-    <a href="/switchRole">Switch Role</a>
-    <a href="/uploadDocuments">Upload Documents</a>
     {{! botton de logout }}
     <form class="box" method="get" action="/api/sessions/logout">
       <button type="submit">Logout</button>
+      <button
+        type="button"
+        onclick="window.location.href='/switchRole'"
+      >Switch Role
+      </button>
+      <button
+        type="button"
+        onclick="window.location.href='/uploadDocuments'"
+      >Documents </button>
+
     </form>
 
   </div>
