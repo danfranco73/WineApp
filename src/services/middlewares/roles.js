@@ -2,6 +2,10 @@
 
 import verifyToken from "../utils/verifyToken.js";
 import userModel from "../../dao/models/userModel.js";
+import ProductService from "../productServices.js";
+
+const productServices = new ProductService();
+
 
 export const checkRole = (roles) => {
   return async (req, res, next) => {
@@ -41,10 +45,13 @@ export const isUser = checkRole(["user"]);
 // check if role is premium
 export const isPremium = checkRole(["premium"]);
 
-export const checkOwnership = async (pid, email) => {
-  const product = await manager.getById(pid);
-  if (!product) return false;
-  return product.owner === email;
+// check if the product belongs to the user
+export const checkOwnership = async (pid,user) => {
+  const product = await productServices.getProductById(pid);
+  if (product.owner === user.role) {
+    return true;
+  }
+  return false;
 };
 
 export const handleRole = (policies) => {

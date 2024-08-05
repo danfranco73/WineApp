@@ -21,7 +21,7 @@ router
   
 
   // Get a product by ID
-  .get("/:pid", verifyToken, async (req, res, next) => {
+  .get("/:pid", /* verifyToken, */ async (req, res, next) => {
     const { pid } = req.params;
     try {
       const product = await productManager.getProductById(pid);

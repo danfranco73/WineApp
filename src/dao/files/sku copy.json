@@ -1,0 +1,63 @@
+[
+  {
+    "title": "producto prueba",
+    "description": "Este es un producto prueba",
+    "price": 200,
+    "thumbnail": "Sin imagen",
+    "code": "abc123",
+    "stock": 25
+  },
+  {
+    "id": 2,
+    "nombre": "Harina Favorita x 1 kg",
+    "precio": 150,
+    "imagen": "../Imagenes/harinaFavorita.jpg",
+    "cantidad": 250
+  },
+  {
+    "id": 3,
+    "nombre": "Yerba Nobleza Gaucha x 1 kg",
+    "precio": 440,
+    "imagen": "../Imagenes/yerbaNG.jpg",
+    "cantidad": 650
+  },
+  {
+    "id": 4,
+    "nombre": "Bizcochuelo Exquisita x 450g",
+    "precio": 272,
+    "imagen": "../Imagenes/bizcochueloExq.jpg",
+    "cantidad": 410
+  },
+  {
+    "id": 5,
+    "nombre": "Fideo Matarazzo x 500g",
+    "precio": 125,
+    "imagen": "../Imagenes/fideoMatarazzo.jpg",
+    "cantidad": 410
+  },
+  {
+    "id": 6,
+    "nombre": "Arroz Gallo x 1kg",
+    "precio": 245,
+    "imagen": "../Imagenes/arrozGallo.jfif",
+    "cantidad": 350
+  },
+  {
+    "title": "producto prueba",
+    "description": "Este es un producto prueba",
+    "price": 200,
+    "thumbnail": "Sin imagen",
+    "code": "abc123",
+    "stock": 25,
+    "id": 7
+  },
+  {
+    "title": "producto prueba",
+    "description": "Este es un producto prueba",
+    "price": 200,
+    "thumbnail": "Sin imagen",
+    "code": "abc123",
+    "stock": 25,
+    "id": 8
+  }
+]

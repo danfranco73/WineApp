@@ -1,33 +1,47 @@
-import CartRepository from "../repository/cartRepository.js";
+import CartDAO from "../dao/cartDAO.js";
+import CartDTO from "../dao/dto/cartDTO.js";
+import cartModel from "../dao/models/cartModel.js";
 import ticketService from "./ticketServices.js"; // Assuming you have a ticketService
 
 export default class CartService {
   constructor() {
-    this.carts = new CartRepository();
+    this.carts = new CartDAO();
   }
 
   // getting all the carts from the database in my ecommerce mongodb
   async getCarts() {
     try {
-      return await this.carts.getCarts();
+      const cart = await this.carts.getAll();
+      if (!cart) {
+        throw new Error("Cart not found");
+      }
+      return cart.map((c) => new CartDTO(c));
     } catch (error) {
       throw new Error(error);
     }
   }
 
-  // adding a new cart to the database in my ecommerce mongodb
-  async addCart(cart) {
+  // adding a new cart with the user id to identify the cart
+  async addCart(uid) {
     try {
-      return await this.carts.addCart(cart);
+      const newCart = await this.carts.addCart(uid);
+      if (!newCart) {
+        throw new Error("Cart not created");
+      }
+      return new CartDTO(newCart);
     } catch (error) {
       throw new Error(error);
     }
   }
 
   // updating a cart in the database
-  async updateCart(cid, cart) {
+  async updateCart(cid, pid, quantity) {
     try {
-      return await this.carts.updateCart(cid, cart);
+      const cart = await this.carts.updateCart(cid, pid, quantity);
+      if (!cart) {
+        throw new Error("Cart not found");
+      }
+      return new CartDTO(cart);
     } catch (error) {
       throw new Error(error);
     }
@@ -36,7 +50,18 @@ export default class CartService {
   // deleting a cart in the database in my ecommerce mongodb
   async deleteCart(cid) {
     try {
-      return await this.carts.deleteCart(cid);
+      return await this.carts.delete(cid);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+  // getting a cart with the user id to identify the cart
+  async getCartWithUser(uid) {
+    try {
+      const cart = await this.carts.getCartWithUser(uid);
+      if (cart) {
+        return new CartDTO(cart);
+      }
     } catch (error) {
       throw new Error(error);
     }
@@ -54,7 +79,11 @@ export default class CartService {
   // adding a product to a cart
   async addProductToCart(cid, pid, quantity) {
     try {
-      return await this.carts.addProductToCart(cid, pid, quantity);
+      const cart = await this.carts.addProduct(cid, pid, quantity);
+      if (!cart) {
+        throw new Error("Cart not found");
+      }
+      return cart;
     } catch (error) {
       throw new Error(error);
     }
@@ -63,7 +92,11 @@ export default class CartService {
   // delete a product in my cart
   async deleteProductFromCart(cid, pid) {
     try {
-      return await this.carts.deleteProductFromCart(cid, pid);
+      const cart = await this.carts.deleteProductFromCart(cid, pid);
+      if (!cart) {
+        throw new Error("Cart not found");
+      }
+      return new CartDTO(cart);
     } catch (error) {
       throw new Error(error);
     }
@@ -72,36 +105,48 @@ export default class CartService {
   // clear all products from a cart
   async clearCart(cid) {
     try {
-      const cart = await this.carts.getCartById(cid);
-      cart.products = [];
-      await this.updateCart(cid, cart);
-      return cart;
+      const cart = await this.carts.clearCart(cid);
+      if (!cart) {
+        throw new Error("Cart not found");
+      }
+      return new CartDTO(cart);
     } catch (error) {
-        // Handle error
-        throw new Error(error);
+      // Handle error
+      throw new Error(error);
     }
   }
 
-  // finish the purchase of a cart by cid in the database only if the user is authenticated and is the cart owner in my ecommerce mongodb
-  async purchaseCart(cid) {
+  // finish the purchase of a cart by cid in the database only if the user is authenticated and is the cart owner
+  async purchaseCart(cid, uid) {
+    const cart = await this.carts.getCartById(cid);
+    const userId = uid;
     try {
-      const cart = await this.carts.getCartById(cid);
-      const products = cart.products;
+      // Check if the cart is empty
+      if (cart.products.length === 0) {
+        throw new Error("Cart is empty");
+      }
+      // Check if the products in the cart are available or have enough stock 
       const productsToBuy = [];
       const productsNotToBuy = [];
-
-      for (const product of products) {
-        const stock = product.product.stock;
-        if (stock >= product.quantity) {
-          // Update product stock in the database
-          product.product.stock -= product.quantity;
-          await product.product.save(); // Save the updated product
-          productsToBuy.push(product);
+      for (const p of cart.products) {
+        const product = await productService.getProductById(p.product._id);
+        if (product.stock >= p.quantity) {
+          productsToBuy.push(p);
         } else {
-          productsNotToBuy.push(product);
+          productsNotToBuy.push(p);
         }
+        // clear the products not to buy from the cart
+        const newCart = cart.products.filter((product) => {
+          return !productsNotToBuy.some((p) => p.product._id == product._id);
+        }
+        );
       }
-
+      // Update the cart with the products to buy
+      const updatedCart = await this.updateCart(cid, newCart);
+      // Update the stock of the products to buy
+      for (const p of productsToBuy) {
+        await productService.updateProductStock(p.product._id, p.quantity * -1);
+      }
       // Create a ticket for products that couldn't be purchased
       await ticketService.addTicket({
         products: productsNotToBuy,
@@ -110,10 +155,8 @@ export default class CartService {
           0
         ),
       });
-
       // Clear the cart
       await this.clearCart(cid);
-
       return productsToBuy;
     } catch (error) {
       throw new Error(error);

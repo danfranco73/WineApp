@@ -123,14 +123,13 @@ app
     })
   )
   .set("view engine", "handlebars")
-  .set("views", "./src/views");
-app
-
+  .set("views", "./src/views")
+  // Routes
   .use("/api/sessions", sessionRouter)
   .use("/api/users", usersRouter)
   // .use("/api/mock", mockProducts)
   .use("/api/products", productsRouter)
-  .use("/api/carts", logged, cartsRouter)
+  .use("/api/carts", /* logged, */ cartsRouter)
   .use("/api/tickets", ticketRouter)
   .use("/", viewsRouter)
   .use("/api/mailing", mailingRouter)

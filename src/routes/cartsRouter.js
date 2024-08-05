@@ -7,8 +7,11 @@ import {
   checkOwnership,
 } from "../services/middlewares/roles.js";
 import { userAuth, isNotAdmin, admin } from "../services/middlewares/auth.js";
+import ticketService from "../services/ticketServices.js";
+import productServices from "../services/productServices.js";
 
 const cartManager = new CartController();
+const productService = new productServices();
 
 const router = Router();
 
@@ -18,36 +21,34 @@ router
     const carts = await cartManager.getCarts();
     res.status(200).send({
       status: "success",
+      message: "Carts retrieved",
       payload: carts,
     });
   })
 
   // add a new cart
   .post("/", async (req, res) => {
-    const cart = req.body;
-    const purchaser = req.session.user;
-    const newCart = await cartManager.addCart(cart);
+    const uid = req.session.user;
+    const newCart = await cartManager.addCart(uid);
     res.send({
       status: "success",
-      purchaser: purchaser,
       payload: newCart,
     });
   })
 
   // update a cart adding a product with pid if user is not admin
-  .put("/:cid/product/:pid/quantity", async (req, res) => {
+  .put("/:cid/product/:pid/:quantity", async (req, res) => {
+    const user = req.session.user;
     const { cid, pid , quantity} = req.params;
-    const isOwner = await checkOwnership(pid, req.session.user.email);
-    if (req.user.role === "premium") {
-      if (!isOwner) {
         const cart = await cartManager.addProductToCart(cid, pid, quantity);
+        // check if the user is the owner of the cart
+        if (cart.user !== user) {
+          res.status(403).send("Forbidden");
+        } 
         res.send({
           status: "success",
           payload: cart,
         });
-      }
-      res.status(403).send("Forbidden");
-    }
   })
 
   // getting cart by cid in the database in my ecommerce mongodb

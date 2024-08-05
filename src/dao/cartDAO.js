@@ -1,47 +1,126 @@
-import cartModel from './models/cartModel.js';
-import productModel from './models/productModel.js';
+import cartModel from "./models/cartModel.js";
+import productModel from "./models/productModel.js";
+import userModel from "./models/userModel.js";
 
 export default class CartDAO {
-    async create(cart) {
-        const newCart = new cartModel(cart);
-        return await newCart.save();
+  // adding a cart to the database
+  async addCart(uid) {
+    const user = await userModel.findOne({ _id: uid });
+    if (!user) {
+      return { message: "User not found" };
     }
-
-    async getAll(query, options) {
-        return await cartModel.find(query, options);
+    const cart = await cartModel.findOne({ user: uid });
+    if (cart) {
+      return { message: "Cart already exists" };
     }
-
-    async getById(cid) {
-        return await cartModel.findOne({ _id: cid });
+    const newCart = new cartModel({ user: uid });
+    return await newCart.save();
+  }
+  // get all the carts in the database
+  async getAll() {
+    const cart = await cartModel
+      .find()
+      .populate("products.product")
+      .populate("user")
+      .lean();
+    return cart;
+  }
+  // get a cart by its id
+  async getCartById(cid) {
+    const cart = await cartModel
+      .findById({ _id: cid })
+      .populate("products.product")
+      .populate("user")
+      .lean();
+    if (!cart) {
+      return { message: "Cart not found" };
     }
+    return cart;
+  }
+  // adding a product to a user cart with quantity
+  async addProduct(cid, pid, quantity) {
+    try {
+      const cart = await cartModel.findOne({ _id: cid });
+      if (!cart) {
+        return { message: "Cart not found" };
+      }
+      const product = await productModel.findOne({ _id: pid });
+      if (!product) {
+        return { message: "Product not found" };
+      }
 
-    async addProduct(cid, pid, quantity) {
-        const cart = await cartModel.findOne({ _id: cid });
-        const product = await productModel.findOne({ _id: pid });
-        if (!product) {
-            throw new Error("Product not found");
-        }
-        const index = cart.products.findIndex((p) => p.product === pid);
-        if (index === -1) {
-            cart.products.push({ product: pid, quantity });
-        } else {
-            cart.products[index].quantity += quantity;
-        }
+      if (cart.products.some((p) => p.product == pid)) {
+        // increment the quantity of the product in the cart
+        cart.products = cart.products.map((p) => {
+          if (p.product == pid) {
+            p.qty += quantity;
+          }
+          return p;
+        });
+      } else {
+        // add the product to the cart
+        cart.products.push({ product: pid, qty: quantity });
         return await cart.save();
+      }
+    } catch (err) {
+      return { message: err.message };
     }
+  }
+  // getting a cart by the user id
+  async getCartByUserId(uid) {
+    const cart = await cartModel
+      .findOne({ user: uid })
+      .populate("products.product")
+      .populate("user")
+      .lean();
+    if (!cart) {
+      return { message: "Cart not found" };
+    }
+    return cart;
+  }
 
-    async update(cid, cart) {
-        return await cartModel.updateOne({ _id: cid }, cart, { new: true });
-    }
+  async update(cid, pid, quantity) {
+    return await cartModel.updateOne({ _id: cid }, { pid, quantity });
+  }
 
-    async removeProduct(cid, pid) {
-        const cart = await cartModel.findOne({ _id: cid });
-        cart.products = cart.products.filter((p) => p.product !== pid);
-        return await cart.save();
+  async deleteProductFromCart(cid, pid) {
+    try {
+      const cart = await findOneAndUpdate(
+        { _id: cid },
+        { $pull: { products: { product: pid } } },
+        { new: true }
+      );
+      return cart;
+    } catch (err) {
+      return { message: err.message };
     }
-    
-    async delete(cid) {
-        await cartModel.deleteOne({ _id: cid });
-        return { message: "Cart deleted successfully" };
+  }
+  // clearing the cart by setting the products array to an empty array
+  async clearCart(cid) {
+    try {
+      const cart = await cartModel.findOneAndUpdate(
+        { _id: cid },
+        { products: [] },
+        { new: true }
+      );
+      return cart;
+    } catch (err) {
+      return { message: err.message };
     }
+  }
+
+  async delete(cid) {
+    await cartModel.deleteOne({ _id: cid });
+    return { message: "Cart deleted successfully" };
+  }
+
+  // delete cart with no user
+  async deleteCartWithNoUser() {
+    try {
+      const cart = await cartModel.deleteOne({ user: null });
+      return cart;
+    } catch (err) {
+      return { message: err.message };
+    }
+  }
 }

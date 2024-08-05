@@ -1,22 +1,22 @@
-import ProductRepository from "../repository/productRepository.js";
+import ProductDAO from "../dao/productDAO.js";
 
 export default class ProductService {
     constructor() {
-        this.products = new ProductRepository();
+        this.products = new ProductDAO();
     }
 
-    async getProducts(page,limit,sort,query) {
+    async getProducts() {
     
-        return await this.products.getProducts(page,limit,sort,query);
+        return await this.products.getAll();
     }
 
     async addProduct(product) {
-         const newProduct = await this.products.addProduct(product);
+         const newProduct = await this.products.create(product);
         return newProduct;
     }
 
     async getProductById(pid) {
-        return await this.products.getProductById(pid);
+        return await this.products.getById(pid);
     }
 
     async updateProduct(id, product) {

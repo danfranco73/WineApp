@@ -5,12 +5,18 @@ export default class ProductDAO {
     this.products = productModel;
   }
 
-  async getAll(page,limit,sort,query) {
-    return await this.products.find(query).lean().limit(limit).skip((page - 1) * limit).sort(sort);
-  }
+  getAll = async () => {
+    const products = await this.products.find().lean();
+    return products;
+  };
 
   async create(product) {
-    return await this.products.save(product);
+    try {
+      const newProduct = new this.products(product);
+      return await newProduct.save();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getById(pid) {

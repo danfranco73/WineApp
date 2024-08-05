@@ -16,28 +16,28 @@ const renderProducts = (products) => {
   };
 
 // // envio un nuevo producto al servidor en su emit "newProduct"
-// const addProductForm = document.getElementById("add-product-form");
+const addProductForm = document.getElementById("add-product-form");
 
-// addProductForm.addEventListener("submit", (e) => {
-//   e.preventDefault();
-//   const title = document.getElementById("title").value;
-//   const description = document.getElementById("description").value;
-//   const price = document.getElementById("price").value;
-//   const stock = document.getElementById("stock").value;
-//   const category = document.getElementById("category").value;
-//   const code = document.getElementById("code").value;
-//   const newProduct = {
-//     title,
-//     description,
-//     price,
-//     stock,
-//     category,
-//     code,
-//   };
-//   logger.info(newProduct);
-//   // renderProducts(newProduct);
-//   socket.emit("newProduct", newProduct);
-// });
+addProductForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const title = document.getElementById("title").value;
+  const description = document.getElementById("description").value;
+  const price = document.getElementById("price").value;
+  const stock = document.getElementById("stock").value;
+  const category = document.getElementById("category").value;
+  const code = document.getElementById("code").value;
+  const newProduct = {
+    title,
+    description,
+    price,
+    stock,
+    category,
+    code,
+  };
+  logger.info(newProduct);
+  // renderProducts(newProduct);
+  socket.emit("newProduct", newProduct);
+});
 
 // send a delete product to the server
 const deleteProductForm = document.getElementById("delete-product-form");

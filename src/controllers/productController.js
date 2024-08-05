@@ -6,12 +6,8 @@ class productController {
     this.productService = new ProductService();
   }
 
-  async getProducts(page,limit,sort,query) {
-    try {
-      return await this.productService.getProducts(page,limit,sort,query);
-    } catch (error) {
-      throw new Error(error);
-    }
+  async getProducts() { 
+      return await this.productService.getProducts();
   }
 
   async addProduct(product) {

@@ -24,15 +24,68 @@ router
       status: "success",
     });
   })
-  .get("/index", async (req, res) => {
-
-      renderWithLayout(res, "index", {
-        title: "WineAPP Products",
+  // Home page with query params for pagination, sorting, etc.
+  .get("/home", async (req, res) => {
+    try {
+      const productsData = await products.getProducts();
+      console.log(productsData.docs);
+      renderWithLayout(res, "home", {
+        title: "Product List",
         status: "success",
+        products: productsData.docs,
+        user: req.session.user,
       });
+    } catch (e) {
+      renderError(res);
+    }
   })
 
-  .get("/login", (req, res) => {
+  // Real Time Products with similar logic to index
+  .get("/realTimeProducts", async (req, res) => {
+    try {
+      const products = await products.getProducts();
+      console.log(products.docs);
+      renderWithLayout(res, "realTimeProducts", {
+        title: "Real-Time Products",
+        products: products.docs,
+        user: req.session.user,
+      });
+    } catch (e) {
+      renderError(res);
+    }
+  })
+//  show the products
+  .get("/index", async (req, res) => {  
+    try {
+      const productsData = await products.getProducts();
+      console.log(productsData.docs);
+      renderWithLayout(res, "index", {
+        title: "Product List",
+        status: "success",
+        products: productsData.docs,
+        user: req.session.user,
+      });
+    } catch (e) {
+      renderError(res);
+    }
+  })
+
+  //  show the products
+  .get("/products", async (req, res) => {  
+    try {
+      const productsData = await products.getProducts();
+      console.log(productsData.docs);
+      renderWithLayout(res, "product", {
+        title: "Product List",
+        status: "success",
+        products: productsData.docs,
+        user: req.session.user,
+      });
+    } catch (e) {
+      renderError(res);
+    }
+  })
+    .get("/login", (req, res) => {
     renderWithLayout(res, "login", {
       title: "Ecommerce Login",
       failLogin: req.session.failLogin ?? false,
@@ -60,38 +113,7 @@ router
       failRestore: req.session.failRestore ?? false,
     });
   })
-  // Home page with query params for pagination, sorting, etc.
-  .get("/home", async (req, res) => {
-    try {
-      const productsData = await products.getProducts(req.query);
-      console.log(productsData.docs);
-      renderWithLayout(res, "home", {
-        title: "Product List",
-        status: "success",
-        products: productsData.docs,
-        user: req.session.user,
-      });
-    } catch (e) {
-      renderError(res);
-    }
-  })
 
-  // Real Time Products with similar logic to index
-  .get("/realTimeProducts", async (req, res) => {
-    const { page = 1, limit = 10, sort = null, query = {} } = req.query;
-    try {
-      const productsData = await products.getProducts(req.query);
-      renderWithLayout(res, "realTimeProducts", {
-        title: "Real-Time Products",
-        products: productsData.docs,
-        user: req.session.user,
-        isValid:
-          productsData.page > 0 && productsData.page <= productsData.totalPages,
-      });
-    } catch (e) {
-      renderError(res);
-    }
-  })
   // Product detail page with similar logic to home
   .get("/product/:id", async (req, res) => {
     try {
