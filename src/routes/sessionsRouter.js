@@ -11,7 +11,6 @@ import CartController from "../controllers/cartController.js";
 
 const cartManager = new CartController();
 
-
 const router = Router();
 const sessionService = new UserService();
 router
@@ -45,16 +44,17 @@ router
   // register new user
   .post("/register", async (req, res) => {
     try {
-      const {email, password, ...rest} = req.body;
+      const { email, password, ...rest } = req.body;
       const userExists = await sessionService.getUserByEmail(email);
       if (userExists) {
         req.session.failRegister = true;
-        console.error("User already exists");
+        Alert("User already exists");
         return res.redirect("/register");
       }
       req.session.failRegister = false;
       const user = await sessionService.register(req.body);
-      const cartId = await cartManager.addCart(user._id);
+      // create a cart for the user
+      const cartId = await cartManager.createCart(user._id);
       console.log("Cart created for user", cartId);
       console.log("User registered correctly", user);
       res.status(200).redirect("/login");

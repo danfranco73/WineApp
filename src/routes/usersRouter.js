@@ -81,56 +81,51 @@ router
       }
     }
   )
-  // this endpoint will erase the users with no login in the last 2 days, the outcome must inform the number of users deleted with a modal
+  // Delete inactive users and send an email to each one
   .delete(
     "/inactiveUsers",
     /* handleRole("admin"), */ async (req, res) => {
       try {
-        const deletedUsersIds = await userRService.deleteInactiveUsers();
-        // count the users remaining in the database after deleting the inactive ones to inform the user in the response
-        const usersRemaining = await userRService.countUsers();
-        // must send a mail to the users deleted
-        if (deletedUsersIds.lenght > 0) {
+        // get the inactive users
+        const inactiveUsers = await userRService.getInactiveUsers();
+        console.log(inactiveUsers);
+
+        // for each inactive user, send an email
+        inactiveUsers.forEach(async (user) => {
           const transporter = nodemailer.createTransport({
-          host: "smtp.gmail.com",
-          service: "gmail",
-          port: 587,
-          secure: false,
-          tls: {
-            rejectUnauthorized: false,
-          },
-          auth: {
-            user: config.USER_MAILING,
-            pass: config.USER_MAILING_PASS,
-          },
+            host: "smtp.gmail.com",
+            service: "gmail",
+            port: 587,
+            secure: false,
+            tls: {
+              rejectUnauthorized: false,
+            },
+            auth: {
+              user: config.USER_MAILING,
+              pass: config.USER_MAILING_PASS,
+            },
+          });
+          const mailOptions = {
+            from: `Admin <${config.USER_MAILING}>`,
+            to: user.email,
+            subject: "Account deleted",
+            text: "Your account has been deleted due to inactivity",
+          };
+          await transporter.sendMail(mailOptions),
+            async (error, info) => {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log("Email sent: " + info.response);
+              }
+            };
         });
-        const mailOptions = {
-          from: `<${config.USER_MAILING}>`,
-          to: deletedUsersIds.map(async (userId) => {
-            const foundUser = await userRService.getUserById(userId);
-            return foundUser.email;
-          }),
-          subject: "Users deleted",
-          html: `
-        <div>
-        <h1>Users deleted</h1>
-        <br>
-        <p>Your account has been deleted due to inactivity</p>
-        <p> If you wont to Register again, please follow the link below</p>
-        <a href="http://localhost:8080/register">Register</a>
-        </div>`,
-        };
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log("Email sent: " + info.response);
-          }
-        });
-      }
+        // delete the inactive users
+        const deletedUserIds = await userRService.deleteInactiveUsers();
         res.status(200).send({
           status: "success",
-          message: `${deletedUsersIds.lenght} users deleted, ${usersRemaining} users remaining`,
+          message: "Inactive users deleted",
+          deletedUserIds: deletedUserIds,
         });
       } catch (error) {
         console.log(error);
