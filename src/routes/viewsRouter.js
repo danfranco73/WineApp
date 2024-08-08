@@ -1,15 +1,16 @@
 import { Router } from "express";
-import productController from "../controllers/productController.js";
 import chatManager from "../dao/managers/chatManager.js";
 import { logger } from "../services/utils/logger.js";
 import CartService from "../services/cartServices.js";
 import UserService from "../services/userServices.js";
+import ProductController from "../controllers/productController.js";
+import { isAdmin } from "../services/middlewares/roles.js";
 
-const products = new productController();
-
+const products = new ProductController();
 const user = new UserService();
 const router = Router();
 
+// Utilities for rendering views
 const renderWithLayout = (res, view, locals) =>
   res.render(view, { layout: "main", ...locals });
 
@@ -17,6 +18,7 @@ const renderError = (res, redirect = "/login") => {
   res.status(500).redirect(redirect);
 };
 
+// Views router
 router
   .get("/", async (req, res) => {
     renderWithLayout(res, "welcome", {
@@ -24,15 +26,15 @@ router
       status: "success",
     });
   })
-  // Home page with query params for pagination, sorting, etc.
+  // Home page with product list and user session data (unchanged)
   .get("/home", async (req, res) => {
     try {
       const productsData = await products.getProducts();
-      console.log(productsData.docs);
+      console.log(productsData);
       renderWithLayout(res, "home", {
         title: "Product List",
         status: "success",
-        products: productsData.docs,
+        products: productsData,
         user: req.session.user,
       });
     } catch (e) {
@@ -40,25 +42,25 @@ router
     }
   })
 
-  // Real Time Products with similar logic to index
   .get("/realTimeProducts", async (req, res) => {
     try {
-      const products = await products.getProducts();
-      console.log(products.docs);
+      const productsData = await products.getProducts();
+      console.log(productsData);
       renderWithLayout(res, "realTimeProducts", {
-        title: "Real-Time Products",
-        products: products.docs,
+        title: "Real Time Products",
+        status: "success",
+        products: productsData,
         user: req.session.user,
       });
     } catch (e) {
       renderError(res);
     }
   })
-//  show the products
-  .get("/index", async (req, res) => {  
+
+  .get("/index", async (req, res) => {
     try {
       const productsData = await products.getProducts();
-      console.log(productsData.docs);
+      console.log(productsData);
       renderWithLayout(res, "index", {
         title: "Product List",
         status: "success",
@@ -71,10 +73,10 @@ router
   })
 
   //  show the products
-  .get("/products", async (req, res) => {  
+  .get("/products", async (req, res) => {
     try {
       const productsData = await products.getProducts();
-      console.log(productsData.docs);
+      console.log(productsData);
       renderWithLayout(res, "product", {
         title: "Product List",
         status: "success",
@@ -85,7 +87,7 @@ router
       renderError(res);
     }
   })
-    .get("/login", (req, res) => {
+  .get("/login", (req, res) => {
     renderWithLayout(res, "login", {
       title: "Ecommerce Login",
       failLogin: req.session.failLogin ?? false,
@@ -106,6 +108,17 @@ router
       user: req.session.user,
     });
   })
+  // user Admin profile
+  .get(
+    "/adminProfile",
+    /* isAdmin, */ async (req, res) => {
+      renderWithLayout(res, "adminProfile", {
+        title: "Admin Profile",
+        user: req.session.user,
+      });
+    }
+  )
+
   // Restore password (unchanged)
   .post("/restore", (req, res) => {
     renderWithLayout(res, "restore", {
@@ -184,6 +197,16 @@ router
       title: "Switch Role",
       uid: req.params.uid,
     });
+  })
+  // show all users
+  .get("/allUsers", async (req, res) => {
+    const users = await user.getAllUsers();
+    renderWithLayout(res, "users", {
+      title: "All Users",
+      users: users,
+    });
   });
+
+  
 
 export default router;

@@ -1,15 +1,16 @@
 // user dto class to transform data from the database into a user object all in UPPERCASE
 
+
 export class UserDTO {
     constructor(user) {
         this.ID = user._id;
-        this.NAME = user.name;
+        this.FIRST_NAME = user.first_name;
         this.EMAIL = user.email;
-        this.PASSWORD = user.password;
-        this.CREATED_AT = user.createdAt;
-        this.UPDATED_AT = user.updatedAt;
+        this.ROLE = user.role;
+        this.LAST_CONNECTION = user.last_connection;
     }
 }
+
 
 // post dto class to transform data from the database into a post object all in UPPERCASE
 

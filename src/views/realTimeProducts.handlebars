@@ -10,7 +10,7 @@
         <button type="submit">Logout</button>
         <button type="button" onclick="window.location.href='/askMailforChange'">Password
         </button>
-        <button type="button" onclick="window.location.href='/userProfile'">Profile </button>
+        <button type="button" onclick="window.location.href='/adminProfile'">Profile </button>
       </form>
     </div>
   </div>
@@ -40,7 +40,7 @@
     <button id="query">Categoria</button>
   </div>
   <div class="product-list">
-    {{#each products}}
+    {{#each product}}
       {{#with this}}
         <div class="product-card" id="products-container">
           <h3>{{title}}</h3>

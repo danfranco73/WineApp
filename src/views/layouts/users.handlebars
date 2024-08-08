@@ -1,0 +1,11 @@
+{{! muestro todos mis usuarios }}
+<div class="container">
+  {{#each users}}
+  <div class="box">
+    <div>
+      <h2>{{this.name}}</h2>
+      <p>{{this.email}}</p>
+    </div>
+  {{/each}}
+  </div>
+</div>

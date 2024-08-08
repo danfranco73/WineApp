@@ -1,8 +1,10 @@
 import userModel from "../dao/models/userModel.js";
 import generateTokenJwt from "./utils/generateTokenJwt.js";
+import {UserDTO} from "../dao/dto/userDTO.js";
 import config from "../config/config.js";
 import jwt from "jsonwebtoken";
 import { createHash, isValidPassword } from "./utils/functionsUtils.js";
+
 
 export default class UserService {
   constructor() {
@@ -99,26 +101,7 @@ export default class UserService {
       throw new Error("Error reseting password");
     }
   }
-  // get user by id
-  async getUserById(uid) {
-    try {
-      const user = await this.users.findById(uid).lean();
-      return user;
-    } catch (error) {
-      console.error("Error getting user by id:", error.message);
-      throw new Error("Error getting user by id");
-    }
-  }
 
-  async deleteUser(id) {
-    try {
-      const user = await this.users.findByIdAndDelete(id);
-      return user;
-    } catch (error) {
-      console.error("Error deleting user:", error.message);
-      throw new Error("Error deleting user");
-    }
-  }
 
   async inactiveUser(id) {
     try {
@@ -127,6 +110,68 @@ export default class UserService {
     } catch (error) {
       console.error("Error inactive user:", error.message);
       throw new Error("Error inactive user");
+    }
+  }
+  // get all users show only the userDTO
+  async getAllUsers() {
+    try {
+      const users = await this.users.find().lean();
+      return users.map((user) => new UserDTO(user));
+    } catch (error) {
+      console.error("Error getting all users:", error.message);
+      throw new Error("Error getting all users");
+    }
+  }
+    // get user by id
+    async getUserById(uid) {
+      try {
+        const user = await this.users.findById(uid).lean();
+        return user;
+      } catch (error) {
+        console.error("Error getting user by id:", error.message);
+        throw new Error("Error getting user by id");
+      }
+    }
+  
+    async deleteUser(id) {
+      try {
+        const user = await this.users.findByIdAndDelete(id);
+        return user;
+      } catch (error) {
+        console.error("Error deleting user:", error.message);
+        throw new Error("Error deleting user");
+      }
+    }
+  // delete with not connection in the last 2 days
+  async deleteInactiveUsers() {
+    try {
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+  
+      const result = await this.users.deleteMany({
+        last_connection: { $lt: twoDaysAgo },
+      });
+  
+      // Get the deleted user IDs from the result object
+      const deletedUserIds = result.deletedCount > 0 ? result.deletedCount : [];
+      console.log(deletedUserIds);
+      
+      // Return the deleted user IDs
+      return deletedUserIds;
+    } catch (error) {
+      console.error("Error deleting inactive users:", error.message);
+      throw new Error("Error deleting inactive users");
+    }
+  }
+  
+  // count users
+  async countUsers() {
+    try {
+      const users = await this.users.countDocuments();
+      return users;
+    } catch (error) {
+      console.error("Error counting users:", error.message);
+      throw new Error("Error counting users");
     }
   }
 }

@@ -38,33 +38,28 @@ export default class CartDAO {
     return cart;
   }
   // adding a product to a user cart with quantity
+  // check if the cart exists
+  // check if the product exists
+  // check if the product is already in the cart then add the quantity
+  // if the product is not in the cart add the product to the cart with the quantity
   async addProduct(cid, pid, quantity) {
-    try {
-      const cart = await cartModel.findOne({ _id: cid });
-      if (!cart) {
-        return { message: "Cart not found" };
-      }
-      const product = await productModel.findOne({ _id: pid });
-      if (!product) {
-        return { message: "Product not found" };
-      }
-
-      if (cart.products.some((p) => p.product == pid)) {
-        // increment the quantity of the product in the cart
-        cart.products = cart.products.map((p) => {
-          if (p.product == pid) {
-            p.qty += quantity;
-          }
-          return p;
-        });
-      } else {
-        // add the product to the cart
-        cart.products.push({ product: pid, qty: quantity });
-        return await cart.save();
-      }
-    } catch (err) {
-      return { message: err.message };
+    const cart = await cartModel.findOne({ _id: cid });
+    if (!cart) {
+      return { message: "Cart not found" };
     }
+    const product = await productModel.findOne({ _id: pid });
+    if (!product) {
+      return { message: "Product not found" };
+    }
+    const productIndex = cart.products.findIndex(
+      (p) => p.product.toString() === pid
+    );
+    if (productIndex !== -1) {
+      cart.products[productIndex].quantity += quantity;
+    } else {
+      cart.products.push({ product: pid, quantity });
+    }
+    return await cart.save();
   }
   // getting a cart by the user id
   async getCartByUserId(uid) {

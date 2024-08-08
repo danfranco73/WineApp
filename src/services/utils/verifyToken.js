@@ -25,9 +25,7 @@ const verifyToken = (req, res, next) => {
       .status(401)
       .send({ origin: config.SERVER, payload: "Se requiere token" });
 
-  console.log("Received Token:", receivedToken); // Log the token
-
-  jwt.verify(receivedToken, config.SECRET_ID, (err, payload) => {
+  jwt.verify(receivedToken, config.SECRET, (err, payload) => {
     if (err) {
       console.error("token de verificacion", err);
       return res

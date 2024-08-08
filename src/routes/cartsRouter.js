@@ -37,14 +37,19 @@ router
   })
 
   // update a cart adding a product with pid if user is not admin
-  .put("/:cid/product/:pid/:quantity", async (req, res) => {
-    const user = req.session.user;
+  .put("/:cid/product/:pid/:quantity", userAuth,async (req, res) => {
+    const user = req.user;
     const { cid, pid , quantity} = req.params;
         const cart = await cartManager.addProductToCart(cid, pid, quantity);
         // check if the user is the owner of the cart
-        if (cart.user !== user) {
+        if (cart.user._id !== user) {
           res.status(403).send("Forbidden");
-        } 
+        } else {
+          res.send({
+            status: "success",
+            payload: cart,
+          });
+        }
         res.send({
           status: "success",
           payload: cart,

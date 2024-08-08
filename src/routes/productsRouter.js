@@ -10,13 +10,8 @@ const router = Router();
 // Get all products with pagination, sorting, and searching
 router
   .get("/", async (req, res, next) => {
-    const { page, limit, sort, query } = req.query;
-    try {
-      const products = await productManager.getProducts(page, limit, sort, query);
-      res.send({ status: "success", payload: products });
-    } catch (error) {
-      next(error);
-    }
+    const products = await productManager.getProducts(req.query);
+    res.send({ status: "success", payload: products });
   })
   
 
@@ -53,10 +48,11 @@ router
           price,
           stock,
           category,
-          owner: req.user.role === "premium" ? req.user.email : "admin", // Add owner if user is premium
+          owner: req.user.role === "premium" ? req.user.role : "admin", // Add owner if user is premium
           ...(req.file && { image: req.file.filename }), // Add image filename if uploaded
         };
         const product = await productManager.addProduct(newProduct);
+        console.log(product);
         res.send({ status: "success", payload: product });
       } catch (error) {
         console.log(error);

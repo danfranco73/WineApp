@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="box">
+    <h1>Profile</h1>
+    <h2>Welcome, {{user.first_name}}!</h2>
+
+    <p><strong>User ID:</strong> {{user._id}}</p>
+    <p><strong>Role:</strong> {{user.role}}</p>
+    <p><strong>Email:</strong> {{user.email}}</p>
+
+    {{! botton de logout }}
+    <form class="box" method="get" action="/api/sessions/logout">
+      <button type="submit">Logout</button>
+      <button type="button" onclick="window.location.href='/switchRole'">Switch
+        Role</button>
+    </form>
+    <form method="get" action="/api/users/allUsers">
+      <button type="submit">Get Users</button>
+    </form>
+    <button type="button" onclick="limpiarInactivos()">Limpio Inactivos</button>
+  </div>
+</div>
+
+<script>
+  function limpiarInactivos() { fetch('/api/users/inactiveUsers', { method:
+  'DELETE', headers: { 'Content-Type': 'application/json', }, }) .then((res) =>
+  res.json()) .then((data) => { alert('Usuarios inactivos eliminados');
+  console.log(data); }); }
+</script>

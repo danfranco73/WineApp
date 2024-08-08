@@ -5,27 +5,23 @@ export default class ProductService {
         this.products = new ProductDAO();
     }
 
-    async getProducts() {
-    
+    async getProducts() {    
         return await this.products.getAll();
     }
 
     async addProduct(product) {
-         const newProduct = await this.products.create(product);
-        return newProduct;
+       return await this.products.create(product);
     }
 
     async getProductById(pid) {
         return await this.products.getById(pid);
     }
 
-    async updateProduct(id, product) {
-        return await this.products.findByIdAndUpdate(id, product, {
-            new: true,
-        });
+    async updateProduct(pid, product) {
+        return await this.products.update(pid, product);
     }
 
-    async deleteProduct(id) {
-        return await this.products.deleteProduct(id);
+    async deleteProduct(pid) {
+        return await this.products.deleteProduct(pid);
     }
 }

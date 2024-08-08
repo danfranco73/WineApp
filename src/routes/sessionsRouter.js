@@ -7,6 +7,10 @@ import UserService from "../services/userServices.js";
 import config from "../config/config.js";
 import verifyToken from "../services/utils/verifyToken.js";
 import { handleRole } from "../services/middlewares/roles.js";
+import CartController from "../controllers/cartController.js";
+
+const cartManager = new CartController();
+
 
 const router = Router();
 const sessionService = new UserService();
@@ -50,6 +54,8 @@ router
       }
       req.session.failRegister = false;
       const user = await sessionService.register(req.body);
+      const cartId = await cartManager.addCart(user._id);
+      console.log("Cart created for user", cartId);
       console.log("User registered correctly", user);
       res.status(200).redirect("/login");
     } catch (error) {

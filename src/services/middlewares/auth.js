@@ -59,6 +59,7 @@ const userAuth = function (req, res, next) {
       .status(401)
       .send("You must be logged in to perform this action.");
   }
+  req.user = req.session.user;
   next();
 };
 

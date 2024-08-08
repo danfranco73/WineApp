@@ -1,3 +1,26 @@
+const addToCartButtons = document.querySelectorAll('.add-to-cart');
+
+addToCartButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const productId = button.dataset.productId;
+    // Send a request to your server to add the product to the cart
+    fetch('/api/cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId })
+    })
+    .then(response => {
+      // Handle the response (e.g., update cart display, show success message)
+
+    })
+    .catch(error => {
+      // Handle errors
+    });
+  });
+});
+
+
+
 
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -1,9 +1,9 @@
-import ProductManagerDB from "../../dao/managers/ProductsManagerDB.js";
+import ProductController from "../../controllers/productController.js";
 import ChatManager from "../../dao/managers/chatManager.js";
 
 
 
-const productManager = new ProductManagerDB();
+const productManager = new ProductController();
 const chatManager = new ChatManager();
 const messages = [];
 
@@ -13,7 +13,7 @@ const WebSocket = (serverIO) => {
   serverIO.on("connection", (socket) => {
     // Products List
     socket.on("getProducts", () => {
-      const products = productManager.getProducts(products)
+      const products = productManager.getProducts()
       serverIO.emit("productList", products);
     });
     // Connect
