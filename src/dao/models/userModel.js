@@ -33,7 +33,7 @@ const userSchema = mongoose.Schema({
   cart: {
     type: [
       {
-        cart: {
+        ucid: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "carts",
         },

@@ -1,7 +1,9 @@
 import CartDAO from "../dao/cartDAO.js";
 import CartDTO from "../dao/dto/cartDTO.js";
-import cartModel from "../dao/models/cartModel.js";
-import ticketService from "./ticketServices.js"; // Assuming you have a ticketService
+import ticketService from "./ticketServices.js";
+import ProductService from "./productServices.js"; 
+
+const productService = new ProductService();
 
 export default class CartService {
   constructor() {
@@ -58,9 +60,9 @@ export default class CartService {
   // getting a cart with the user id to identify the cart
   async getCartWithUser(uid) {
     try {
-      const cart = await this.carts.getCartWithUser(uid);
+      const cart = await this.carts.getCartByUserId(uid);
       if (cart) {
-        return new CartDTO(cart);
+        return cart;        
       }
     } catch (error) {
       throw new Error(error);
@@ -75,20 +77,16 @@ export default class CartService {
       throw new Error(error);
     }
   }
-
-  // adding a product to a cart
-  async addProductToCart(cid, pid, quantity) {
+  // adding a product to a cart, if the user is not admin
+  // if the product is already in the cart, the quantity is updated
+  // if the product is not in the cart, it is added
+  async addProductToCart(cid, pid ) {
     try {
-      const cart = await this.carts.addProduct(cid, pid, quantity);
-      if (!cart) {
-        throw new Error("Cart not found");
-      }
-      return cart;
+    const cart = await this.carts.addProduct(cid, pid);       
     } catch (error) {
       throw new Error(error);
     }
   }
-
   // delete a product in my cart
   async deleteProductFromCart(cid, pid) {
     try {

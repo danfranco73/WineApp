@@ -1,31 +1,77 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const cartId = new URLSearchParams(window.location.search).get("cid"); // Get cartId from URL
-  
-    if (!cartId) {
-      console.error("Cart ID is missing");
-      return;
-    }
-  
-    async function fetchCart() {
-      try {
-        const response = await fetch(`/api/carts/${cartId}`);
-        const result = await response.json();
-        if (result.status === "success") {
-          updateCartUI(result.payload);
-        } else {
-          console.error("Error fetching cart:", result.message);
-        }
-      } catch (error) {
-        console.error("Error fetching cart:", error);
-      }
-    }
-  
-    function updateCartUI(cartData) {
-      // Update your cart UI with cartData
-      console.log("Cart data:", cartData);
-      // Implement UI update logic
-    }
-  
-    fetchCart();
+const cartItems = document.getElementById("cartItemList");
+const cartSummary = document.getElementById("cartSummary");
+const vaciarCarritoBtn = document.getElementById("vaciarCarritoBtn");
+let subtotal = 0;
+
+if (cartItems) {
+  const totalPriceElements = cartItems.querySelectorAll(".totalPrice");
+  const quantityElements = cartItems.querySelectorAll(".quantity");
+
+  totalPriceElements.forEach((priceElement, index) => {
+    const price = parseFloat(priceElement.closest(".carrito21BoxCol2").querySelector(".price").innerText);
+    const quantity = parseInt(quantityElements[index].innerText);
+    const totalPrice = price * quantity;
+    priceElement.innerText = totalPrice.toFixed(0);
+    subtotal += totalPrice;
   });
-  
+}
+
+if (cartSummary) {
+  const subtotalElement = cartSummary.querySelector("#subtotal");
+  const totalElement = cartSummary.querySelector("#total");
+
+  subtotalElement.innerText = `$${subtotal.toFixed(0)}`;
+  totalElement.innerText = `$${subtotal.toFixed(0)}`;
+}
+
+if (vaciarCarritoBtn) {
+  const cartId = vaciarCarritoBtn.getAttribute("data-cart-id");
+
+  vaciarCarritoBtn.addEventListener("click", async function (event) {
+    event.preventDefault();
+
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción vaciará tu carrito de compras. ¿Deseas continuar?",
+      icon: "warning",
+      showCancelButton: true,
+      customClass: {
+        cancelButton: "vaciar-carrito-cancel btn btn-dark",
+        confirmButton: "btn btn-effect btn-dark btn-jif vaciar-carrito-confirm ",
+      },
+      confirmButtonText: "Sí, vaciar carrito",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(`/api/carts/${cartId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "¡Error!",
+              text: "Ocurrió un error al vaciar el carrito",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+            });
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "¡Error!",
+            text: "Ocurrió un error al vaciar el carrito",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+          });
+        }
+      }
+    });
+  });
+}

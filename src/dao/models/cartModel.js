@@ -14,24 +14,26 @@ const cartSchema = new mongoose.Schema(
     products: {
       type: [
         {
-          product: {
+          cpid: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "products",
-            qty: Number,
-            required: true,
+          },
+          quantity: {
+            type: Number,
+            default: 1,
           },
         },
       ],
-    },
-    quantity: {
-      type: Number,
+      default: [],
     },
   },
   {
     timestamps: true,
   }
 );
-
+cartSchema.pre("find", function () {
+  this.populate("products._id");
+});
 cartSchema.plugin(mongoosePaginate);
 const cartModel = mongoose.model(cartCollection, cartSchema);
 

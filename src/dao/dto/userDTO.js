@@ -7,6 +7,7 @@ export class UserDTO {
         this.FIRST_NAME = user.first_name;
         this.EMAIL = user.email;
         this.ROLE = user.role;
+        this.CART = user.cart;
         this.LAST_CONNECTION = user.last_connection;
     }
 }

@@ -6,7 +6,7 @@ import {
   checkRole,
   checkOwnership,
 } from "../services/middlewares/roles.js";
-import { userAuth, isNotAdmin, admin } from "../services/middlewares/auth.js";
+import { userAuth, auth,isNotAdmin, admin } from "../services/middlewares/auth.js";
 import ticketService from "../services/ticketServices.js";
 import productServices from "../services/productServices.js";
 
@@ -17,12 +17,22 @@ const router = Router();
 
 // get the carts from the database in my ecommerce mongodb
 router
-  .get("/", /* verifyToken, */  async (req, res) => {
+  .get("/", async (req, res) => {
     const carts = await cartManager.getCarts();
     res.status(200).send({
       status: "success",
       message: "Carts retrieved",
       payload: carts,
+    });
+  })
+  // get cart by user id (Othe one that is logged in)ß
+  .get("/user", auth, async (req, res) => {
+    const user = req.session.user;
+    const uid = user._id;
+    const cart = await cartManager.getCartByUserId(uid);
+    res.send({
+      status: "success",
+      payload: cart,
     });
   })
 
@@ -37,23 +47,21 @@ router
   })
 
   // update a cart adding a product with pid if user is not admin
-  .put("/:cid/product/:pid/:quantity", userAuth,async (req, res) => {
-    const user = req.user;
-    const { cid, pid , quantity} = req.params;
-        const cart = await cartManager.addProductToCart(cid, pid, quantity);
-        // check if the user is the owner of the cart
-        if (cart.user._id !== user) {
-          res.status(403).send("Forbidden");
+  .put("/:cid/product/:pid", auth,async (req, res) => {
+    const { cid, pid  } = req.params;
+    const user = req.session.user;
+        const cart = await cartManager.addProductToCart(cid, pid );
+        if (user.role === "admin") {
+          res.send({
+            status: "error",
+            message: "You are not allowed to add products to cart",
+          });
         } else {
           res.send({
             status: "success",
             payload: cart,
           });
         }
-        res.send({
-          status: "success",
-          payload: cart,
-        });
   })
 
   // getting cart by cid in the database in my ecommerce mongodb

@@ -4,6 +4,8 @@
     <form class="user">
       <p><b> Email:</b>{{user.email}}</p>
       <p><b> Role:</b>{{user.role}}</p>
+      {{!-- get but not show the user cart mongo db object id --}}
+      <input type="hidden" name="cart" value="{{user.cart._id}}">
     </form>
     <div class="options">
       <form class="box" method="get" action="/api/sessions/logout">
@@ -11,6 +13,7 @@
         <button type="button" onclick="window.location.href='/askMailforChange'">Password
         </button>
         <button type="button" onclick="window.location.href='/userProfile'">Profile</button>
+        <button type="button" onclick="window.location.href='api/carts/user'">Cart</button>
       </form>
     </div>
   </div>
@@ -29,10 +32,12 @@
         <p>Codigo: {{code}}</p>
         <p>Categoria: {{category}}</p>
         <p>Imagen: {{thumbnails}}</p>
-      <button type="button" class="add-to-cart" data-product-id="{{_id}}">
-          Agregar al carrito
+      <button type="button" class="add-to-cart" data-pid="{{_id}}">
+          Add to Cart
         </button>
       <div>
     {{/with}}
   {{/each}}
 </div>
+
+<script src="/js/home.js"></script>

@@ -5,14 +5,14 @@ import { checkUser } from "../services/middlewares/auth.js";
 import nodemailer from "nodemailer";
 import config from "../config/config.js";
 import verifyToken from "../services/utils/verifyToken.js";
-import { handleRole } from "../services/middlewares/roles.js";
+import { handleRole, isAdmin } from "../services/middlewares/roles.js";
 
 const router = Router();
 const userRService = new UserService();
 
 router
   // endpoint to update user role (from premium to user or viceverse) by uid (only if the user logged in is an admin)
-  .put("/premium/:uid", verifyToken, handleRole("admin"), async (req, res) => {
+  .put("/premium/:uid", async (req, res) => {
     try {
       const uid = req.params.uid;
       const user = await userRService.getUserById(uid);
@@ -66,72 +66,65 @@ router
       }
     }
   )
-  .get(
-    "/allUsers",
-    /* handleRole("admin"), */ async (req, res) => {
-      try {
-        const users = await userRService.getAllUsers();
-        res.status(200).send({
-          status: "success",
-          users: users,
-        });
-      } catch (error) {
-        console.log(error);
-        res.status(500).send({ message: "Error getting users" });
-      }
+  .get("/allUsers", isAdmin, async (req, res) => {
+    try {
+      const users = await userRService.getAllUsers();
+      res.status(200).send({
+        status: "success",
+        users: users,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ message: "Error getting users" });
     }
-  )
+  })
   // Delete inactive users and send an email to each one
-  .delete(
-    "/inactiveUsers",
-    /* handleRole("admin"), */ async (req, res) => {
-      try {
-        // get the inactive users
-        const inactiveUsers = await userRService.getInactiveUsers();
-        console.log(inactiveUsers);
-
-        // for each inactive user, send an email
-        inactiveUsers.forEach(async (user) => {
-          const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            service: "gmail",
-            port: 587,
-            secure: false,
-            tls: {
-              rejectUnauthorized: false,
-            },
-            auth: {
-              user: config.USER_MAILING,
-              pass: config.USER_MAILING_PASS,
-            },
-          });
-          const mailOptions = {
-            from: `Admin <${config.USER_MAILING}>`,
-            to: user.email,
-            subject: "Account deleted",
-            text: "Your account has been deleted due to inactivity",
+  .delete("/inactiveUsers", isAdmin, async (req, res) => {
+    try {
+      // get the inactive users
+      const inactiveUsers = await userRService.getInactiveUsers();
+      console.log(inactiveUsers);
+      // for each inactive user, send an email
+      inactiveUsers.forEach(async (user) => {
+        const transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          service: "gmail",
+          port: 587,
+          secure: false,
+          tls: {
+            rejectUnauthorized: false,
+          },
+          auth: {
+            user: config.USER_MAILING,
+            pass: config.USER_MAILING_PASS,
+          },
+        });
+        const mailOptions = {
+          from: `Admin <${config.USER_MAILING}>`,
+          to: user.email,
+          subject: "Account deleted",
+          text: "Your account has been deleted due to inactivity",
+        };
+        await transporter.sendMail(mailOptions),
+          async (error, info) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log("Email sent: " + info.response);
+            }
           };
-          await transporter.sendMail(mailOptions),
-            async (error, info) => {
-              if (error) {
-                console.log(error);
-              } else {
-                console.log("Email sent: " + info.response);
-              }
-            };
-        });
-        // delete the inactive users
-        const deletedUserIds = await userRService.deleteInactiveUsers();
-        res.status(200).send({
-          status: "success",
-          message: "Inactive users deleted",
-          deletedUserIds: deletedUserIds,
-        });
-      } catch (error) {
-        console.log(error);
-        res.status(500).send({ message: "Error deleting inactive users" });
-      }
+      });
+      // delete the inactive users
+      const deletedUserIds = await userRService.deleteInactiveUsers();
+      res.status(200).send({
+        status: "success",
+        message: "Inactive users deleted",
+        deletedUserIds: deletedUserIds,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ message: "Error deleting inactive users" });
     }
-  );
+  });
 
 export default router;

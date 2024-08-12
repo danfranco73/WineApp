@@ -2,7 +2,6 @@ import CartService from "../services/cartServices.js";
 
 class CartController {
   constructor() {
-    
     this.cartService = new CartService();
   }
 
@@ -10,8 +9,22 @@ class CartController {
     return await this.cartService.getCarts();
   }
 
+  async getCartByUserId(uid) {
+    return await this.cartService.getCartWithUser(uid);
+  }
+
   async addCart(uid) {
     return await this.cartService.addCart(uid);
+  }
+
+  async createCart(uid) {
+    try {
+      const cart = await this.cartService.addCart(uid);
+      return cart._id;
+    } catch (error) {
+      console.error(error.message);
+      throw new Error("Error creating cart");
+    }
   }
 
   async getCartById(cid) {
@@ -26,8 +39,8 @@ class CartController {
     return await this.cartService.deleteCart(cid);
   }
 
-  async addProductToCart(cid, pid, quantity) {
-    const cart = await this.cartService.addProductToCart(cid, pid, quantity);
+  async addProductToCart(cid, pid ) {
+    const cart = await this.cartService.addProductToCart(cid, pid );
   }
 
   async deleteProductFromCart(cid, pid) {

@@ -1,72 +1,45 @@
-const addToCartButtons = document.querySelectorAll('.add-to-cart');
-
-addToCartButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const productId = button.dataset.productId;
-    // Send a request to your server to add the product to the cart
-    fetch('/api/cart', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId })
-    })
-    .then(response => {
-      // Handle the response (e.g., update cart display, show success message)
-
-    })
-    .catch(error => {
-      // Handle errors
+// Initiating the home page
+const home = () => {
+  // get the products from the database
+  fetch("/api/products")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      const products = data.payload;
+      const productsContainer = document.querySelector(".products-container");
+      productsContainer.innerHTML = "";
+      products.forEach((product) => {
+        productsContainer.innerHTML += `
+          <div class="card">
+            <img src="${product.image}" alt="${product.name}" />
+            <h3>${product.name}</h3>
+            <p>${product.description}</p>
+            <p>$${product.price}</p>
+            <button class="add-to-cart" data-pid="${product._id}">Add to cart</button>
+          </div>
+        `;
+      });
     });
-  });
+};
+
+home();
+
+//  in my home.handlebats the button to add a product to the cart using the logged user id to get my cart id and product id to add to the cart
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("add-to-cart")) {
+    const pid = e.target.getAttribute("data-pid");
+    fetch("/api/carts/user")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        const cid = data.payload._id;
+        fetch(`/api/carts/${cid}/product/${pid}`, {
+          method: "PUT",
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+          });
+      });
+  }
 });
-
-
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const pageDown = document.getElementById("pageDown");
-  const pageUp = document.getElementById("pageUp");
-  const page = document.getElementById("page");
-  const limit = document.getElementById("limit");
-  const sort = document.getElementById("sort");
-  const query = document.getElementById("query");
-  const productList = document.getElementById("product-list");
-
-  pageDown.addEventListener("click", async () => {
-    const response = await fetch("http://localhost:8080/api/products?page=1");
-    const data = await response.json();
-    console.log(data);
-  });
-
-  pageUp.addEventListener("click", async () => {
-    const response = await fetch("http://localhost:8080/api/products?page=2");
-    const data = await response.json();
-    console.log(data);
-  });
-
-  page.addEventListener("click", async () => {
-    const response = await fetch("http://localhost:8080/api/products?page=3");
-    const data = await response.json();
-    console.log(data);
-  });
-
-  limit.addEventListener("click", async () => {
-    const response = await fetch("http://localhost:8080/api/products?limit=5");
-    const data = await response.json();
-    console.log(data);
-  });
-
-  sort.addEventListener("click", async () => {
-    const response = await fetch("http://localhost:8080/api/products?sort=asc");
-    const data = await response.json();
-    console.log(data);
-  });
-
-  query.addEventListener("click", async () => {
-    const response = await fetch("http://localhost:8080/api/products?query=Almacen");
-    const data = await Electronicsresponse.json();
-    console.log(data);
-  });
-});
-
-

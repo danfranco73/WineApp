@@ -35,10 +35,12 @@ router
   // Add a new product with image upload (admin and Premium only)
   .post(
     "/",
-    verifyToken,
+    // verifyToken,
     handleRole(["admin", "premium"]),
     upload.single("image"),
     async (req, res, next) => {
+      const userId = req.user._id;
+      const userRole = req.user.role;
       const { title, description, code, price, stock, category } = req.body;
       try {
         const newProduct = {
@@ -48,11 +50,12 @@ router
           price,
           stock,
           category,
-          owner: req.user.role === "premium" ? req.user.role : "admin", // Add owner if user is premium
+          // add req.user._id as owner if user is premium, otherwise add "admin"
+          owner: userRole === "premium" ? userId : "admin",
           ...(req.file && { image: req.file.filename }), // Add image filename if uploaded
         };
         const product = await productManager.addProduct(newProduct);
-        console.log(product);
+        console.log(product); // Debug 
         res.send({ status: "success", payload: product });
       } catch (error) {
         console.log(error);
@@ -84,13 +87,13 @@ router
     }
   })
 
-  // Delete a product by pid (admin and Premium only)
+  // Delete a product by pid, if the product owner is the same as the user (premiun) or the user is admin (can delete any product). But if the user is admin, and the product owner is premium, the owner should be notified with a email
   .delete(
     "/:pid",
-    verifyToken,
+    /* verifyToken, */
     handleRole(["admin", "premium"]),
     async (req, res, next) => {
-      const { pid } = req.params;
+      const { pid } = req.params; 
       const email = req.user.email;
       let isOwner = true;
       if (req.user.role === "premium") {
@@ -102,9 +105,44 @@ router
           message: "No tienes permiso para eliminar este producto",
         });
       }
-      try {
+      try {         
+        const product = await productManager.getProductById(pid); // Get product details
         await productManager.deleteProduct(pid);
-        res.send({ status: "success", message: "Producto eliminado" });
+        if (req.user.role === 'admin' && product.owner.role === 'premium') {
+          await sendNotificationEmail(product.owner.email, product); // Send notification
+          const sendNotificationEmail = async (ownerEmail, product) => {
+            try {
+              const transporter = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                service: "gmail",
+                port: 587,
+                secure: false,
+                tls: {
+                  rejectUnauthorized: false,
+                },
+                auth: {
+                  user: config.USER_MAILING,
+                  pass: config.USER_MAILING_PASS,
+                },
+              });
+          
+              const mailOptions = {
+                from: `Admin <${config.USER_MAILING}>`,
+                to: ownerEmail, // Use the owner's email directly
+                subject: "Product Deleted",
+                text: `Your product "${product.title}" has been deleted by the Admin.`, // Include product title for clarity
+              };
+          
+              await transporter.sendMail(mailOptions);
+              console.log("Email sent successfully.");
+            } catch (error) {
+              console.error("Error sending notification email:", error);
+            }
+          };
+          
+        }
+        res.send({ status: 'success', message: 'Producto eliminado' });
+
       } catch (error) {
         next(error);
       }

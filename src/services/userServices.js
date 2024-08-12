@@ -12,7 +12,7 @@ export default class UserService {
 
   async register(user) {
     try {
-      user.password = createHash(user.password); // hash password before saving
+      user.password = createHash(user.password); 
       const newUser = await this.users.create(user);
       return newUser;
     } catch (error) {

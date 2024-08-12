@@ -20,69 +20,72 @@ export default class CartDAO {
   async getAll() {
     const cart = await cartModel
       .find()
-      .populate("products.product")
+      .populate("products.cpid")
       .populate("user")
       .lean();
     return cart;
   }
   // get a cart by its id
-  async getCartById(cid) {
-    const cart = await cartModel
-      .findById({ _id: cid })
-      .populate("products.product")
-      .populate("user")
-      .lean();
-    if (!cart) {
-      return { message: "Cart not found" };
-    }
-    return cart;
+async getCartById(cid) {
+  const cart = await cartModel
+    .findById({ _id: cid })
+    .populate("products.cpid")
+    .populate("user")
+    .lean();
+  console.log("Cart retrieved:", cart); // Add logging
+  if (!cart) {
+    return { message: "Cart not found" };
   }
+  return cart;
+}
+
   // adding a product to a user cart with quantity
-  // check if the cart exists
-  // check if the product exists
-  // check if the product is already in the cart then add the quantity
-  // if the product is not in the cart add the product to the cart with the quantity
-  async addProduct(cid, pid, quantity) {
-    const cart = await cartModel.findOne({ _id: cid });
-    if (!cart) {
-      return { message: "Cart not found" };
+  async addProduct(cid, pid ) {    
+    try {
+      const cart = await cartModel.findOne({ _id: cid });
+      if (!cart) {
+        return { message: "Cart not found 1" };
+      }
+      const existingProductIndex = cart.products.findIndex((product) => product._id.toString() === pid);
+      if (existingProductIndex !== -1) {
+        cart.products[existingProductIndex].quantity++;
+      } else {
+        cart.products.push({ _id: pid, quantity: 1 });
+      }
+      await cart.save();
+      return cart;
+    } catch (error) {
+      return { message: error.message };
     }
-    const product = await productModel.findOne({ _id: pid });
-    if (!product) {
-      return { message: "Product not found" };
-    }
-    const productIndex = cart.products.findIndex(
-      (p) => p.product.toString() === pid
-    );
-    if (productIndex !== -1) {
-      cart.products[productIndex].quantity += quantity;
-    } else {
-      cart.products.push({ product: pid, quantity });
-    }
-    return await cart.save();
   }
   // getting a cart by the user id
   async getCartByUserId(uid) {
     const cart = await cartModel
       .findOne({ user: uid })
-      .populate("products.product")
-      .populate("user")
-      .lean();
+        .lean();
     if (!cart) {
       return { message: "Cart not found" };
     }
     return cart;
   }
 
-  async update(cid, pid, quantity) {
-    return await cartModel.updateOne({ _id: cid }, { pid, quantity });
+  async updateCart(cid, products) {
+    try {
+      const cart = await cartModel.findOneAndUpdate({ _id: cid }, { products }, { new: true }).populate("products._id");
+      if (!cart) {
+        return { message: "Cart not found" };
+      }
+      return cart;
+    } catch (error) {
+      return { message: error.message };
+    }
   }
 
   async deleteProductFromCart(cid, pid) {
     try {
       const cart = await findOneAndUpdate(
         { _id: cid },
-        { $pull: { products: { product: pid } } },
+        { $pull: { products: { cpid: pid } } },
         { new: true }
       );
       return cart;

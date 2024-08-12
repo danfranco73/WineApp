@@ -1,10 +1,31 @@
-// if the user is not logged in, it will be redirected to the login page
-const auth = function (req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).redirect("/login");
+// src/services/middlewares/auth.js
+import CartService from "../cartServices.js";
+import verifyToken from "../utils/verifyToken.js";
+import userModel from "../../dao/models/userModel.js";
+
+const cartService = new CartService();
+
+const auth = async (req, res, next) => {
+  try {
+    const user = req.session.user;
+    // const token = req.headers.authorization.split(" ")[1];
+    // const decoded = verifyToken(token);
+    // if (decoded._id !== user._id) {
+    //   return res.status(401).send("Unauthorized");
+    // }
+    // Fetch the user's cart
+    const cart = await cartService.getCartWithUser(user._id);
+    if (!user) {
+      return res.status(401).send("Unauthorized");
+    }
+    user.cart = cart; // Attach the cart to the user object
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(401).send("Unauthorized");
   }
-  return next();
 };
+
 
 // check if the user is logged and if it is, continue, otherwise alert yo need to log in
 const logged = function (req, res, next) {

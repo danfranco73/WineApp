@@ -6,6 +6,8 @@ import UserService from "../services/userServices.js";
 import ProductController from "../controllers/productController.js";
 import { isAdmin } from "../services/middlewares/roles.js";
 
+const cartService = new CartService();
+
 const products = new ProductController();
 const user = new UserService();
 const router = Router();
@@ -155,12 +157,12 @@ router
   .get("/cart", async (req, res) => {
     try {
       const cartService = new CartService();
-      const cart = await cartService.getCarts(req.session.user);
+      const cart = await cartService.getCartWithUser(req.session.user._id);
       renderWithLayout(res, "cart", {
         title: "Cart",
-        cart,
+        cart: cart,
       });
-    } catch (e) {
+    } catch (e) {      
       renderError(res);
     }
   })
@@ -192,14 +194,14 @@ router
   })
 
   // switchRole
-  .get("/switchRole", async (req, res) => {
+  .get("/switchRole", isAdmin, async (req, res) => {
     renderWithLayout(res, "switchRole", {
       title: "Switch Role",
       uid: req.params.uid,
     });
   })
   // show all users
-  .get("/allUsers", async (req, res) => {
+  .get("/allUsers",isAdmin, async (req, res) => {
     const users = await user.getAllUsers();
     renderWithLayout(res, "users", {
       title: "All Users",
