@@ -1,64 +1,77 @@
-<div class="container">
-  <div class="box">
-    <h1>Bienvenido  {{user.first_name}}</h1>
-    <form class="user">
-      <p><b> Email:</b> {{user.email}}</p>
-      <p><b> Role:</b> {{user.role}}</p>
-    </form>
-    <div class="options">
-      <form class="box" method="get" action="/api/sessions/logout">
-        <button type="submit">Logout</button>
-        <button type="button" onclick="window.location.href='/askMailforChange'">Password
-        </button>
-        <button type="button" onclick="window.location.href='/adminProfile'">Profile </button>
-        <button type="button" onclick="window.location.href='/cart'">Cart</button>
-      </form>
-    </div>
-  </div>
-  <div class="box-form">
-    <form  class="box" id="add-product-form" method="post" action="/api/products/">
-      <input type="text" id="title" placeholder="Nombre" />
-      <input type="text" id="description" placeholder="Descripción" />
-      <input type="text" id="price" placeholder="Precio" />
-      <input type="text" id="stock" placeholder="Stock" />
-      <input type="text" id="category" placeholder="Categoria" />
-      <input type="text" id="code" placeholder="Codigo" />
-      <button type="submit">Agregar</button>
-    </form>
-    <form class="box" id="delete-product-form" method="delete" action="/api/products/:pid">
-      <input type="text" id="id" placeholder="Id del producto" />
-      <button type="submit">Eliminar</button>
+<div class="box">
+  <h1>Bienvenido {{user.first_name}}</h1>
+  <form class="user">
+    <p><b> Email:</b> {{user.email}}</p>
+    <p><b> Role:</b> {{user.role}}</p>
+  </form>
+  <div class="options">
+    <form class="box" method="get" action="/api/sessions/logout">
+      <button type="submit">Logout</button>
+      <button
+        type="button"
+        onclick="window.location.href='/askMailforChange'"
+      >Password
+      </button>
+      <button
+        type="button"
+        onclick="window.location.href='/adminProfile'"
+      >Profile </button>
+      <button type="button" onclick="window.location.href='/cart'">Cart</button>
     </form>
   </div>
 </div>
-<div id="products-list">
-  <div class="options">
-    <button id="pageDown">Anterior</button>
-    <button id="pageUp">Siguiente</button>
-    <button id="page">Pagina</button>
-    <button id="limit">Limitar</button>
-    <button id="sort">Ordenar</button>
-    <button id="query">Categoria</button>
-  </div>
-  <div class="product-list">
-    {{#each product}}
-      {{#with this}}
-        <div class="product-card" id="products-container">
-          <h3>{{title}}</h3>
-          <hr />
-          <p>Id: {{_id}}</p>
-          <p class="product-description">Descripción: {{description}}</p>
-          <p class="product-price"> Precio: ${{price}}</p>
-          <p>Stock: {{stock}}</p>
-          <p>Codigo: {{code}}</p>
-          <p>Categoria: {{category}}</p>
-          <p>Imagen: {{thumbnails}}</p>
-          <button type="button" class="add-to-cart" data-product-id="{{_id}}">
-            Agregar (1)
-          </button>
-        </div>
-      {{/with}}
-    {{/each}}
+<div class="box-form">
+  <form class="box" id="add-product-form" method="post" action="/api/products/">
+    <input type="text" id="title" placeholder="Nombre" />
+    <input type="text" id="description" placeholder="Descripción" />
+    <input type="text" id="price" placeholder="Precio" />
+    <input type="text" id="stock" placeholder="Stock" />
+    <input type="text" id="category" placeholder="Categoria" />
+    <input type="text" id="code" placeholder="Codigo" />
+    <button type="submit">Agregar</button>
+  </form>
+  <form
+    class="box"
+    id="delete-product-form"
+    method="delete"
+    action="/api/products/:pid"
+  >
+    <input type="text" id="id" placeholder="Id del producto" />
+    <button type="submit">Eliminar</button>
+  </form>
+</div>
+
+<div class="options">
+  <button id="pageDown">Anterior</button>
+  <button id="pageUp">Siguiente</button>
+  <button id="page">Pagina</button>
+  <button id="limit">Limitar</button>
+  <button id="sort">Ordenar</button>
+  <button id="query">Categoria</button>
+</div>
+<h2>Productos</h2>
+<div class="container">
+  <div id="products-list">
+    <div class="product-list">
+      {{#each product}}
+        {{#with this}}
+          <div class="product-card" id="products-container">
+            <h3>{{title}}</h3>
+            <hr />
+            <p>Id: {{_id}}</p>
+            <p class="product-description">Descripción: {{description}}</p>
+            <p class="product-price"> Precio: ${{price}}</p>
+            <p>Stock: {{stock}}</p>
+            <p>Codigo: {{code}}</p>
+            <p>Categoria: {{category}}</p>
+            <p>Imagen: {{thumbnails}}</p>
+            <button type="button" class="add-to-cart" data-product-id="{{_id}}">
+              Agregar (1)
+            </button>
+          </div>
+        {{/with}}
+      {{/each}}
+    </div>
   </div>
 </div>
 

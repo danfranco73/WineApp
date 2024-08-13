@@ -11,7 +11,7 @@ const router = Router();
 router
   .get("/", async (req, res, next) => {
     const products = await productManager.getProducts(req.query);
-    res.send({ status: "success", payload: products });
+   return res.send({ status: "success", payload: products });
   })
   
 
@@ -21,9 +21,9 @@ router
     try {
       const product = await productManager.getProductById(pid);
       if (product) {
-        res.send({ status: "success", payload: product });
+        return res.send({ status: "success", payload: product });
       } else {
-        res
+        return res
           .status(404)
           .send({ status: "error", message: "Producto no encontrado" });
       }
@@ -56,7 +56,7 @@ router
         };
         const product = await productManager.addProduct(newProduct);
         console.log(product); // Debug 
-        res.send({ status: "success", payload: product });
+        return res.send({ status: "success", payload: product });
       } catch (error) {
         console.log(error);
         next(error);
@@ -76,9 +76,9 @@ router
         category,
       });
       if (updatedProduct) {
-        res.send({ status: "success", payload: updatedProduct });
+        return res.send({ status: "success", payload: updatedProduct });
       } else {
-        res
+        return res
           .status(404)
           .send({ status: "error", message: "Producto no encontrado" });
       }
@@ -98,6 +98,10 @@ router
       let isOwner = true;
       if (req.user.role === "premium") {
         isOwner = await checkOwnership(pid, email);
+        return res.status(403).send({
+          status: "error",
+          message: "No tienes permiso para eliminar este producto",
+        });
       }
       if (!isOwner) {
         return res.status(403).send({
@@ -141,7 +145,7 @@ router
           };
           
         }
-        res.send({ status: 'success', message: 'Producto eliminado' });
+       return res.send({ status: 'success', message: 'Producto eliminado' });
 
       } catch (error) {
         next(error);

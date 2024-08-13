@@ -29,7 +29,7 @@ export default class ProductController {
     if (!product) {
       throw new Error("Product not found");
     }
-    res.send({ status: "success", payload: product });
+   return res.send({ status: "success", payload: product });
   } catch (error) {
     next(error);
   }

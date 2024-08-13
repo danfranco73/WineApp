@@ -40,7 +40,8 @@ class CartController {
   }
 
   async addProductToCart(cid, pid ) {
-    const cart = await this.cartService.addProductToCart(cid, pid );
+    const cart = await this.cartService.addProductToCart(cid, pid, );
+    return cart;
   }
 
   async deleteProductFromCart(cid, pid) {
@@ -60,7 +61,6 @@ class CartController {
     const ticket = await this.cartService.purchaseCart(cid);
     return ticket;
   }
- // c
 
 
 }

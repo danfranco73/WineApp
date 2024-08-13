@@ -1,7 +1,7 @@
 import CartDAO from "../dao/cartDAO.js";
 import CartDTO from "../dao/dto/cartDTO.js";
 import ticketService from "./ticketServices.js";
-import ProductService from "./productServices.js"; 
+import ProductService from "./productServices.js";
 
 const productService = new ProductService();
 
@@ -62,7 +62,7 @@ export default class CartService {
     try {
       const cart = await this.carts.getCartByUserId(uid);
       if (cart) {
-        return cart ;        
+        return cart;
       }
     } catch (error) {
       throw new Error(error);
@@ -80,9 +80,10 @@ export default class CartService {
   // adding a product to a cart, if the user is not admin
   // if the product is already in the cart, the quantity is updated
   // if the product is not in the cart, it is added
-  async addProductToCart(cid, pid ) {
+  async addProductToCart(cid, pid) {
     try {
-    const cart = await this.carts.addProduct(cid, pid);       
+      const cart = await this.carts.addProduct(cid, pid);
+      return cart;
     } catch (error) {
       throw new Error(error);
     }
@@ -123,7 +124,7 @@ export default class CartService {
       if (cart.products.length === 0) {
         throw new Error("Cart is empty");
       }
-      // Check if the products in the cart are available or have enough stock 
+      // Check if the products in the cart are available or have enough stock
       const productsToBuy = [];
       const productsNotToBuy = [];
       for (const p of cart.products) {
@@ -136,14 +137,13 @@ export default class CartService {
         // clear the products not to buy from the cart
         const newCart = cart.products.filter((product) => {
           return !productsNotToBuy.some((p) => p.product._id == product._id);
-        }
-        );
+        });
       }
       // Update the cart with the products to buy
       const updatedCart = await this.updateCart(cid, newCart);
       // Update the stock of the products to buy
       for (const p of productsToBuy) {
-        await productService.updateProductStock(p.product._id, p.quantity * -1);
+        await productService.updateProduct(p.product._id, p.quantity * -1);
       }
       // Create a ticket for products that couldn't be purchased
       await ticketService.addTicket({

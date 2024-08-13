@@ -5,6 +5,7 @@ import CartService from "../services/cartServices.js";
 import UserService from "../services/userServices.js";
 import ProductController from "../controllers/productController.js";
 import { isAdmin } from "../services/middlewares/roles.js";
+import cartModel from "../dao/models/cartModel.js";
 
 const cartService = new CartService();
 
@@ -43,17 +44,21 @@ router
       renderError(res);
     }
   })
-  // Cart page shown with user session data in localhost:8080/api/carts/user
+  
   .get("/cart", async (req, res) => {
     try {
       const cart = await cartService.getCartWithUser(req.session.user._id);
-      console.log(cart.products);
-      
+      const cartId = cart._id;
+      const cartProducts = await cartModel.findById(cartId).populate({
+        path: "products.cpid",
+        model: "products",
+      }).lean();
+
       renderWithLayout(res, "cart", {
         title: "Cart",
         status: "success",
         cart,
-        products: cart.products,
+        cartProducts,
         user: req.session.user,
       });
     } catch (e) {

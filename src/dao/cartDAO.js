@@ -26,43 +26,46 @@ export default class CartDAO {
     return cart;
   }
   // get a cart by its id
-async getCartById(cid) {
-  const cart = await cartModel
-    .findById({ _id: cid })
-    .populate("products.cpid")
-    .populate("user")
-    .lean();
-  console.log("Cart retrieved:", cart); // Add logging
-  if (!cart) {
-    return { message: "Cart not found" };
+  async getCartById(cid) {
+    const cart = await cartModel
+      .findById({ _id: cid })
+      .populate("products.cpid")
+      .populate("user")
+      .lean();
+    console.log("Cart retrieved:", cart); // Add logging
+    if (!cart) {
+      return { message: "Cart not found" };
+    }
+    return cart;
   }
-  return cart;
-}
 
   // adding a product to a user cart with quantity
-  async addProduct(cid, pid ) {    
+  async addProduct(cid, pid) {
     try {
-      const cart = await cartModel.findOne({ _id: cid });
-      if (!cart) {
-        return { message: "Cart not found 1" };
+      if(!cid || !pid) {
+        return { message: "Cart or Product ID missing" };
       }
-      const existingProductIndex = cart.products.findIndex((product) => product._id.toString() === pid);
+      const cart = await cartModel.findById(cid);
+      if (!cart) {
+        return { message: "Cart not found" };
+      }
+      const existingProductIndex = cart.products.findIndex(
+        (product) => product._id.toString() === pid
+      );
       if (existingProductIndex !== -1) {
         cart.products[existingProductIndex].quantity++;
       } else {
         cart.products.push({ _id: pid, quantity: 1 });
       }
       await cart.save();
-      return cart;
+      return { message: "Product added to cart successfully" , cart};
     } catch (error) {
       return { message: error.message };
     }
   }
   // getting a cart by the user id
   async getCartByUserId(uid) {
-    const cart = await cartModel
-      .findOne({ user: uid })
-        .lean()
+    const cart = await cartModel.findOne({ user: uid }).lean();
     if (!cart) {
       return { message: "Cart not found" };
     }
@@ -71,7 +74,9 @@ async getCartById(cid) {
 
   async updateCart(cid, products) {
     try {
-      const cart = await cartModel.findOneAndUpdate({ _id: cid }, { products }, { new: true }).populate("products._id");
+      const cart = await cartModel
+        .findOneAndUpdate({ _id: cid }, { products }, { new: true })
+        .populate("products._id");
       if (!cart) {
         return { message: "Cart not found" };
       }
