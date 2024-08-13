@@ -30,6 +30,8 @@ router
     const user = req.session.user;
     const uid = user._id;
     const cart = await cartManager.getCartByUserId(uid);
+    console.log(cart);
+    
     res.send({
       status: "success",
       payload: cart,

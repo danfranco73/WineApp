@@ -62,7 +62,7 @@ export default class CartService {
     try {
       const cart = await this.carts.getCartByUserId(uid);
       if (cart) {
-        return cart;        
+        return cart ;        
       }
     } catch (error) {
       throw new Error(error);

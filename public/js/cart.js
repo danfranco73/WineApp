@@ -1,77 +1,80 @@
-const cartItems = document.getElementById("cartItemList");
-const cartSummary = document.getElementById("cartSummary");
-const vaciarCarritoBtn = document.getElementById("vaciarCarritoBtn");
-let subtotal = 0;
+// cart.js
+document.addEventListener('DOMContentLoaded', () => {
+  const cartContainer = document.querySelector('.container');
 
-if (cartItems) {
-  const totalPriceElements = cartItems.querySelectorAll(".totalPrice");
-  const quantityElements = cartItems.querySelectorAll(".quantity");
-
-  totalPriceElements.forEach((priceElement, index) => {
-    const price = parseFloat(priceElement.closest(".carrito21BoxCol2").querySelector(".price").innerText);
-    const quantity = parseInt(quantityElements[index].innerText);
-    const totalPrice = price * quantity;
-    priceElement.innerText = totalPrice.toFixed(0);
-    subtotal += totalPrice;
-  });
-}
-
-if (cartSummary) {
-  const subtotalElement = cartSummary.querySelector("#subtotal");
-  const totalElement = cartSummary.querySelector("#total");
-
-  subtotalElement.innerText = `$${subtotal.toFixed(0)}`;
-  totalElement.innerText = `$${subtotal.toFixed(0)}`;
-}
-
-if (vaciarCarritoBtn) {
-  const cartId = vaciarCarritoBtn.getAttribute("data-cart-id");
-
-  vaciarCarritoBtn.addEventListener("click", async function (event) {
-    event.preventDefault();
-
-    Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Esta acción vaciará tu carrito de compras. ¿Deseas continuar?",
-      icon: "warning",
-      showCancelButton: true,
-      customClass: {
-        cancelButton: "vaciar-carrito-cancel btn btn-dark",
-        confirmButton: "btn btn-effect btn-dark btn-jif vaciar-carrito-confirm ",
-      },
-      confirmButtonText: "Sí, vaciar carrito",
-      cancelButtonText: "Cancelar",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const response = await fetch(`/api/carts/${cartId}`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          if (response.ok) {
-            window.location.reload();
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "¡Error!",
-              text: "Ocurrió un error al vaciar el carrito",
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-            });
-          }
-        } catch (error) {
-          Swal.fire({
-            icon: "error",
-            title: "¡Error!",
-            text: "Ocurrió un error al vaciar el carrito",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-          });
-        }
+  const fetchCart = async () => {
+    try {
+      const response = await fetch('/api/carts/user');
+      if (!response.ok) {
+        throw new Error('Error fetching cart data');
       }
+      const cartData = await response.json();
+      renderCart(cartData.payload);
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      // Handle the error appropriately, e.g., display an error message
+    }
+  };
+
+  const renderCart = (cart) => {
+    cartContainer.innerHTML = ''; // Clear previous cart content
+
+    if (cart.products.length === 0) {
+      cartContainer.innerHTML = '<p>Your cart is empty.</p>';
+      return;
+    }
+
+    // Iterate through each product in the cart
+    cart.products.forEach(product => {
+      const productCard = document.createElement('div');
+      productCard.classList.add('product-card');
+      productCard.innerHTML = `
+        <h3>${product.title}</h3>
+        <hr />
+        <p>Id: ${product._id}</p>
+        <p class="product-description">Descripción: ${product.description}</p>
+        <p class="product-price"> Precio: $${product.price}</p>
+        <p>Stock: ${product.stock}</p>
+        <p>Codigo: ${product.code}</p>
+        <p>Categoria: ${product.category}</p>
+        <p>Imagen: ${product.thumbnails}</p>
+        <button type="button" class="purchase-the-cart" data-pid="${product._id}">Purchase</button>
+      `;
+      cartContainer.appendChild(productCard);
     });
+  };
+
+
+fetchCart(); // Fetch the cart data when the page loads
+});
+
+const totalElement = document.getElementById('total');
+const checkoutButton = document.querySelector('.checkout');
+
+// Function to update the total price in the cart
+function updateTotal() {
+  let totalPrice = 0;
+  const products = document.querySelectorAll('.product-card');
+  products.forEach(product => {
+    const priceElement = product.querySelector('.product-price');
+    if (!priceElement){
+    const price = parseFloat(priceElement.textContent.replace(' Precio: $', ''));
+    totalPrice += price;
+    } else {
+      console.error('Price element not found', product);
+    }
   });
+  totalElement.textContent = totalPrice.toFixed(2);
 }
+
+// Function to handle the checkout button click
+checkoutButton.addEventListener('click', () => {
+  // Get the cart ID from the hidden input field
+  const cartId = document.querySelector('input[name="cart"]').value;
+
+  // Redirect to the checkout page with the cart ID
+  window.location.href = `/checkout?cartId=${cartId}`;
+});
+
+// Initial update of the total price
+updateTotal();

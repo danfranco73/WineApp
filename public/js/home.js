@@ -10,9 +10,9 @@ const home = () => {
       productsContainer.innerHTML = "";
       products.forEach((product) => {
         productsContainer.innerHTML += `
-          <div class="card">
-            <img src="${product.image}" alt="${product.name}" />
-            <h3>${product.name}</h3>
+          <div class="product-card">
+            <img src="${product.image}" alt="${product.title}" />
+            <h3>${product.title}</h3>
             <p>${product.description}</p>
             <p>$${product.price}</p>
             <button class="add-to-cart" data-pid="${product._id}">Add to cart</button>

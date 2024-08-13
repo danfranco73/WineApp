@@ -1,43 +1,49 @@
-<div class="container">
-  <div class="box">
-    <h1>Bienvenido {{user.first_name}}</h1>
-    <form class="user">
-      <p><b> Email:</b>{{user.email}}</p>
-      <p><b> Role:</b>{{user.role}}</p>
-      {{!-- get but not show the user cart mongo db object id --}}
-      <input type="hidden" name="cart" value="{{user.cart._id}}">
+<div class="box">
+  <h1>Bienvenido {{user.first_name}}</h1>
+  <form class="user">
+    <p><b> Email:</b>{{user.email}}</p>
+    <p><b> Role:</b>{{user.role}}</p>
+    {{! get but not show the user cart mongo db object id }}
+    <input type="hidden" name="cart" value="{{user.cart._id}}" />
+  </form>
+  <div class="options">
+    <form class="box" method="get" action="/api/sessions/logout">
+      <button type="submit">Logout</button>
+      <button
+        type="button"
+        onclick="window.location.href='/askMailforChange'"
+      >Password
+      </button>
+      <button
+        type="button"
+        onclick="window.location.href='/userProfile'"
+      >Profile</button>
+      <button type="button" onclick="window.location.href='/cart'">Cart</button>
     </form>
-    <div class="options">
-      <form class="box" method="get" action="/api/sessions/logout">
-        <button type="submit">Logout</button>
-        <button type="button" onclick="window.location.href='/askMailforChange'">Password
-        </button>
-        <button type="button" onclick="window.location.href='/userProfile'">Profile</button>
-        <button type="button" onclick="window.location.href='api/carts/user'">Cart</button>
-      </form>
-    </div>
   </div>
 </div>
 <h2>Productos</h2>
-<div class="product-list">  
-  {{#each products}}
-    {{#with this}}
-      <div class="product-card" id="products-container">
-        <h3>{{title}}</h3>
-        <hr />
-        <p>Id: {{_id}}</p>
-        <p class="product-description">Descripción: {{description}}</p>
-        <p class="product-price"> Precio: ${{price}}</p>
-        <p>Stock: {{stock}}</p>
-        <p>Codigo: {{code}}</p>
-        <p>Categoria: {{category}}</p>
-        <p>Imagen: {{thumbnails}}</p>
-      <button type="button" class="add-to-cart" data-pid="{{_id}}">
-          Add to Cart
-        </button>
-      <div>
-    {{/with}}
-  {{/each}}
+<div class="container">
+  <div class="product-list">
+    <div class="product-card" id="products-container">
+      {{#each products}}
+        {{#with this}}
+          <h3>{{title}}</h3>
+          <hr />
+          <p>Id: {{_id}}</p>
+          <p class="product-description">Descripción: {{description}}</p>
+          <p class="product-price"> Precio: ${{price}}</p>
+          <p>Stock: {{stock}}</p>
+          <p>Codigo: {{code}}</p>
+          <p>Categoria: {{category}}</p>
+          <p>Imagen: {{thumbnails}}</p>
+          <button type="button" class="add-to-cart" data-pid="{{_id}}">
+            Add to Cart
+          </button>
+        {{/with}}
+      {{/each}}
+    </div>
+  </div>
 </div>
 
 <script src="/js/home.js"></script>

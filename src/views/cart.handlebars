@@ -1,75 +1,47 @@
-<title>Carrito</title>
-
-<div class="mx-auto my-2 text-center border-2 text-uppercase">
-  <h1>Carrito</h1>
+<div class="box">
+  <h1>Shopping Cart</h1>
+  <h2>{{user.first_name}}</h2>
+  <form class="user">
+    <p><b> Email:</b>{{user.email}}</p>
+    <p><b> Role:</b>{{user.role}}</p>
+    {{! get but not show the user cart mongo db object id }}
+    <input type="hidden" name="cart" value="{{user.cart._id}}" />
+  </form>
+  <hr />
 </div>
 
-{{#if payload.length}}
-  <div class="row gap-3 justify-content-evenly">
-    <div class="col-8">
-      <div class="border border-1 bg-white">
-        <div class="text-black antiquewhite p-2">
-          <h4>Productos en carrito</h4>
-        </div>
-        <ul id="cartItemList">
-          {{#each payload}}
-            <li class="d-flex border-bottom py-3">
-              <a href="../products/item/{{_id._id}}">
-                <img class="carrito21BoxCol1" src="../../img/products/{{_id.thumbnails}}" alt="{{_id.title}}">
-              </a>
-              <div class="carrito21BoxCol2">
-                <h4 class="tituloNombreCart">{{_id.title}}</h4>
-                <h5 class="texto-s mt-2">Precio x unidad:&nbsp; $<strong class="price">{{_id.price}}</strong></h5>
-                <h5 class="texto-s mt-5">Unidades:&nbsp;&nbsp;<strong class="quantity">{{quantity}}</strong></h5>
-                <h5 class="texto-s mt-3">Precio x lote ({{quantity}}):&nbsp; $<strong class="totalPrice"></strong></h5>
-              </div>
-            </li>
-          {{/each}}
-        </ul>
-        <button class="btn btn-effect btn-dark btn-jif px-5 mt-3 uppercase mb-4 ms-4" id="vaciarCarritoBtn" data-cart-id="{{user.cart._id}}">Vaciar carrito</button>
-      </div>
-    </div>
-    <div class="col-3">
-      <div class="border border-1 bg-white">
-        <div class="p-2 text-black antiquewhite">
-          <h4>Detalle de compra</h4>
-        </div>
-        <div>
-          <table class="table table-borderless align-middle">
-            <tbody id="cartSummary">
-              <tr>
-                <td class="col-10 fs-14">Cantidad de productos:</td>
-                <td class="col-12 fs-14 text-end">{{totalQuantityInCart}}</td>
-              </tr>
-              <tr>
-                <td class="col-10 fs-14">Subtotal: </td>
-                <td class="col-2 fs-14 text-end" id="subtotal">$0.00</td>
-              </tr>
-              <tr>
-                <td class="col-10 fs-14">Descuento: </td>
-                <td class="col-2 fs-14 text-end">$0.00</td>
-              </tr>
-              <tr class="">
-                <td class="col-10">Total:</td>
-                <td class="col-2 text-end" id="total"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="iniciarCompra">
-                        <form action="{{user.cart._id}}/purchase" method="get">
-                    <button class='btn btn-effect btn-dark btn-jif bg-black px-5 uppercase'><i class="bi bi-cash-stack"></i> Confirmar Compra</button>
-                </form>
-      </div>
-    </div>
+<div class="container">
+  <h2>Productos</h2>
+  <div class="product-list">
+    <div class="product-card" id="products-container">
+      {{#each products}}
+        {{#with this}}
+          <h3>{{title}}</h3>
+          <hr />
+          <p>Id: {{_id}}</p>
+          <p class="product-description">Descripción: {{description}}</p>
+          <p class="product-price"> Precio: ${{price}}</p>
+          <p>Stock: {{stock}}</p>
+          <p>Codigo: {{code}}</p>
+          <p>Categoria: {{category}}</p>
+          <p>Imagen: {{thumbnails}}</p>
+          <div class="box">
+            <button type="button" class="delete-from-cart" data-pid="{{_id}}">
+              Delete
+            </button>
 
+          </div>
+        {{/with}}
+      {{/each}}
     </div>
   </div>
-{{else}}
-  <div>
-    <h1 class="font-semibold text-4xl text-gray-700 text-center uppercase my-5">El carrito está vacío</h1>
+</div>
+<div class="cart-summary">
+  <h2>Resumen</h2>
+  <div class="summary">
+    <p>Total: $<span id="total">0</span></p>
+    <button type="button" class="checkout">Checkout</button>
   </div>
-{{/if}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</div>
+
 <script src="/js/cart.js"></script>

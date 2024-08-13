@@ -43,6 +43,23 @@ router
       renderError(res);
     }
   })
+  // Cart page shown with user session data in localhost:8080/api/carts/user
+  .get("/cart", async (req, res) => {
+    try {
+      const cart = await cartService.getCartWithUser(req.session.user._id);
+      console.log(cart.products);
+      
+      renderWithLayout(res, "cart", {
+        title: "Cart",
+        status: "success",
+        cart,
+        products: cart.products,
+        user: req.session.user,
+      });
+    } catch (e) {
+      renderError(res);
+    }
+  })
 
   .get("/realTimeProducts", async (req, res) => {
     try {
@@ -153,19 +170,7 @@ router
       renderError(res);
     }
   })
-  // Cart page with similar logic to home
-  .get("/cart", async (req, res) => {
-    try {
-      const cartService = new CartService();
-      const cart = await cartService.getCartWithUser(req.session.user._id);
-      renderWithLayout(res, "cart", {
-        title: "Cart",
-        cart: cart,
-      });
-    } catch (e) {      
-      renderError(res);
-    }
-  })
+
   // adding a endpoint testin the logger
   .get("/loggerTest", (req, res) => {
     logger.debug("debug");
@@ -201,14 +206,13 @@ router
     });
   })
   // show all users
-  .get("/allUsers",isAdmin, async (req, res) => {
+  .get("/allUsers", isAdmin, async (req, res) => {
     const users = await user.getAllUsers();
     renderWithLayout(res, "users", {
       title: "All Users",
       users: users,
     });
-  });
-
+  })
   
 
 export default router;

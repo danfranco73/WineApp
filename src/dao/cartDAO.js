@@ -62,7 +62,7 @@ async getCartById(cid) {
   async getCartByUserId(uid) {
     const cart = await cartModel
       .findOne({ user: uid })
-        .lean();
+        .lean()
     if (!cart) {
       return { message: "Cart not found" };
     }
