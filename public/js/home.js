@@ -27,19 +27,17 @@ home();
 //  in my home.handlebats the button to add a product to the cart using the logged user id to get my cart id and product id to add to the cart
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("add-to-cart")) {
+    const cid = e.target.getAttribute("data-cid");
     const pid = e.target.getAttribute("data-pid");
-    fetch("/api/carts/user")
+    fetch(`/api/carts/${cid}/product/${pid}`, {
+      method: "PUT",
+    })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        const cid = data.payload._id;
-        fetch(`/api/carts/${cid}/product/${pid}`, {
-          method: "PUT",
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log(data);
-          });
+        if (data.status === "success") {
+          alert("Product added to cart");
+        }
       });
   }
 });

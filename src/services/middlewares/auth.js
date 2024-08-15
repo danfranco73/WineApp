@@ -5,24 +5,19 @@ import userModel from "../../dao/models/userModel.js";
 
 const cartService = new CartService();
 
+// check if the user is logged and if it is, continue, otherwise alert yo need to log in
 const auth = async (req, res, next) => {
   try {
-    const user = req.session.user;
-    // const token = req.headers.authorization.split(" ")[1];
-    // const decoded = verifyToken(token);
-    // if (decoded._id !== user._id) {
-    //   return res.status(401).send("Unauthorized");
-    // }
-    // Fetch the user's cart
-    const cart = await cartService.getCartWithUser(user._id);
+    const user = await userModel.findById(req.session.user
+      ._id)
+      .populate("cart");    
     if (!user) {
-      return res.status(401).send("Unauthorized");
+      return res.status(401).send("Unauthorized No User");
     }
-    user.cart = cart; // Attach the cart to the user object
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).send("Unauthorized");
+    res.status(401).send("Unauthorized error");
   }
 };
 

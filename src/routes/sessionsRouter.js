@@ -49,15 +49,16 @@ router
       if (userExists) {
         req.session.failRegister = true;
         Alert("User already exists");
-        return res.redirect("/register");
+        return res.redirect("/login");
       }
       req.session.failRegister = false;
       const user = await sessionService.register(req.body);
+      
       // create a cart for the user
-      const cartId = await cartManager.createCart(user._id);
+      const cartId = await cartManager.createCart();
+      
       // update user with cart id
       await sessionService.updateUser(user._id,{ cart: [{ cart: cartId }]});
-      console.log("Cart created for user", cartId);
       console.log("User registered correctly", user);
       res.status(200).redirect("/login");
     } catch (error) {

@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 
-mongoose.pluralize(null); //
 const productCollection = "products";
 
 const productSchema = mongoose.Schema({

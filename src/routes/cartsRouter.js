@@ -30,23 +30,11 @@ router
       payload: carts,
     });
   })
-  // get cart by user id (Othe one that is logged in)ß
-  .get("/user", auth, async (req, res) => {
-    const user = req.session.user;
-    const uid = user._id;
-    const cart = await cartManager.getCartByUserId(uid);
-    console.log(cart);
-
-    return res.send({
-      status: "success",
-      payload: cart,
-    });
-  })
 
   // add a new cart
   .post("/", async (req, res) => {
-    const uid = req.session.user;
-    const newCart = await cartManager.addCart(uid);
+    const products = req.body.products;
+    const newCart = await cartManager.addCart(products);
     return res.send({
       status: "success",
       payload: newCart,
@@ -54,9 +42,17 @@ router
   })
 
   // update a cart adding a product with pid if user is not admin
-  .put("/:cid/product/:pid", auth, async (req, res) => {
-    const { cid, pid } = req.params;
+  .put("/:cid/product/:pid", async (req, res) => {
     const user = req.session.user;
+     
+    if (!user) {
+      return res.status(401).send({
+        status: "error",
+        message: "Unauthorized No user",
+      });
+    }
+    // get the cid from the user session and the pid from the product id
+    const { cid, pid } = req.params;
     const cart = await cartManager.addProductToCart(cid, pid);
     return res.send({
       status: "success",
@@ -68,16 +64,6 @@ router
   .get("/:cid", async (req, res) => {
     const { cid } = req.params;
     const cart = await cartManager.getCartById(cid);
-    return res.send({
-      status: "success",
-      payload: cart,
-    });
-  })
-
-  // router to finish the purchase of a cart by cid in the database on ly if the user is authenticated and is the cart owner
-  .patch("/:cid/purchase", userAuth, async (req, res) => {
-    const { cid } = req.params;
-    const cart = await cartManager.purchaseCart(cid, req.session.user);
     return res.send({
       status: "success",
       payload: cart,
@@ -109,6 +95,27 @@ router
   .delete("/:cid/clear", async (req, res) => {
     const { cid } = req.params;
     const cart = await cartManager.clearCart(cid);
+    return res.send({
+      status: "success",
+      payload: cart,
+    });
+  })
+
+  // update product quantity in a cart
+  .put("/:cid/product/:pid", async (req, res) => {
+    const { cid, pid } = req.params;
+    const { quantity } = req.body;
+    const cart = await cartManager.updateProductQuantity(cid, pid, quantity);
+    return res.send({
+      status: "success",
+      payload: cart,
+    });
+  })
+
+  // purchase the cart
+  .post("/:cid/purchase", async (req, res) => {
+    const { cid } = req.params;
+    const cart = await cartManager.purchaseCart(cid);
     return res.send({
       status: "success",
       payload: cart,

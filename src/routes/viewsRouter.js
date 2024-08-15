@@ -6,6 +6,7 @@ import UserService from "../services/userServices.js";
 import ProductController from "../controllers/productController.js";
 import { isAdmin } from "../services/middlewares/roles.js";
 import cartModel from "../dao/models/cartModel.js";
+import productModel from "../dao/models/productModel.js";
 
 const cartService = new CartService();
 
@@ -32,8 +33,14 @@ router
   // Home page with product list and user session data (unchanged)
   .get("/home", async (req, res) => {
     try {
+      // need to pass tha cart id in the user model to the view
       const productsData = await products.getProducts();
-      console.log(productsData);
+      if (!productsData) {
+        return res.status(404).send("No products found");
+      }
+
+      
+      
       renderWithLayout(res, "home", {
         title: "Product List",
         status: "success",
@@ -44,25 +51,41 @@ router
       renderError(res);
     }
   })
-  
+  // show the cart with its products data of the user in session
+  // including the total quantity of products in the cart
+  // and the total price of the products in the cart
   .get("/cart", async (req, res) => {
     try {
-      const cart = await cartService.getCartWithUser(req.session.user._id);
-      const cartId = cart._id;
-      const cartProducts = await cartModel.findById(cartId).populate({
-        path: "products.cpid",
-        model: "products",
-      }).lean();
+      const user = req.session.user;
+      console.log(user.cart);
 
+      const cart = await cartModel.findById(user.cart).populate({
+        path: "products._id",
+        model: productModel,
+      });
+
+      const totalQuantity = await cartService.getTotalQuantityInCart(user.cart);
+      const products = cart.products;
+      const productsData = [];
+      let totalAmount = 0;
+      for (const product of products) {
+        const productData = await productModel.findById(product._id);
+        productsData.push({
+          _id: productData._id,
+          title: productData.title,
+          quantity: product.quantity,
+          price: productData.price,
+        });
+        totalAmount += productData.price * product.quantity;
+      }
       renderWithLayout(res, "cart", {
         title: "Cart",
-        status: "success",
-        cart,
-        cartProducts,
-        user: req.session.user,
+        products: productsData,
+        totalQuantity,
+        totalAmount,
       });
     } catch (e) {
-      renderError(res);
+      res.status(500).send("Error al obtener el carrito en viewsRouter");
     }
   })
 
@@ -217,7 +240,6 @@ router
       title: "All Users",
       users: users,
     });
-  })
-  
+  });
 
 export default router;

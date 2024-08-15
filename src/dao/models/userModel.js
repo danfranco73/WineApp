@@ -31,15 +31,8 @@ const userSchema = mongoose.Schema({
     require: true,
   },
   cart: {
-    type: [
-      {
-        ucid: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "carts",
-        },
-      },
-    ],
-    default: [],
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "carts",
   },
   role: {
     type: String,
@@ -48,7 +41,7 @@ const userSchema = mongoose.Schema({
     default: "user",
   },
   documents: {
-    type: [{name: String, reference: String}],
+    type: [{ name: String, reference: String }],
   },
   last_connection: {
     type: Date,
@@ -66,7 +59,10 @@ userSchema.pre("save", function (next) {
   }
   next();
 });
-
+userSchema.pre("find", function (next) {
+  this.populate("cart");
+  next();
+});
 const userModel = mongoose.model(userCollection, userSchema);
 
 export default userModel;

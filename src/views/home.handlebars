@@ -3,8 +3,9 @@
   <form class="user">
     <p><b> Email:</b>{{user.email}}</p>
     <p><b> Role:</b>{{user.role}}</p>
+    <p><b> NoCart: </b>{{user.cart}}</p>
     {{! get but not show the user cart mongo db object id }}
-    <input type="hidden" name="cart" value="{{user.cart._id}}" />
+    <input type="hidden" name="cart" value="{{cartId}}" />
   </form>
   <div class="options">
     <form class="box" method="get" action="/api/sessions/logout">
@@ -37,7 +38,7 @@
           <p>Codigo: {{code}}</p>
           <p>Categoria: {{category}}</p>
           <p>Imagen: {{thumbnails}}</p>
-          <button type="button" class="add-to-cart" data-pid="{{_id}}">
+          <button type="button" class="add-to-cart" data-cid="{{user.cart}}" data-pid="{{_id}}">
             Add to Cart
           </button>
         {{/with}}

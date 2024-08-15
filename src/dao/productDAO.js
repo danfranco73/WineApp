@@ -24,4 +24,7 @@ async getAll() {
   async delete(pid) {
     return await productModel.findByIdAndDelete(pid);
   }
+  async deleteCartWithNoUser() {
+    return await productModel.deleteMany({ owner: null });
+  }
 }

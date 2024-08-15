@@ -4,7 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const fetchCart = async () => {
     try {
-      const response = await fetch('/api/carts/user');
+      const response = await fetch('/api/carts',{
+        method: 
+      });
       if (!response.ok) {
         throw new Error('Error fetching cart data');
       }
