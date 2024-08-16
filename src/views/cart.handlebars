@@ -2,7 +2,7 @@
 <div class="box-cart">
   <form class="user">
     <p><b> Email:</b>{{user.email}}</p>
-    <p><b> #Cart: </b>{{cart._id}}</p>
+    <p><b> #Cart: </b>{{user.cart}}</p>
     <input type="hidden" name="user" value="{{req.session.user}}" />
     <input type="hidden" name="cart" value="{{cart._id}}" />
   </form>
@@ -27,7 +27,7 @@
     </form>
   </div>
 </div>
-<h2>Productos</h2>
+<h2>Products</h2>
 <div class="product-list" id="products-container">
   {{#if products}}
       {{#each products}}

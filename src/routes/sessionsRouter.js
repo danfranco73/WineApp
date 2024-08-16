@@ -53,12 +53,15 @@ router
       }
       req.session.failRegister = false;
       const user = await sessionService.register(req.body);
-      
+      const uid = user._id;
+
       // create a cart for the user
-      const cartId = await cartManager.createCart();
-      
+      const cartId = await cartManager.createCart(uid);
+
       // update user with cart id
-     const userUpdated = await sessionService.updateUser(user._id,{ cart: cartId });
+      const userUpdated = await sessionService.updateUser(user._id, {
+        cart: cartId,
+      });
       console.log("User registered correctly", userUpdated);
       return res.status(200).redirect("/login");
     } catch (error) {

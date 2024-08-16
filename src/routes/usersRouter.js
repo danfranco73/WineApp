@@ -33,7 +33,7 @@ router
       res.status(500).json({ message: "Error updating user role" });
     }
   })
-  // endpoint to upload documents by uid
+  // endpoint to upload documents by uid using multer and the userModel 
   .post(
     "/:uid/documents",
     /*     verifyToken,
@@ -56,6 +56,8 @@ router
         });
         user.documents = documents;
         const updatedUser = await userRService.updateUser(user._id, user);
+        
+
         res.status(200).send({
           status: "success",
           user: updatedUser,
@@ -79,7 +81,7 @@ router
     }
   })
   // Delete inactive users and send an email to each one
-  .delete("/inactiveUsers", isAdmin, async (req, res) => {
+  .delete("/inactiveUsers", /* isAdmin, */ async (req, res) => {
     try {
       // get the inactive users
       const inactiveUsers = await userRService.getInactiveUsers();

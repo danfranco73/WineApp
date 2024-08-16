@@ -11,26 +11,28 @@ const router = Router();
 router
   .get("/", async (req, res, next) => {
     const products = await productManager.getProducts(req.query);
-   return res.send({ status: "success", payload: products });
+    return res.send({ status: "success", payload: products });
   })
-  
 
   // Get a product by ID
-  .get("/:pid", /* verifyToken, */ async (req, res, next) => {
-    const { pid } = req.params;
-    try {
-      const product = await productManager.getProductById(pid);
-      if (product) {
-        return res.send({ status: "success", payload: product });
-      } else {
-        return res
-          .status(404)
-          .send({ status: "error", message: "Producto no encontrado" });
+  .get(
+    "/:pid",
+    /* verifyToken, */ async (req, res, next) => {
+      const { pid } = req.params;
+      try {
+        const product = await productManager.getProductById(pid);
+        if (product) {
+          return res.send({ status: "success", payload: product });
+        } else {
+          return res
+            .status(404)
+            .send({ status: "error", message: "Producto no encontrado" });
+        }
+      } catch (error) {
+        next(error);
       }
-    } catch (error) {
-      next(error);
     }
-  })
+  )
 
   // Add a new product with image upload (admin and Premium only)
   .post(
@@ -55,7 +57,7 @@ router
           ...(req.file && { image: req.file.filename }), // Add image filename if uploaded
         };
         const product = await productManager.addProduct(newProduct);
-        console.log(product); // Debug 
+        console.log(product); // Debug
         return res.send({ status: "success", payload: product });
       } catch (error) {
         console.log(error);
@@ -93,7 +95,7 @@ router
     /* verifyToken, */
     handleRole(["admin", "premium"]),
     async (req, res, next) => {
-      const { pid } = req.params; 
+      const { pid } = req.params;
       const email = req.user.email;
       let isOwner = true;
       if (req.user.role === "premium") {
@@ -109,10 +111,10 @@ router
           message: "No tienes permiso para eliminar este producto",
         });
       }
-      try {         
+      try {
         const product = await productManager.getProductById(pid); // Get product details
         await productManager.deleteProduct(pid);
-        if (req.user.role === 'admin' && product.owner.role === 'premium') {
+        if (req.user.role === "admin" && product.owner.role === "premium") {
           await sendNotificationEmail(product.owner.email, product); // Send notification
           const sendNotificationEmail = async (ownerEmail, product) => {
             try {
@@ -129,24 +131,22 @@ router
                   pass: config.USER_MAILING_PASS,
                 },
               });
-          
+
               const mailOptions = {
                 from: `Admin <${config.USER_MAILING}>`,
                 to: ownerEmail, // Use the owner's email directly
                 subject: "Product Deleted",
                 text: `Your product "${product.title}" has been deleted by the Admin.`, // Include product title for clarity
               };
-          
+
               await transporter.sendMail(mailOptions);
               console.log("Email sent successfully.");
             } catch (error) {
               console.error("Error sending notification email:", error);
             }
           };
-          
         }
-       return res.send({ status: 'success', message: 'Producto eliminado' });
-
+        return res.send({ status: "success", message: "Producto eliminado" });
       } catch (error) {
         next(error);
       }

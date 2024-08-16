@@ -12,7 +12,7 @@ export default class UserService {
 
   async register(user) {
     try {
-      user.password = createHash(user.password); 
+      user.password = createHash(user.password);
       const newUser = await this.users.create(user);
       return newUser;
     } catch (error) {
@@ -36,9 +36,12 @@ export default class UserService {
       if (user.password) {
         user.password = createHash(user.password); // hash password before saving
       }
-      const updatedUser = await this.users.findByIdAndUpdate(id, user, {
-        new: true,
-      });
+      const updatedUser = await this.users
+        .findByIdAndUpdate(id, user, {
+          new: true,
+        })
+        .lean();
+
       return updatedUser;
     } catch (error) {
       console.error(error.message);

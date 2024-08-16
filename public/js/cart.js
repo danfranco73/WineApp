@@ -1,17 +1,18 @@
-
 // Purpose: To handle the cart functionality
 const cartId = document.querySelector("input[name='cart']").value;
 console.log(cartId);
-
 
 document.addEventListener("DOMContentLoaded", () => {
   const deleteButtons = document.querySelectorAll(".delete-from-cart");
   deleteButtons.forEach((button) => {
     button.addEventListener("click", async (event) => {
       const productId = event.target.getAttribute("data-pid");
-      const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/carts/${cartId}/product/${productId}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (response.ok) {
         window.location.reload();
       }
@@ -38,12 +39,14 @@ document.addEventListener("DOMContentLoaded", () => {
   checkoutButton.addEventListener("click", async () => {
     const cartId = document.querySelector("input[name='cart']").value;
     const response = await fetch(`/api/carts/${cartId}/purchase`, {
-      method: "POST",
-    });
-    if (response.ok) {
-      window.location.reload();
-    }
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (response.ok) {
+          window.location.href = "/checkout";
+        }
+      });
   });
-
 });
-

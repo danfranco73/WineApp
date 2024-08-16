@@ -27,9 +27,10 @@ export default class CartRepository {
     }
   }
 
-  async createCart() {
+  async createCart(uid) {
     try {
       const newCart = new cartModel();
+      newCart.user = uid;
       return await newCart.save();
     } catch (error) {
       throw new Error("Error al crear el carrito");

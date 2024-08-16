@@ -10,8 +10,8 @@ class CartController {
   async getCarts() {
     return await this.cartService.getCarts();
   }
-  async createCart() {
-    return await this.cartService.addCart();
+  async createCart(uid) {
+    return await this.cartService.addCart(uid);
   }
 
   async getCartById(cid) {

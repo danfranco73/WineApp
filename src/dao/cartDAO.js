@@ -13,8 +13,8 @@ export default class CartDAO {
     return await this.cartRepository.getCartById(cid);
   }
 
-  async createCart() {
-    return await this.cartRepository.createCart();
+  async createCart(uid) {
+    return await this.cartRepository.createCart(uid);
   }
 
   async addProductByID(cid, pid) {

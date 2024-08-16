@@ -14,8 +14,8 @@ export default class CartService {
     return await this.carts.getCartById(cid);
   }
   // creating a new cart
-  async addCart() {
-    return await this.carts.createCart();
+  async addCart(uid) {
+    return await this.carts.createCart(uid);
   }
   // adding a product to a cart
   async addProductToCart(cid, pid) {

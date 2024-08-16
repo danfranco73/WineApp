@@ -5,6 +5,7 @@
 
     <p><strong>User ID:</strong> {{user._id}}</p>
     <p><strong>Role:</strong> {{user.role}}</p>
+    <p><strong>#Cart:</strong> {{user.cart}}</p>
 
     {{#if user.documents}}
       <h2>Uploaded Documents</h2>
@@ -29,11 +30,6 @@
     {{! botton de logout }}
     <form class="box" method="get" action="/api/sessions/logout">
       <button type="submit">Logout</button>
-      <button
-        type="button"
-        onclick="window.location.href='/switchRole'"
-      >Switch Role
-      </button>
       <button
         type="button"
         onclick="window.location.href='/uploadDocuments'"

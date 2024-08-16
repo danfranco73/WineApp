@@ -1,31 +1,24 @@
-<section style="margin-bottom: 1em;">
-  <div class="row">
-    {{#each products}}
-      <div class="card" style="width: 260px; padding: 0; margin: 1em;">
-        {{!-- <img src="{{this.thumbnail}}" class="card-img-top" alt="Thumbnail" style="width: 100%;"> --}}
-        <div class="card-body">
-          <h5 class="card-title">{{this.title}}</h5>
-          <p
-            class="card-text"
-            style="text-align: right; font-size: 200%; font-weight: bold;"
-          >USD {{this.price}}</p>
-        </div>
-        <div class="card-footer" style="text-align: right;">
-          <a
-            class="btn btn-warning"
-            onclick="addtoCart('{{this.title}}', {{this.price}})"
-          >Agregar</a>
-        </div>
-      </div>
-    {{/each}}
+<h1>Compra</h1>
+<div class="box-cart">
+  <form class="user">
+    <p><b> Email:</b>{{user.email}}</p>
+    <p><b> #Cart: </b>{{cart._id}}</p>
+    <input type="hidden" name="user" value="{{req.session.user}}" />
+    <input type="hidden" name="cart" value="{{cart._id}}" />
+  </form>
+  <div class="cart-summary">
+    <h2>Totals</h2>
+    <div class="summary">
+      <p>Units: <span>{{totalQuantity}}</span></p>
+      <p>Amount: $<span>{{totalAmount}}</span></p>
+    </div>
   </div>
-</section>
+</div>
 
-<section style="margin-bottom: 1em;">
-  <div class="row m-2">
-    <button id="checkoutBtn" class="btn btn-warning"><b>Comprar!</b></button>
-  </div>
-</section>
+{{! choose the payments methods }}
+
+
+
 
 <div
   id="alert"
@@ -46,9 +39,9 @@
   title: title, unit_price: parseInt(price), quantity: 1, currency_id: 'ARS' }
   break; case 'stripe': default: newProduct = { price_data: { product_data: {
   name: title }, currency: 'usd', unit_amount: parseInt(price * 100), // * 100
-  pq opera en centavos }, quantity: 1 } } cart.push(newProduct);
-  notify('Agregado al carrito!'); } checkoutBtn.addEventListener('click', async
-  (e) => { e.preventDefault(); if (cart.length > 0) { const url = service ===
+  pq opera en centavos quantity: 1 } } } cart.push(newProduct); notify('Agregado
+  al carrito!'); } checkoutBtn.addEventListener('click', async (e) => {
+  e.preventDefault(); if (cart.length > 0) { const url = service ===
   'mercadopago' ? '/api/carts/checkoutmp': '/api/carts/checkoutstr'; const data
   = await fetch(url, { method: 'POST', headers: { 'Content-Type':
   'application/json' }, body: JSON.stringify(cart) }) const jsonData = await

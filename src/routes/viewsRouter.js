@@ -52,7 +52,9 @@ router
   })
   .get("/cart", async (req, res) => {
     const cart = await cartModel.findOne({ user: req.session.user._id });
-    if(!req.session.user){
+    console.log(cart);
+    
+    if (!req.session.user) {
       return res.status(404).send("No user found").redirect("/login");
     }
     if (!cart) {
@@ -69,7 +71,7 @@ router
     const totalQuantity = await cartService.getTotalQuantityInCart(cart._id);
     const totalAmount = await cartService.amountEachProductInCart(cart._id);
     console.log(totalAmount, totalQuantity);
-    
+
     renderWithLayout(res, "cart", {
       title: "Cart",
       cart,
@@ -77,6 +79,26 @@ router
       products: products,
       totalQuantity,
       totalAmount,
+    });
+  })
+
+  .get("/checkout", async (req, res) => {
+    const cart = await cartModel.findOne({ user: req.session.user._id });
+    if (!cart) {
+      return res.status(404).send("No cart found");
+    }
+    const products = await productModel.find({
+      _id: { $in: cart.products },
+    });
+    const totalQuantity = await cartService.getTotalQuantityInCart(cart._id);
+    const totalAmount = await cartService.amountEachProductInCart(cart._id);
+    renderWithLayout(res, "purchase", {
+      title: "purchase",
+      cart,
+      user: req.session.user,
+      products: products,
+      totalAmount,
+      totalQuantity,
     });
   })
 

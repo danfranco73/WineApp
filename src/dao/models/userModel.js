@@ -31,8 +31,12 @@ const userSchema = mongoose.Schema({
     require: true,
   },
   cart: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "carts",
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "carts",
+      },
+    ],
   },
   role: {
     type: String,
@@ -41,7 +45,16 @@ const userSchema = mongoose.Schema({
     default: "user",
   },
   documents: {
-    type: [{ name: String, reference: String }],
+    type: [
+      {
+        name: String,
+        reference: String,
+        docType: {
+          type: String,
+          enum: ["dni", "domicilio", "cuenta", "avatar"],
+        },
+      },
+    ],
   },
   last_connection: {
     type: Date,

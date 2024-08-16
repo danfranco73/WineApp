@@ -113,7 +113,7 @@ router
   })
 
   // purchase the cart
-  .post("/:cid/purchase", async (req, res) => {
+  .get("/:cid/purchase", async (req, res) => {
     const { cid } = req.params;
     const cart = await cartManager.purchaseCart(cid);
     return res.send({
