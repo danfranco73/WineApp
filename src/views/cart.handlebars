@@ -1,46 +1,61 @@
-<div class="box">
-  <h1>Shopping Cart</h1>
-  <h2>{{user.first_name}}</h2>
+<h1>Shopping Cart de {{user.first_name}}</h1>
+<div class="box-cart">
   <form class="user">
     <p><b> Email:</b>{{user.email}}</p>
-    <p><b> Role:</b>{{user.role}}</p>
-    {{! get but not show the user cart mongo db object id }}
-    <input type="hidden" name="cart" value="{{user.cart._id}}" />
+    <p><b> #Cart: </b>{{cart._id}}</p>
+    <input type="hidden" name="user" value="{{req.session.user}}" />
+    <input type="hidden" name="cart" value="{{cart._id}}" />
   </form>
-  <hr />
-</div>
-
-<div class="container">
-  <h2>Productos</h2>
-  <div class="product-list">
-    <div class="product-card" id="products-container">
-      {{#each products}}
-        {{#with this}}
-          <h3>{{title}}</h3>
-          <hr />
-          <p>Id: {{_id}}</p>
-          <p class="product-description">Descripción: {{description}}</p>
-          <p class="product-price"> Precio: ${{price}}</p>
-          <p>Stock: {{stock}}</p>
-          <p>Codigo: {{code}}</p>
-          <p>Categoria: {{category}}</p>
-          <p>Imagen: {{thumbnails}}</p>
-          <div class="box">
-            <button type="button" class="delete-from-cart" data-pid="{{_id}}">
-              Delete
-            </button>
-
-          </div>
-        {{/with}}
-      {{/each}}
+  <div class="cart-summary">
+    <h2>Totals</h2>
+    <div class="summary">
+      <p>Units: <span>{{totalQuantity}}</span></p>
+      <p>Amount: $<span>{{totalAmount}}</span></p>
     </div>
   </div>
 </div>
-<div class="cart-summary">
-  <h2>Resumen</h2>
-  <div class="summary">
-    <p>Total: $<span id="total">0</span></p>
-    <button type="button" class="checkout">Checkout</button>
+<div class="box>">
+  <hr />
+  <div class="options">
+    <form class="box" method="get" action="/api/sessions/logout">
+      <button type="submit">Logout</button>
+      <button
+        type="button"
+        onclick="window.location.href='/userProfile'"
+      >Profile</button>
+      <button type="button" class="checkout">Checkout</button>
+    </form>
+  </div>
+</div>
+<h2>Productos</h2>
+<div class="product-list">
+  <div class="product-card" id="products-container">
+    {{#if products}}
+      <ul>
+        {{#each products}}
+          {{#with this}}
+            <li>
+              <h3>{{title}}</h3>
+              <hr />
+              <p>Id: {{_id}}</p>
+              <p class="product-description">Descripción: {{description}}</p>
+              <p class="product-price"> Precio: ${{price}}</p>
+              <p>Categoria: {{category}}</p>
+              <p>Imagen: {{thumbnails}}</p>
+              <p> Quantity: {{quantity}}</p>
+              <button type="button" class="add-quantity" data-pid="{{_id}}">
+                Add +
+              </button>
+              <button type="button" class="delete-from-cart" data-pid="{{_id}}">
+                Delete
+              </button>
+            </li>
+          {{/with}}
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>No hay productos en el carrito</p>
+    {{/if}}
   </div>
 </div>
 

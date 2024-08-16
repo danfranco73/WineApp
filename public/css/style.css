@@ -88,6 +88,19 @@ a:hover {
   min-width: 300px;
   margin-bottom: 20px;
 }
+/* estilo para un encabezado de un carrito de compras */
+.box-cart {
+  background-color: transparent;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(40, 21, 21, 0.1);
+  width: 80%;
+  min-width: 300px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .box h1 {
   margin: 0%;
@@ -193,9 +206,9 @@ button:hover {
 
 .product-list {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   gap: 20px;
-  justify-content: center;
+  /* justify-content: center; */
   padding: 20px;
 }
 

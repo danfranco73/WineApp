@@ -3,7 +3,7 @@
   <form class="user">
     <p><b> Email:</b>{{user.email}}</p>
     <p><b> Role:</b>{{user.role}}</p>
-    <p><b> NoCart: </b>{{user.cart}}</p>
+    <p><b> #Cart: </b>{{cart._id}}</p>
     {{! get but not show the user cart mongo db object id }}
     <input type="hidden" name="cart" value="{{cartId}}" />
   </form>

@@ -40,6 +40,10 @@ class CartController {
   async clearCart(cid) {
     return await this.cartService.clearCart(cid);
   }
+  async amountEachProductInCart(cid) {
+    return await this.cartService.amountEachProductInCart(cid);
+  }
+
   async updateProductQuantity(cid, productId, quantity) {
     return await this.cartService.updateProductQuantity(
       cid,

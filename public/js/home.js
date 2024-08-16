@@ -4,7 +4,7 @@ const home = () => {
   fetch("/api/products")
     .then((res) => res.json())
     .then((data) => {
-      console.log(data);
+      // console.log(data);
       const products = data.payload;
       const productsContainer = document.querySelector(".products-container");
       productsContainer.innerHTML = "";

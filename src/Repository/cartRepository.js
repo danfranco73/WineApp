@@ -147,6 +147,27 @@ export default class CartRepository {
     }
   }
 
+  async amountEachProductInCart(cid) {
+    try {
+      const cart = await cartModel.findOne({ _id: cid }).lean();
+      if (!cart) {
+        throw new Error("Carrito no encontrado");
+      }
+
+      let totalAmount = 0;
+      for (const product of cart.products) {
+        const productData = await productModel.findOne({ _id: product._id }).lean();
+        totalAmount += productData.price * product.quantity;
+      }
+
+      return totalAmount;
+    } catch (error) {
+      throw new Error(
+        "Error al obtener la cantidad total de productos en el carrito"
+      );
+    }
+  }
+
   async getTotalQuantityInCart(cid) {
     try {
       const cart = await cartModel.findOne({ _id: cid }).lean();

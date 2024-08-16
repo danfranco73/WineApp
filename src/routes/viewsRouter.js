@@ -38,55 +38,46 @@ router
       if (!productsData) {
         return res.status(404).send("No products found");
       }
-
-      
-      
+      const cart = await cartModel.findOne({ user: req.session.user._id });
       renderWithLayout(res, "home", {
         title: "Product List",
         status: "success",
         products: productsData,
+        cart,
         user: req.session.user,
       });
     } catch (e) {
       renderError(res);
     }
   })
-  // show the cart with its products data of the user in session
-  // including the total quantity of products in the cart
-  // and the total price of the products in the cart
   .get("/cart", async (req, res) => {
-    try {
-      const user = req.session.user;
-      console.log(user.cart);
-
-      const cart = await cartModel.findById(user.cart).populate({
-        path: "products._id",
-        model: productModel,
-      });
-
-      const totalQuantity = await cartService.getTotalQuantityInCart(user.cart);
-      const products = cart.products;
-      const productsData = [];
-      let totalAmount = 0;
-      for (const product of products) {
-        const productData = await productModel.findById(product._id);
-        productsData.push({
-          _id: productData._id,
-          title: productData.title,
-          quantity: product.quantity,
-          price: productData.price,
-        });
-        totalAmount += productData.price * product.quantity;
-      }
-      renderWithLayout(res, "cart", {
-        title: "Cart",
-        products: productsData,
-        totalQuantity,
-        totalAmount,
-      });
-    } catch (e) {
-      res.status(500).send("Error al obtener el carrito en viewsRouter");
+    const cart = await cartModel.findOne({ user: req.session.user._id });
+    if(!user){
+      return res.status(404).send("No user found").redirect("/login");
     }
+    if (!cart) {
+      const newCart = await cartService.addCart();
+      const user = await user.getUserById(req.session.user._id);
+      user.cart = newCart._id;
+      await user.save();
+      cart = await cartModel.findOne({ user: req.session.user._id });
+    }
+    // need to pass tha quantity of the products in the cart
+    const products = await productModel.find({
+      _id: { $in: cart.products },
+    });
+    const totalQuantity = await cartService.getTotalQuantityInCart(cart._id);
+    const totalAmount = await cartService.amountEachProductInCart(cart._id);
+    console.log(totalAmount, totalQuantity);
+    
+    renderWithLayout(res, "cart", {
+      title: "Cart",
+      cart,
+      user: req.session.user,
+      products: products,
+      totalQuantity,
+      totalAmount,
+    });
   })
 
   .get("/realTimeProducts", async (req, res) => {

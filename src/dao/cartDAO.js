@@ -41,6 +41,10 @@ export default class CartDAO {
     return await this.cartRepository.clearCart(cid);
   }
 
+  async amountEachProductInCart(cid) {
+    return await this.cartRepository.amountEachProductInCart(cid);
+  }
+
   async getTotalQuantityInCart(cid) {
     return await this.cartRepository.getTotalQuantityInCart(cid);
   }

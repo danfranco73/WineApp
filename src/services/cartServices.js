@@ -41,6 +41,10 @@ export default class CartService {
   async clearCart(cid) {
     return await this.carts.clearCart(cid);
   }
+  // getting the amount of each product in a cart
+  async amountEachProductInCart(cid) {
+    return await this.carts.amountEachProductInCart(cid);
+  }
   // getting the total quantity of products in a cart
   async getTotalQuantityInCart(cid) {
     return await this.carts.getTotalQuantityInCart(cid);
