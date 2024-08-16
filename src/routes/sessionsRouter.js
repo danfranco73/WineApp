@@ -58,9 +58,9 @@ router
       const cartId = await cartManager.createCart();
       
       // update user with cart id
-      await sessionService.updateUser(user._id,{ cart: [{ cart: cartId }]});
-      console.log("User registered correctly", user);
-      res.status(200).redirect("/login");
+     const userUpdated = await sessionService.updateUser(user._id,{ cart: cartId });
+      console.log("User registered correctly", userUpdated);
+      return res.status(200).redirect("/login");
     } catch (error) {
       res.status(400).send({
         status: "error",

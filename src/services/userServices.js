@@ -121,9 +121,9 @@ export default class UserService {
     }
   }
 
-  async deleteUser(id) {
+  async deleteUser(uid) {
     try {
-      const user = await this.users.findByIdAndDelete(id);
+      const user = await this.users.findByIdAndDelete(uid);
       return user;
     } catch (error) {
       console.error("Error deleting user:", error.message);

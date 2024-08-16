@@ -52,7 +52,7 @@ router
   })
   .get("/cart", async (req, res) => {
     const cart = await cartModel.findOne({ user: req.session.user._id });
-    if(!user){
+    if(!req.session.user){
       return res.status(404).send("No user found").redirect("/login");
     }
     if (!cart) {

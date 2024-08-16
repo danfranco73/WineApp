@@ -5,7 +5,7 @@
     <p><b> Role:</b>{{user.role}}</p>
     <p><b> #Cart: </b>{{cart._id}}</p>
     {{! get but not show the user cart mongo db object id }}
-    <input type="hidden" name="cart" value="{{cartId}}" />
+    <input type="hidden" name="cart" value="{{cart._id}}" />
   </form>
   <div class="options">
     <form class="box" method="get" action="/api/sessions/logout">
@@ -24,11 +24,10 @@
   </div>
 </div>
 <h2>Productos</h2>
-<div class="container">
-  <div class="product-list">
-    <div class="product-card" id="products-container">
+  <div class="product-list" id="products-container">
       {{#each products}}
         {{#with this}}
+        <div class="product-card">
           <h3>{{title}}</h3>
           <hr />
           <p>Id: {{_id}}</p>
@@ -38,13 +37,12 @@
           <p>Codigo: {{code}}</p>
           <p>Categoria: {{category}}</p>
           <p>Imagen: {{thumbnails}}</p>
-          <button type="button" class="add-to-cart" data-cid="{{user.cart}}" data-pid="{{_id}}">
+          <button type="button" class="add-to-cart" data-cid="{{cart._id}}" data-pid="{{_id}}">
             Add to Cart
           </button>
+        </div>
         {{/with}}
       {{/each}}
-    </div>
   </div>
-</div>
 
 <script src="/js/home.js"></script>

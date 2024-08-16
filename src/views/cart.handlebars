@@ -28,13 +28,11 @@
   </div>
 </div>
 <h2>Productos</h2>
-<div class="product-list">
-  <div class="product-card" id="products-container">
-    {{#if products}}
-      <ul>
-        {{#each products}}
-          {{#with this}}
-            <li>
+<div class="product-list" id="products-container">
+  {{#if products}}
+      {{#each products}}
+        {{#with this}}
+          <div class="product-card">
               <h3>{{title}}</h3>
               <hr />
               <p>Id: {{_id}}</p>
@@ -49,14 +47,12 @@
               <button type="button" class="delete-from-cart" data-pid="{{_id}}">
                 Delete
               </button>
-            </li>
-          {{/with}}
-        {{/each}}
-      </ul>
-    {{else}}
-      <p>No hay productos en el carrito</p>
-    {{/if}}
-  </div>
+          </div>
+        {{/with}}
+      {{/each}}
+  {{else}}
+    <p>No hay productos en el carrito</p>
+  {{/if}}
 </div>
 
 <script src="/js/cart.js"></script>

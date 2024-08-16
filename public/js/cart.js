@@ -1,4 +1,3 @@
-import { response } from "express";
 
 // Purpose: To handle the cart functionality
 const cartId = document.querySelector("input[name='cart']").value;
