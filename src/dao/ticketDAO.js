@@ -1,4 +1,4 @@
-import TicketRepository from "../repository/ticketsRepository.js";
+import TicketRepository from "../Repository/ticketsRepository.js";
 class TicketDao {
   constructor() {
     this.ticketDao = new TicketRepository();
