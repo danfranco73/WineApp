@@ -50,7 +50,7 @@ const app = express();
 // Connection to MongoDB
 mongoose
   .connect(uri)
-  .then(() => console.log("Connected to MongoDB"))
+  // .then(() => console.log("Connected "))
   .catch((error) => console.log(error));
 // Singleton
 mongoSingleton();
@@ -62,7 +62,7 @@ setInterval(() => {
 // Connection to local port
 const httpServer = app.listen(PORT, () => {
   // paso por el log el puerto y solo la cantidad de procesos que se están ejecutando
-  console.log(`Server listening on port ${PORT} `);
+  // console.log(`Server listening on port ${PORT} `);
 });
 // Swagger
 const swaggerOptions = {

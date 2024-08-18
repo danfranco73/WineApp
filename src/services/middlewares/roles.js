@@ -54,8 +54,11 @@ export const isPremium = checkRole(["premium"]);
 
 // check if the product belongs to the user
 export const checkOwnership = async (pid,user) => {
+  const { email } = user; // user email
   const product = await productServices.getProductById(pid);
-  if (product.owner === user.role) {
+  // console.log(product.owner); ok
+  // console.log(email); ok    
+  if (product.owner === email) { // check if the product owner is the same as the user email
     return true;
   }
   return false;
@@ -63,12 +66,11 @@ export const checkOwnership = async (pid,user) => {
 
 export const handleRole = (policies) => {
   return async (req, res, next) => {
-    console.log(req.user);
-      if (!req.user) {
+      if (!req.session.user) {
         console.error("No Authorization!!");        
         return res.status(401).send("Unauthorized product not owned by user");
       }    
-    if (policies.includes(req.user.role)) {
+    if (policies.includes(req.session.user.role)) {
       next();
     }
   };

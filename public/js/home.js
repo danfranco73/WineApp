@@ -33,9 +33,17 @@ document.addEventListener("click", (e) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data.status === "success") {
-          alert("Product added to cart");
+          // Create a temporary message element
+          const message = document.createElement("div");
+          message.textContent = "Product added to cart!";
+          message.classList.add("success-message"); // Add a class for styling
+          // Append the message to the body
+          document.body.appendChild(message);
+          // Set a timeout to remove the message after 2 seconds
+          setTimeout(() => {
+            document.body.removeChild(message);
+          }, 1000);
         }
       });
   }

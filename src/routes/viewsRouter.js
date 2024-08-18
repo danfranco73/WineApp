@@ -53,8 +53,7 @@ router
       if (!productsData) {return res.status(404).send("No products found");}
       const cart = await cartModel.findOne({ user: req.session.user._id });
       console.log(cart);
-      
-      const isPremium = req.session.user.role === "premium";      
+      if (!req.session.user) {return res.status(404).send("No user found").redirect("/login");}
 
       renderWithLayout(res, "realTimeProducts", {
         title: "Real Time Products",
@@ -62,7 +61,6 @@ router
         products: productsData,
         cart,
         user: req.session.user,
-        isPremium,
       });
     } catch (e) {renderError(res);}
   })

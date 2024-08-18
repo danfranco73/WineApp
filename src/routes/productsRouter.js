@@ -35,24 +35,31 @@ router
   )
 
   // Add a new product with image upload (assuming upload.single is configured)
-.post("/", upload.single("image"),async (req, res, next) => {
-  try {
-    const user = req.session.user;
-    const userRole = user.role;
-    const owner = userRole === "premium" ? user.email : "admin@localhost";
-    const thumbnails = req.file ? req.file.path : null;
-    const { title, description, code, price, stock, category } = req.body;
-    const product = { title, description, code, price, stock, category, owner /*, thumbnails: thumbnails.filename */ };
-    const newProduct = await productManager.addProduct(product);
-    console.log(newProduct);
+  .post("/", upload.single("image"), async (req, res, next) => {
+    try {
+      const user = req.session.user;
+      const userRole = user.role;
+      const owner = userRole === "premium" ? user.email : "admin@localhost";
+      const thumbnails = req.file ? req.file.path : null;
+      const { title, description, code, price, stock, category } = req.body;
+      const product = {
+        title,
+        description,
+        code,
+        price,
+        stock,
+        category,
+        owner /*, thumbnails: thumbnails.filename */,
+      };
+      const newProduct = await productManager.addProduct(product);
+      console.log(newProduct);
 
-    return res.status(201).json({ status: "success", payload: newProduct });
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-})
-
+      return res.status(201).json({ status: "success", payload: newProduct });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  })
 
   .put("/:pid", verifyToken, handleRole(["admin"]), async (req, res, next) => {
     const { pid } = req.params;
@@ -79,31 +86,29 @@ router
   })
 
   // Delete a product by pid, if the product owner is the same as the user (premiun) or the user is admin (can delete any product). But if the user is admin, and the product owner is premium, the owner should be notified with a email
-  .delete(
-    "/:pid",
-    /* verifyToken, */
-    handleRole(["admin", "premium"]),
-    async (req, res, next) => {
-      const { pid } = req.params;
-      const email = req.user.email;
-      let isOwner = true;
-      if (req.user.role === "premium") {
-        isOwner = await checkOwnership(pid, email);
-        return res.status(403).send({
-          status: "error",
-          message: "No tienes permiso para eliminar este producto",
-        });
-      }
-      if (!isOwner) {
-        return res.status(403).send({
-          status: "error",
-          message: "No tienes permiso para eliminar este producto",
-        });
-      }
+  .delete("/:pid", handleRole(["admin", "premium"]), async (req, res, next) => {
+    const { pid } = req.params;
+    // console.log(pid); ok
+    const user = req.session.user;
+    // console.log(user.role); ok
+    const email = user.email;
+    // console.log(email); ok
+    const isOwner = await checkOwnership(pid, user); //
+    console.log(isOwner);
+    if (isOwner) {
       try {
-        const product = await productManager.getProductById(pid); // Get product details
+        // proceed to delete the product
+        const product = await productManager.getProductById(pid);
+        console.log(product);
+        
+        if (!product) {
+          throw new Error("Product not found");
+        }
         await productManager.deleteProduct(pid);
-        if (req.user.role === "admin" && product.owner.role === "premium") {
+
+        // Send notification email if the product owner is premium and the user is admin
+
+        if (user.role === "admin" && product.owner.role === "premium") {
           await sendNotificationEmail(product.owner.email, product); // Send notification
           const sendNotificationEmail = async (ownerEmail, product) => {
             try {
@@ -137,9 +142,13 @@ router
         }
         return res.send({ status: "success", message: "Producto eliminado" });
       } catch (error) {
+        console.log(error);
+        
         next(error);
       }
+    } else {
+      return res.status(401).send("Unauthorized");
     }
-  );
+  });
 
 export default router;

@@ -9,6 +9,6 @@ export default async function mongoSingleton() {
       useFindAndModify: false,
     });
   } else {
-    console.log('MongoDB already connected');
+    // console.log('Server On');
   }
 }

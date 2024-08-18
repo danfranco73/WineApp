@@ -5,10 +5,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const purchaseModal = document.getElementById("purchase-modal");
 
   function showModal() {
+    // Show the modal
     purchaseModal.style.display = "block";
     setTimeout(function () {
       purchaseModal.style.display = "none";
-    }, 5000);
+    }, 3000);
   }
 
   submitPaymentButton.addEventListener("click", function () {
@@ -19,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
+          window.location.reload();
           window.location.href = "/cart";
         }
       });

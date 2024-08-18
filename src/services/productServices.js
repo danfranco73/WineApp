@@ -22,6 +22,6 @@ export default class ProductService {
     }
 
     async deleteProduct(pid) {
-        return await this.products.deleteProduct(pid);
+        return await this.products.delete(pid);
     }
 }

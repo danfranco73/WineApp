@@ -30,9 +30,9 @@ export default class ProductController {
       if (!product) {
         throw new Error("Product not found");
       }
-      return res.send({ status: "success", payload: product });
+      return product;
     } catch (error) {
-      next(error);
+      console.log(error);      
     }
   };
 
@@ -46,13 +46,9 @@ export default class ProductController {
 
   async deleteProduct (pid){
     try {
-      const user = req.user;
       const product = await this.productService.getProductById(pid);
       if (!product) {
         throw new Error("Product not found");
-      }
-      if (user.role === "premium" && product.owner !== user.email) {
-        throw new Error("You are not allowed to delete this product");
       }
       return await this.productService.deleteProduct(pid);
     } catch (error) {
