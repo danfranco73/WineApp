@@ -24,16 +24,15 @@
   </div>
 
 <div class="box-form">
-  <form class="box" id="add-product-form" method="post" action="/api/products/">
-    <input type="text" id="title" placeholder="Nombre" />
-    <input type="text" id="description" placeholder="Descripción" />
-    <input type="text" id="price" placeholder="Precio" />
+  <form class="box" id="add-product-form" method="POST" action="/api/products" enctype="multipart/form-data">
+    <input type="text" id="title" placeholder="Name" />
+    <input type="text" id="description" placeholder="Description" />
+    <input type="text" id="price" placeholder="Price" />
     <input type="text" id="stock" placeholder="Stock" />
-    <input type="text" id="category" placeholder="Categoria" />
-    <input type="text" id="code" placeholder="Codigo" />
-    {{! add the url of the image }}
-    <input type="text" id="thumbnails" placeholder="Imagen" />
-    <button type="submit">Agregar</button>
+    <input type="text" id="category" placeholder="Category" />
+    <input type="text" id="code" placeholder="Code" />
+    <input type="text" id="thumbnails" placeholder="Image" />
+    <button type="submit">Add to database</button>
   </form>
 </div>
 </div>
@@ -46,12 +45,12 @@
         <h3>{{title}}</h3>
         <hr />
         <p>Id: {{_id}}</p>
-        <p class="product-description">Descripción: {{description}}</p>
-        <p class="product-price"> Precio: ${{price}}</p>
+        <p class="product-description">Description: {{description}}</p>
+        <p class="product-price"> Price: ${{price}}</p>
         <p>Stock: {{stock}}</p>
-        <p>Codigo: {{code}}</p>
-        <p>Categoria: {{category}}</p>
-        <p>Imagen: {{thumbnails}}</p>
+        <p>Code: {{code}}</p>
+        <p>Category: {{category}}</p>
+        <p>Image: <img src="{{thumbnails}}" alt="product-image" /></p>
           <button
             type="button"
             class="add-to-cart"

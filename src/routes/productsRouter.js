@@ -49,8 +49,8 @@ router
         price,
         stock,
         category,
-        owner /*, thumbnails: thumbnails.filename */,
-      };
+        owner,
+        thumbnails,};
       const newProduct = await productManager.addProduct(product);
       console.log(newProduct);
 

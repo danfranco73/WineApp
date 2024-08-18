@@ -4,9 +4,10 @@ import { logger } from "../services/utils/logger.js";
 import CartService from "../services/cartServices.js";
 import UserService from "../services/userServices.js";
 import ProductController from "../controllers/productController.js";
-import { isAdmin } from "../services/middlewares/roles.js";
+import { handleRole, checkRole } from "../services/middlewares/roles.js";
 import cartModel from "../dao/models/cartModel.js";
 import productModel from "../dao/models/productModel.js";
+import {auth, isNotAdmin,logged,admin} from "../services/middlewares/auth.js";
 
 const cartService = new CartService();
 
@@ -65,7 +66,8 @@ router
     } catch (e) {renderError(res);}
   })
 
-  .get("/cart", async (req, res) => {
+  .get("/cart",isNotAdmin, async (req, res) => {
+
     const cart = await cartModel.findOne({ user: req.session.user._id });    
     if (!req.session.user) {
       return res.status(404).send("No user found").redirect("/login");
@@ -97,7 +99,7 @@ router
 
   .get("/checkout", async (req, res) => {
     const cart = await cartModel.findOne({ user: req.session.user._id });
-    const products = await productModel.find({_id: { $in: cart.products },});
+     const products = await productModel.find({_id: { $in: cart.products },});
     console.log(products);
     
     const totalQuantity = await cartService.getTotalQuantityInCart(cart._id);
@@ -169,7 +171,7 @@ router
   // user Admin profile
   .get(
     "/adminProfile",
-    /* isAdmin, */ async (req, res) => {
+     async (req, res) => {
       renderWithLayout(res, "adminProfile", {
         title: "Admin Profile",
         user: req.session.user,
@@ -245,7 +247,7 @@ router
     });
   })
   // show all users
-  .get("/allUsers", isAdmin, async (req, res) => {
+  .get("/allUsers", admin, async (req, res) => {
     const users = await user.getAllUsers();
     renderWithLayout(res, "users", {
       title: "All Users",

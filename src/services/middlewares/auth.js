@@ -42,9 +42,12 @@ const checkUser = function (req, res, next) {
 // Only the admin can access the admin panel
 const admin = function (req, res, next) {
   if (req.session.user.role !== "admin") {
-    return res.redirect("/");
+    // if the user is not admin, redirect to the last page
+    return res
+      .status(403)
+      .send("You don't have permission to perform this action.");
   }
-  next();
+  next()
 };
 // if the user is admin cannot acces to the user panel
 const isNotAdmin = function (req, res, next) {

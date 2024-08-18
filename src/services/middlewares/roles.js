@@ -64,14 +64,8 @@ export const checkOwnership = async (pid,user) => {
   return false;
 };
 
-export const handleRole = (policies) => {
-  return async (req, res, next) => {
-      if (!req.session.user) {
-        console.error("No Authorization!!");        
-        return res.status(401).send("Unauthorized product not owned by user");
-      }    
-    if (policies.includes(req.session.user.role)) {
-      next();
-    }
-  };
-};
+export const handleRole = (roles) => {
+  return [verifyToken, checkRole(roles)];
+}
+
+

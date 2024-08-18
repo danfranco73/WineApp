@@ -1,18 +1,16 @@
 import { Router } from "express";
 import upload from "../services/utils/utilMulter.js";
 import UserService from "../services/userServices.js";
-import { checkUser } from "../services/middlewares/auth.js";
+import { checkUser, admin} from "../services/middlewares/auth.js";
 import nodemailer from "nodemailer";
 import config from "../config/config.js";
-import verifyToken from "../services/utils/verifyToken.js";
-import { handleRole, isAdmin } from "../services/middlewares/roles.js";
 
 const router = Router();
 const userRService = new UserService();
 
 router
   // endpoint to update user role (from premium to user or viceverse) by uid (only if the user logged in is an admin)
-  .put("/premium/:uid", async (req, res) => {
+  .put("/premium/:uid", admin,async (req, res) => {
     try {
       const uid = req.params.uid;
       const user = await userRService.getUserById(uid);
@@ -68,7 +66,7 @@ router
       }
     }
   )
-  .get("/allUsers", /* isAdmin, */ async (req, res) => {
+  .get("/allUsers", admin,async (req, res) => {
     try {
       const users = await userRService.getAllUsers();
       res.status(200).send({
@@ -81,7 +79,7 @@ router
     }
   })
   // Delete inactive users and send an email to each one
-  .delete("/inactiveUsers", /* isAdmin, */ async (req, res) => {
+  .delete("/inactiveUsers", admin, async (req, res) => {
     try {
       // get the inactive users
       const inactiveUsers = await userRService.getInactiveUsers();

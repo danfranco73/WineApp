@@ -33,7 +33,7 @@ const verifyToken = (req, res, next) => {
         .send({ origin: config.SERVER, payload: "Token has expired" });
     }
     console.log("Payload:", payload); // Log the payload
-    req.user = payload;
+    req.session.user = payload;
     next();
   });
 };

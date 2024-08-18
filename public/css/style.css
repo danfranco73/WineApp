@@ -46,6 +46,8 @@ hr {
 
   
 .product-card {
+  flex:1 0 250 px;
+  margin-bottom:1rem;
   border: 1px solid #ddd;
   border-radius: 8px;
   width: 350px;
@@ -219,12 +221,12 @@ button:hover {
   background-color: #0056b3; /* Darker blue on hover */
 }
 
-.product-list {
+.product-list { 
   display: flex;
-  /* flex-wrap: wrap; */
+  flex-wrap: wrap; /* Allow cards to wrap to the next line */
+  justify-content: center 
   gap: 20px;
-  /* justify-content: center; */
-  padding: 20px;
+  padding: auto;
 }
 
 .product-image {
@@ -348,7 +350,7 @@ button:hover {
   }
 
   .product-card {
-    width: 100%;
+    flex: 1 0 100%;
   }
 
   .box {
@@ -371,15 +373,6 @@ button:hover {
   #delete-product-form {
     width: 100%;
   }
-
-  .product-list {
-    flex-direction: column;
-  }
-
-  .product-card {
-    width: 100%;
-  }
-
   .product-image {
     height: 200px;
   }
