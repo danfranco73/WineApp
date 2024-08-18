@@ -21,8 +21,14 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         if (data.status === "success") {
           window.location.reload();
-          window.location.href = "/cart";
+          window.location.href = "/home";
         }
       });
   });
+
+  // show the prducts in cart-summary class
+  const cartSummary = document.querySelector(".cart-summary");
+
+
+
 });

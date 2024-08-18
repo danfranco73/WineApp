@@ -98,13 +98,18 @@ router
   .get("/checkout", async (req, res) => {
     const cart = await cartModel.findOne({ user: req.session.user._id });
     const products = await productModel.find({_id: { $in: cart.products },});
+    console.log(products);
+    
     const totalQuantity = await cartService.getTotalQuantityInCart(cart._id);
     const totalAmount = await cartService.amountEachProductInCart(cart._id);
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString(); 
     renderWithLayout(res, "purchase", {
       title: "purchase",
       cart,
       user: req.session.user,
       products: products,
+      currentDate: formattedDate,
       totalAmount,
       totalQuantity,
     });

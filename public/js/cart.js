@@ -1,6 +1,5 @@
 // Purpose: To handle the cart functionality
 const cartId = document.querySelector("input[name='cart']").value;
-console.log(cartId);
 
 document.addEventListener("DOMContentLoaded", () => {
   const deleteButtons = document.querySelectorAll(".delete-from-cart");
