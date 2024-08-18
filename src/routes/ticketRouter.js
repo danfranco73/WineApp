@@ -1,44 +1,12 @@
 import { Router } from "express";
-import TicketManager from "../dao/managers/ticketManager.js";
+import TicketController from "../controllers/ticketController.js";
 
-const ticketManager = new TicketManager();
+const ticketRouter = Router();
+const ticketController = new TicketController();
 
-const router = Router();
+ticketRouter.get("/", ticketController.getAllTickets);
+ticketRouter.get("/:id", ticketController.getTicketById);
+ticketRouter.get("/user/:userId", ticketController.getTicketsByUserId);
+ticketRouter.post("/", ticketController.createTicket);
 
-router.get("/", async (req, res) => {
-    const tickets = await ticketManager.getTickets();
-    res.send({
-        status: "success",
-        payload: tickets,
-    });
-    });
-// add a new ticket
-router.post("/", async (req, res) => {
-    const ticket = req.body;
-    const newTicket = await ticketManager.addTicket(ticket);
-    res.send({
-        status: "success",
-        payload: newTicket,
-    });
-});
-// get a ticket by id
-router.get("/:tid", async (req, res) => {
-    const { id } = req.params;
-    const ticket = await ticketManager.getTicketById(tid);
-    res.send({
-        status: "success",
-        payload: ticket,
-    });
-});
-// 
-router.put("/:id", async (req, res) => {
-    const { id } = req.params;
-    const ticket = req.body;
-    const updatedTicket = await ticketManager.updateTicket(id, ticket);
-    res.send({
-        status: "success",
-        payload: updatedTicket,
-    });
-});
-
-export default router;
+export default ticketRouter;

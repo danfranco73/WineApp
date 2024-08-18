@@ -1,10 +1,20 @@
-<h1>Compra</h1>
-<div class="box-cart">
+<h1>Thanks for your Purchase {{user.First_Name}}</h1>
+<div class="container">
   <form class="user">
     <p><b> Email:</b>{{user.email}}</p>
     <p><b> #Cart: </b>{{cart._id}}</p>
     <input type="hidden" name="user" value="{{req.session.user}}" />
     <input type="hidden" name="cart" value="{{cart._id}}" />
+    <div class="options">
+      <form class="box" method="get" action="/api/sessions/logout">
+        <button type="submit">Logout</button>
+        <button
+          type="button"
+          onclick="window.location.href='/cart'"
+        >Cart</button>
+      <button type="button" onclick="goBack()">goBack</button>        
+      </form>
+    </div>
   </form>
   <div class="cart-summary">
     <h2>Totals</h2>
@@ -14,37 +24,55 @@
     </div>
   </div>
 </div>
-
-{{! choose the payments methods }}
-
-
-
-
-<div
-  id="alert"
-  class="alert alert-success"
-  role="alert"
-  style="position: fixed; top: 1.5em; right: 1.5em; z-index: 1000; display: none;"
->
-  Msg
+<div class="box-cart">
+  <h2>Tickets</h2>
+  <div class="tickets">
+    {{#if tickets}}
+      <p>code: {{this.code}}</p>
+      <p>Date: {{this.purchase_datetime}}</p>
+      <p>Purchaser: ${{this.purchaser}}</p>
+      <p>Amount: ${{this.amount}}</p>
+    {{else}}
+      <p>No tickets</p>
+    {{/if}}
+  </div>
+</div>
+<div class="box-cart">
+  <h2>Products</h2>
+  <div class="product-card">
+    {{#each cart.products}}
+      <p>Name: {{this.title}}</p>
+      <p>Price: ${{this.price}}</p>
+    {{/each}}
+  </div>
 </div>
 
+<div class="box-cart">
+  <h2>Payment</h2>
+  <form id="payment-form">
+    <div class="form-group">
+      <label for="card-element">
+        Credit or debit card
+      </label>
+      <div id="card-element">
+        <!-- A Stripe Element will be inserted here. -->
+      </div>
+      <!-- Used to display form errors. -->
+      <div id="card-errors" role="alert"></div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="purchase-modal" class="modal">
+      <div class="modal-content">
+        <p id="modal-text">Thank you for your purchase!</p>
+      </div>
+    </div>
+    <button id="submit-payment">Submit Payment</button>
+  </form>
+</div>
+
+<script src="/js/charge.js"></script>
 <script>
-  const cart = []; const service = 'mercadopago'; const alert =
-  document.getElementById('alert'); const checkoutBtn =
-  document.getElementById('checkoutBtn'); const notify = (msg) => {
-  alert.innerHTML = msg; alert.style.display = 'block'; setTimeout(() =>
-  alert.style.display = 'none', 2000); } const addtoCart = (title, price) => {
-  let newProduct = {}; switch (service) { case 'mercadopago': newProduct = {
-  title: title, unit_price: parseInt(price), quantity: 1, currency_id: 'ARS' }
-  break; case 'stripe': default: newProduct = { price_data: { product_data: {
-  name: title }, currency: 'usd', unit_amount: parseInt(price * 100), // * 100
-  pq opera en centavos quantity: 1 } } } cart.push(newProduct); notify('Agregado
-  al carrito!'); } checkoutBtn.addEventListener('click', async (e) => {
-  e.preventDefault(); if (cart.length > 0) { const url = service ===
-  'mercadopago' ? '/api/carts/checkoutmp': '/api/carts/checkoutstr'; const data
-  = await fetch(url, { method: 'POST', headers: { 'Content-Type':
-  'application/json' }, body: JSON.stringify(cart) }) const jsonData = await
-  data.json(); window.location.href = jsonData.url; } else { notify('El carrito
-  está vacío, nada para procesar'); } });
-</script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>

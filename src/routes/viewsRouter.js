@@ -35,10 +35,8 @@ router
     try {
       // need to pass tha cart id in the user model to the view
       const productsData = await products.getProducts();
-      if (!productsData) {
-        return res.status(404).send("No products found");
-      }
-      const cart = await cartModel.findOne({ user: req.session.user._id });
+      if (!productsData) {return res.status(404).send("No products found");}
+      const cart = await cartModel.findOne({ user: req.session.user._id });      
       renderWithLayout(res, "home", {
         title: "Product List",
         status: "success",
@@ -46,14 +44,31 @@ router
         cart,
         user: req.session.user,
       });
-    } catch (e) {
-      renderError(res);
-    }
+    } catch (e) {renderError(res);}
   })
+
+  .get("/realTimeProducts", async (req, res) => {
+    try {
+      const productsData = await products.getProducts();
+      if (!productsData) {return res.status(404).send("No products found");}
+      const cart = await cartModel.findOne({ user: req.session.user._id });
+      console.log(cart);
+      
+      const isPremium = req.session.user.role === "premium";      
+
+      renderWithLayout(res, "realTimeProducts", {
+        title: "Real Time Products",
+        status: "success",
+        products: productsData,
+        cart,
+        user: req.session.user,
+        isPremium,
+      });
+    } catch (e) {renderError(res);}
+  })
+
   .get("/cart", async (req, res) => {
-    const cart = await cartModel.findOne({ user: req.session.user._id });
-    console.log(cart);
-    
+    const cart = await cartModel.findOne({ user: req.session.user._id });    
     if (!req.session.user) {
       return res.status(404).send("No user found").redirect("/login");
     }
@@ -84,12 +99,7 @@ router
 
   .get("/checkout", async (req, res) => {
     const cart = await cartModel.findOne({ user: req.session.user._id });
-    if (!cart) {
-      return res.status(404).send("No cart found");
-    }
-    const products = await productModel.find({
-      _id: { $in: cart.products },
-    });
+    const products = await productModel.find({_id: { $in: cart.products },});
     const totalQuantity = await cartService.getTotalQuantityInCart(cart._id);
     const totalAmount = await cartService.amountEachProductInCart(cart._id);
     renderWithLayout(res, "purchase", {
@@ -100,21 +110,6 @@ router
       totalAmount,
       totalQuantity,
     });
-  })
-
-  .get("/realTimeProducts", async (req, res) => {
-    try {
-      const productsData = await products.getProducts();
-      console.log(productsData);
-      renderWithLayout(res, "realTimeProducts", {
-        title: "Real Time Products",
-        status: "success",
-        products: productsData,
-        user: req.session.user,
-      });
-    } catch (e) {
-      renderError(res);
-    }
   })
 
   .get("/index", async (req, res) => {
@@ -240,7 +235,7 @@ router
   })
 
   // switchRole
-  .get("/switchRole", isAdmin, async (req, res) => {
+  .get("/switchRole", /* isAdmin, */ async (req, res) => {
     renderWithLayout(res, "switchRole", {
       title: "Switch Role",
       uid: req.params.uid,

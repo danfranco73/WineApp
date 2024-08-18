@@ -1,32 +1,40 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const ticketCollection = 'tickets';
+const ticketCollection = "tickets";
 
 const ticketSchema = new mongoose.Schema({
-    purchase_datetime: {
-        type: Date, default: Date.now
-    },
-    amount: {
+  code: {
+    type: String,
+    required: true,
+  },
+  purchase_datetime: {
+    type: Date,
+    default: Date.now,
+  },
+  amount: {
+    type: Number,
+  },
+  purchaser: {
+    type: String,
+  },
+  products: [
+    {
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "products",
+      },
+      quantity: {
         type: Number,
-    },
-    purchaser: {
+        required: true,
+      },
+      name: {
         type: String,
+        required: true,
+      },
     },
-    cart: {
-        type: [{
-            cart: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'carts',
-            },
-        }]
-    },
+  ],
 });
 
-const Ticket = mongoose.model(ticketCollection, ticketSchema);
+const ticketModel = mongoose.model(ticketCollection, ticketSchema);
 
-export default Ticket;
-
-
-
-
-
+export default ticketModel;

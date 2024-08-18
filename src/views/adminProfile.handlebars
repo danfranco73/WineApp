@@ -12,6 +12,7 @@
       <button type="submit">Logout</button>
       <button type="button" onclick="window.location.href='/switchRole'">Switch
         Role</button>
+      <button type="button" onclick="goBack()">goBack</button>        
     </form>
     <form method="get" action="/api/users/allUsers">
       <button type="submit">Get Users</button>
@@ -26,3 +27,8 @@
   res.json()) .then((data) => { alert('Usuarios inactivos eliminados');
   console.log(data); }); }
 </script>
+<script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>

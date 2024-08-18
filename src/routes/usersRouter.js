@@ -68,7 +68,7 @@ router
       }
     }
   )
-  .get("/allUsers", isAdmin, async (req, res) => {
+  .get("/allUsers", /* isAdmin, */ async (req, res) => {
     try {
       const users = await userRService.getAllUsers();
       res.status(200).send({

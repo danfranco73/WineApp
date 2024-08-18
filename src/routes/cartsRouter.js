@@ -12,11 +12,12 @@ import {
   isNotAdmin,
   admin,
 } from "../services/middlewares/auth.js";
-import ticketService from "../services/ticketServices.js";
+import TicketController from "../controllers/ticketController.js";
 import productServices from "../services/productServices.js";
 
 const cartManager = new CartController();
 const productService = new productServices();
+const ticketController = new TicketController();
 
 const router = Router();
 
@@ -44,16 +45,16 @@ router
   // update a cart adding a product with pid if user is not admin
   .put("/:cid/product/:pid", async (req, res) => {
     const user = req.session.user;
-     
     if (!user) {
       return res.status(401).send({
         status: "error",
         message: "Unauthorized No user",
       });
-    }
-    // get the cid from the user session and the pid from the product id
+    } // get the cid from the user session and the pid from the product id
     const { cid, pid } = req.params;
     const cart = await cartManager.addProductToCart(cid, pid);
+    console.log(cart);
+    
     return res.send({
       status: "success",
       payload: cart,
@@ -73,10 +74,10 @@ router
   // delete a cart by id
   .delete("/:cid", async (req, res) => {
     const id = req.params.cid;
-    cartDeleted = await cartManager.deleteCart(id);
+    const cartDeleted = await cartManager.deleteCart(id);
     return res.send({
       status: "success",
-      message: "Cart deleted",
+      message: "Cart cleared",
       payload: cartDeleted,
     });
   })
@@ -114,11 +115,13 @@ router
 
   // purchase the cart
   .get("/:cid/purchase", async (req, res) => {
-    const { cid } = req.params;
-    const cart = await cartManager.purchaseCart(cid);
+    const { cid } = req.params.cid;
+    console.log(cid);
+
+    const ticket = await cartManager.purchaseCart({_id:cid});
     return res.send({
       status: "success",
-      payload: cart,
+      payload: ticket,
     });
   });
 

@@ -37,7 +37,14 @@ export const checkRole = (roles) => {
 };
 
 // check if role is admin continue otherwise send forbidden
-export const isAdmin = checkRole(["admin"]);
+export const isAdmin = async (req, res, next) => {
+  if (req.user.role === "admin") {
+    next();
+  } else {
+    res.status(403).send("Forbidden");
+  }
+};
+
 
 // check if role is user
 export const isUser = checkRole(["user"]);
@@ -57,7 +64,10 @@ export const checkOwnership = async (pid,user) => {
 export const handleRole = (policies) => {
   return async (req, res, next) => {
     console.log(req.user);
-    if (!req.user) return res.status(401).send("Unauthorized");
+      if (!req.user) {
+        console.error("No Authorization!!");        
+        return res.status(401).send("Unauthorized product not owned by user");
+      }    
     if (policies.includes(req.user.role)) {
       next();
     }

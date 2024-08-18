@@ -1,10 +1,10 @@
 import { Router } from "express";
 import upload from "../services/utils/utilMulter.js";
-import productController from "../controllers/productController.js";
+import ProductController from "../controllers/productController.js";
 import verifyToken from "../services/utils/verifyToken.js";
 import { handleRole, checkOwnership } from "../services/middlewares/roles.js";
 
-const productManager = new productController();
+const productManager = new ProductController();
 const router = Router();
 
 // Get all products with pagination, sorting, and searching
@@ -34,37 +34,26 @@ router
     }
   )
 
-  // Add a new product with image upload (admin and Premium only)
-  .post(
-    "/",
-    // verifyToken,
-    handleRole(["admin", "premium"]),
-    upload.single("image"),
-    async (req, res, next) => {
-      const userId = req.user._id;
-      const userRole = req.user.role;
-      const { title, description, code, price, stock, category } = req.body;
-      try {
-        const newProduct = {
-          title,
-          description,
-          code,
-          price,
-          stock,
-          category,
-          // add req.user._id as owner if user is premium, otherwise add "admin"
-          owner: userRole === "premium" ? userId : "admin",
-          ...(req.file && { image: req.file.filename }), // Add image filename if uploaded
-        };
-        const product = await productManager.addProduct(newProduct);
-        console.log(product); // Debug
-        return res.send({ status: "success", payload: product });
-      } catch (error) {
-        console.log(error);
-        next(error);
-      }
-    }
-  )
+  // Add a new product with image upload (assuming upload.single is configured)
+.post("/", upload.single("image"),async (req, res, next) => {
+  try {
+    const user = req.session.user;
+    const userRole = user.role;
+    const owner = userRole === "premium" ? user.email : "admin@localhost";
+    const thumbnails = req.file ? req.file.path : null;
+    const { title, description, code, price, stock, category } = req.body;
+    const product = { title, description, code, price, stock, category, owner /*, thumbnails: thumbnails.filename */ };
+    const newProduct = await productManager.addProduct(product);
+    console.log(newProduct);
+
+    return res.status(201).json({ status: "success", payload: newProduct });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+})
+
+
   .put("/:pid", verifyToken, handleRole(["admin"]), async (req, res, next) => {
     const { pid } = req.params;
     const { title, description, code, price, stock, category } = req.body;

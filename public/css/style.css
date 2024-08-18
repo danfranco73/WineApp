@@ -88,6 +88,8 @@ a:hover {
   min-width: 300px;
   margin-bottom: 20px;
 }
+
+
 /* estilo para un encabezado de un carrito de compras */
 .box-cart {
   background-color: transparent;
@@ -98,7 +100,20 @@ a:hover {
   min-width: 300px;
   margin-bottom: 20px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.box-rtp {
+  background-color: transparent;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(40, 21, 21, 0.1);
+  width: 80%;
+  min-width: 300px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
   gap: 10px;
 }
 
@@ -243,6 +258,69 @@ button:hover {
   border: none;
   cursor: pointer;
 }
+
+.success-message {
+  position: fixed; /* Position it on top of the page */
+  top: 10px; /* Adjust vertical position */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Center horizontally */
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  padding: 10px 20px; /* Add padding */
+  border-radius: 5px; /* Round the corners */
+  opacity: 1; /* Full opacity initially */
+  transition: opacity 0.5s ease-in-out; /* Add a smooth fade-out transition */
+}
+
+.success-message.fade-out {
+  opacity: 0; /* Fade out to 0 opacity */
+}
+/* Modal styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+.modal-tect {
+  color: #333;
+}
+
+.modal-content {
+  background-color: rgb(255, 255, 255);
+  margin: 20% auto;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 300px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+.delete-message {
+  position: fixed; /* Position it on top of the page */
+  top: 10px; /* Adjust vertical position */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Center horizontally */
+  background-color: #dc435f; /* Green background */
+  color: white; /* White text */
+  padding: 10px 20px; /* Add padding */
+  border-radius: 5px; /* Round the corners */
+  opacity: 1; /* Full opacity initially */
+  transition: opacity 0.5s ease-in-out; /* Add a smooth fade-out transition */
+}
+
+.delete-message.fade-out {
+  opacity: 0; /* Fade out to 0 opacity */
+}
+
+
 .summary {
   text-align: right;
 }

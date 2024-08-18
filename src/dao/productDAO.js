@@ -7,8 +7,7 @@ async getAll() {
   }
   
   async create(product) {
-      const newProduct = new productModel(product);
-      return await newProduct.save();
+    return await productModel.create(product);
   }
 
   async getById(pid) {

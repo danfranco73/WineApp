@@ -3,6 +3,9 @@
   <form class="user">
     <p><b> Email:</b> {{user.email}}</p>
     <p><b> Role:</b> {{user.role}}</p>
+    <p><b> #Cart: </b>{{cart._id}}</p>
+    <p><b> Total {{products.length}} products available</b></p>
+    <input type="hidden" name="cart" value="{{cart._id}}" />
   </form>
   <div class="options">
     <form class="box" method="get" action="/api/sessions/logout">
@@ -19,7 +22,7 @@
       <button type="button" onclick="window.location.href='/cart'">Cart</button>
     </form>
   </div>
-</div>
+
 <div class="box-form">
   <form class="box" id="add-product-form" method="post" action="/api/products/">
     <input type="text" id="title" placeholder="Nombre" />
@@ -28,52 +31,43 @@
     <input type="text" id="stock" placeholder="Stock" />
     <input type="text" id="category" placeholder="Categoria" />
     <input type="text" id="code" placeholder="Codigo" />
+    {{! add the url of the image }}
+    <input type="text" id="thumbnails" placeholder="Imagen" />
     <button type="submit">Agregar</button>
   </form>
-  <form
-    class="box"
-    id="delete-product-form"
-    method="delete"
-    action="/api/products/:pid"
-  >
-    <input type="text" id="id" placeholder="Id del producto" />
-    <button type="submit">Eliminar</button>
-  </form>
+</div>
 </div>
 
-<div class="options">
-  <button id="pageDown">Anterior</button>
-  <button id="pageUp">Siguiente</button>
-  <button id="page">Pagina</button>
-  <button id="limit">Limitar</button>
-  <button id="sort">Ordenar</button>
-  <button id="query">Categoria</button>
-</div>
 <h2>Productos</h2>
-<div class="container">
-  <div id="products-list">
-    <div class="product-list">
-      {{#each product}}
-        {{#with this}}
-          <div class="product-card" id="products-container">
-            <h3>{{title}}</h3>
-            <hr />
-            <p>Id: {{_id}}</p>
-            <p class="product-description">Descripción: {{description}}</p>
-            <p class="product-price"> Precio: ${{price}}</p>
-            <p>Stock: {{stock}}</p>
-            <p>Codigo: {{code}}</p>
-            <p>Categoria: {{category}}</p>
-            <p>Imagen: {{thumbnails}}</p>
-            <button type="button" class="add-to-cart" data-product-id="{{_id}}">
-              Agregar (1)
-            </button>
-          </div>
-        {{/with}}
-      {{/each}}
-    </div>
-  </div>
+<div class="product-list" id="products-container">
+  {{#each products}}
+    {{#with this}}
+      <div class="product-card">
+        <h3>{{title}}</h3>
+        <hr />
+        <p>Id: {{_id}}</p>
+        <p class="product-description">Descripción: {{description}}</p>
+        <p class="product-price"> Precio: ${{price}}</p>
+        <p>Stock: {{stock}}</p>
+        <p>Codigo: {{code}}</p>
+        <p>Categoria: {{category}}</p>
+        <p>Imagen: {{thumbnails}}</p>
+          <button
+            type="button"
+            class="add-to-cart"
+            data-cid="{{cart._id}}"
+            data-pid="{{_id}}"
+          >
+            Add to Cart
+          </button>
+          <button
+            class="delete-product"
+            data-pid="${{_id}}"
+          >Delete Product
+          </button>
+      </div>
+    {{/with}}
+  {{/each}}
 </div>
 
-<script src="socket.io/socket.io.js"></script>
 <script src="/js/realTimeProducts.js"></script>

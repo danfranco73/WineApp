@@ -4,7 +4,7 @@
     <p><b> Email:</b>{{user.email}}</p>
     <p><b> #Cart: </b>{{user.cart}}</p>
     <input type="hidden" name="user" value="{{req.session.user}}" />
-    <input type="hidden" name="cart" value="{{cart._id}}" />
+    <input type="hidden" name="cart" value="{{user.cart}}" />
   </form>
   <div class="cart-summary">
     <h2>Totals</h2>
@@ -23,36 +23,48 @@
         type="button"
         onclick="window.location.href='/userProfile'"
       >Profile</button>
-      <button type="button" class="checkout">Checkout</button>
+      <button
+        type="button"
+        onclick="window.location.href='/checkout'"
+      >Checkout</button>
+          <button type="button" class="clear-cart" data-cid="{{user.cart}}">
+            Clear Cart
+          </button>
+      <button type="button" onclick="goBack()">goBack</button>
     </form>
   </div>
 </div>
 <h2>Products</h2>
 <div class="product-list" id="products-container">
   {{#if products}}
-      {{#each products}}
-        {{#with this}}
-          <div class="product-card">
-              <h3>{{title}}</h3>
-              <hr />
-              <p>Id: {{_id}}</p>
-              <p class="product-description">Descripción: {{description}}</p>
-              <p class="product-price"> Precio: ${{price}}</p>
-              <p>Categoria: {{category}}</p>
-              <p>Imagen: {{thumbnails}}</p>
-              <p> Quantity: {{quantity}}</p>
-              <button type="button" class="add-quantity" data-pid="{{_id}}">
-                Add +
-              </button>
-              <button type="button" class="delete-from-cart" data-pid="{{_id}}">
-                Delete
-              </button>
-          </div>
-        {{/with}}
-      {{/each}}
+    {{#each products}}
+      {{#with this}}
+        <div class="product-card">
+          <h3>{{title}}</h3>
+          <hr />
+          <p>Id: {{_id}}</p>
+          <p class="product-description">Descripción: {{description}}</p>
+          <p class="product-price"> Precio: ${{price}}</p>
+          <p>Categoria: {{category}}</p>
+          <p>Imagen: {{thumbnails}}</p>
+          <p> Quantity: {{quantity}}</p>
+          <button type="button" class="add-quantity" data-pid="{{_id}}">
+            Add +
+          </button>
+          <button type="button" class="delete-from-cart" data-pid="{{_id}}">
+            Delete
+          </button>
+        </div>
+      {{/with}}
+    {{/each}}
   {{else}}
     <p>No hay productos en el carrito</p>
   {{/if}}
 </div>
 
 <script src="/js/cart.js"></script>
+<script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>

@@ -1,6 +1,7 @@
-import ticketModel from "../models/ticketModel.js";
+import ticketModel from "../dao/models/ticketModel.js";
 
-export class TicketRepository {
+
+export default class TicketRepository {
   async getAllTickets(limit, page, query, sort) {
     return await ticketModel
       .find(query)
