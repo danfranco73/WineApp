@@ -1,7 +1,7 @@
 import { Router } from "express";
 import upload from "../services/utils/utilMulter.js";
 import UserService from "../services/userServices.js";
-import { checkUser, admin} from "../services/middlewares/auth.js";
+import { admin} from "../services/middlewares/auth.js";
 import nodemailer from "nodemailer";
 import config from "../config/config.js";
 
@@ -34,8 +34,6 @@ router
   // endpoint to upload documents by uid using multer and the userModel 
   .post(
     "/:uid/documents",
-    /*     verifyToken,
-    checkUser, */
     upload.array("files"),
     async (req, res) => {
       try {

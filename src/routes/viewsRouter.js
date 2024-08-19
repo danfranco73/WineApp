@@ -4,10 +4,14 @@ import { logger } from "../services/utils/logger.js";
 import CartService from "../services/cartServices.js";
 import UserService from "../services/userServices.js";
 import ProductController from "../controllers/productController.js";
-import { handleRole, checkRole } from "../services/middlewares/roles.js";
 import cartModel from "../dao/models/cartModel.js";
 import productModel from "../dao/models/productModel.js";
-import {auth, isNotAdmin,logged,admin} from "../services/middlewares/auth.js";
+import {
+  auth,
+  isNotAdmin,
+  logged,
+  admin,
+} from "../services/middlewares/auth.js";
 
 const cartService = new CartService();
 
@@ -36,8 +40,10 @@ router
     try {
       // need to pass tha cart id in the user model to the view
       const productsData = await products.getProducts();
-      if (!productsData) {return res.status(404).send("No products found");}
-      const cart = await cartModel.findOne({ user: req.session.user._id });      
+      if (!productsData) {
+        return res.status(404).send("No products found");
+      }
+      const cart = await cartModel.findOne({ user: req.session.user._id });
       renderWithLayout(res, "home", {
         title: "Product List",
         status: "success",
@@ -45,16 +51,22 @@ router
         cart,
         user: req.session.user,
       });
-    } catch (e) {renderError(res);}
+    } catch (e) {
+      renderError(res);
+    }
   })
 
   .get("/realTimeProducts", async (req, res) => {
     try {
       const productsData = await products.getProducts();
-      if (!productsData) {return res.status(404).send("No products found");}
+      if (!productsData) {
+        return res.status(404).send("No products found");
+      }
       const cart = await cartModel.findOne({ user: req.session.user._id });
       console.log(cart);
-      if (!req.session.user) {return res.status(404).send("No user found").redirect("/login");}
+      if (!req.session.user) {
+        return res.status(404).send("No user found").redirect("/login");
+      }
 
       renderWithLayout(res, "realTimeProducts", {
         title: "Real Time Products",
@@ -63,12 +75,13 @@ router
         cart,
         user: req.session.user,
       });
-    } catch (e) {renderError(res);}
+    } catch (e) {
+      renderError(res);
+    }
   })
 
-  .get("/cart",isNotAdmin, async (req, res) => {
-
-    const cart = await cartModel.findOne({ user: req.session.user._id });    
+  .get("/cart", isNotAdmin, async (req, res) => {
+    const cart = await cartModel.findOne({ user: req.session.user._id });
     if (!req.session.user) {
       return res.status(404).send("No user found").redirect("/login");
     }
@@ -99,13 +112,13 @@ router
 
   .get("/checkout", async (req, res) => {
     const cart = await cartModel.findOne({ user: req.session.user._id });
-     const products = await productModel.find({_id: { $in: cart.products },});
+    const products = await productModel.find({ _id: { $in: cart.products } });
     console.log(products);
-    
+
     const totalQuantity = await cartService.getTotalQuantityInCart(cart._id);
     const totalAmount = await cartService.amountEachProductInCart(cart._id);
     const today = new Date();
-    const formattedDate = today.toLocaleDateString(); 
+    const formattedDate = today.toLocaleDateString();
     renderWithLayout(res, "purchase", {
       title: "purchase",
       cart,
@@ -169,15 +182,12 @@ router
     });
   })
   // user Admin profile
-  .get(
-    "/adminProfile",
-     async (req, res) => {
-      renderWithLayout(res, "adminProfile", {
-        title: "Admin Profile",
-        user: req.session.user,
-      });
-    }
-  )
+  .get("/adminProfile", async (req, res) => {
+    renderWithLayout(res, "adminProfile", {
+      title: "Admin Profile",
+      user: req.session.user,
+    });
+  })
 
   // Restore password (unchanged)
   .post("/restore", (req, res) => {
@@ -240,12 +250,15 @@ router
   })
 
   // switchRole
-  .get("/switchRole", /* isAdmin, */ async (req, res) => {
-    renderWithLayout(res, "switchRole", {
-      title: "Switch Role",
-      uid: req.params.uid,
-    });
-  })
+  .get(
+    "/switchRole",
+    /* isAdmin, */ async (req, res) => {
+      renderWithLayout(res, "switchRole", {
+        title: "Switch Role",
+        uid: req.params.uid,
+      });
+    }
+  )
   // show all users
   .get("/allUsers", admin, async (req, res) => {
     const users = await user.getAllUsers();

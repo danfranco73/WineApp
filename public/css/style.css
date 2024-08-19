@@ -82,6 +82,8 @@ a:hover {
 }
 
 .box {
+  display: block;
+  justify-content: center;
   background-color: transparent;
   padding: 20px;
   border-radius: 10px;
@@ -102,7 +104,7 @@ a:hover {
   min-width: 300px;
   margin-bottom: 20px;
   display: flex;
-  flex-direction: row;
+  flex-direction:auto;
   gap: 10px;
 }
 
@@ -116,6 +118,7 @@ a:hover {
   margin-bottom: 20px;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -129,6 +132,7 @@ a:hover {
 form {
   width: 100%;
   min-width: 300px;
+  justify-content: center;
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -143,6 +147,7 @@ form {
 
 .options {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 10px;
   min-width: 310px;
@@ -150,6 +155,7 @@ form {
 
 .button-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
 }
@@ -224,7 +230,7 @@ button:hover {
 .product-list { 
   display: flex;
   flex-wrap: wrap; /* Allow cards to wrap to the next line */
-  justify-content: center 
+  justify-content: center;
   gap: 20px;
   padding: auto;
 }
@@ -358,6 +364,7 @@ button:hover {
   }
 
   .box-cart {
+    flex-wrap: wrap;
     width: 100%;
   }
 
@@ -366,6 +373,15 @@ button:hover {
   }
 
   .box-form {
+    width: 100%;
+  }
+
+  .options {
+    /* centralizo los buttons */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
     width: 100%;
   }
 
