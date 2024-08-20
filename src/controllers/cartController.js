@@ -1,6 +1,8 @@
 import CartService from "../services/cartServices.js";
 import ProductService from "../services/productServices.js";
-import ticketService from "../services/ticketServices.js";
+import TicketService from "../services/ticketServices.js";
+
+const ticketService = new TicketService();
 
 const productService = new ProductService();
 
@@ -57,26 +59,51 @@ class CartController {
   async getTotalQuantityInCart(cid) {
     return await this.cartService.getTotalQuantityInCart(cid);
   }
-// creo un ticket con los productos del carrito, el monto total y el id del usuario, la fecha y el purchaser, y luego elimino el carrito
-  async purchaseCart(cid) {
-    try{
-    const cart = await this.cartService.getCartById(cid);
-    const products = await productService.getProductById(cart.products);
-    const totalAmount = await this.cartService.amountEachProductInCart(cid);
-    const user = await userService.getUserById(cart.user);
-    const newTicket = await ticketService.createTicket({
-      email: user.email,
-      amount: totalAmount,
-      products,
-      purchaser: user._id,
-      date: new Date(),
-    });
-    await this.cartService.clearCart(cid);
-    return newTicket;
-  }
-  catch(e){
-    console.log(e);
-  }
+  async purchaseCart(cid, purchaser) {
+    // console.log(purchaser, "purchaser"); user _id ok
+    try {
+      const cart = await this.cartService.getCartById(cid);
+      // hago el map para obtener los productos del carrito
+      const products = cart.products.map((product) => {
+        return {
+          _id: product._id,
+          quantity: product.quantity,
+        };
+      });
+      // console.log(products, "products"); ok
+
+      // obtengo el total de la compra
+      const totalAmount = await this.cartService.amountEachProductInCart(cid);
+      // console.log(cart, "del purchase"); ok
+      // Check if the cart is empty
+      if (cart.products.length === 0) {
+        throw new Error("El carrito esta vacio");
+      }
+      // check if the stock is enough for each product
+      for (const product of products) {
+        const productData = await productService.getProductById(product._id);
+        if (productData.stock < product.quantity) {
+          throw new Error("No hay suficiente stock de " + productData.title);
+        }
+      }
+      // reduce the stock of each product
+      for (const product of products) {
+        await productService.reduceStock(product._id, product.quantity);
+      }
+      // return the ticket with the products purchased and the total amount
+      // clear the cart after the purchase
+      
+      const ticket = await ticketService.createTicket(
+        purchaser,
+        products,
+        totalAmount
+      );
+      await this.cartService.clearCart(cid);
+      return ticket;
+      
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 

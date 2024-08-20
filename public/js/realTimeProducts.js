@@ -12,12 +12,12 @@ const realTimeProducts = () => {
             <img src="${product.image}" alt="${product.title}" />
             <h3>${product.title}</h3>
             <p>${product.description}</p>
-            <p>$${product.price}</p>
-            <p>$${product.code}</p>
-            <p>$${product.thumbnails}</p>
-            <p>$${product.category}</p>
-            <p>$${product.stock}</p>
-            <p>$${product.owner}</p>
+            <p>${product.price}</p>
+            <p>${product.code}</p>
+            <p>${product.thumbnails}</p>
+            <p>${product.category}</p>
+            <p>${product.stock}</p>
+            <p>${product.owner}</p>
             <button class="add-to-cart" data-pid="${product._id}">Add to cart</button>
               <button class="delete-product" data-pid="${product._id}">Delete</button>
           </div>

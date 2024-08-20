@@ -27,7 +27,7 @@ const ticketSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
-      name: {
+      title: {
         type: String,
         required: true,
       },

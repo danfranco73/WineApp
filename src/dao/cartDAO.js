@@ -21,6 +21,10 @@ export default class CartDAO {
     return await this.cartRepository.addProductByID(cid, pid);
   }
 
+  async reduceStock(pid, quantity) {
+    return await this.cartRepository.reduceStock(pid, quantity);
+  }
+
   async deleteProductInCart(cid, pid) {
     return await this.cartRepository.deleteProductInCart(cid, pid);
   }
@@ -29,8 +33,13 @@ export default class CartDAO {
     return await this.cartRepository.updateCart(cid, products);
   }
 
-  async updateProductQuantity(cid, productId, quantity) {
-    return await this.cartRepository.updateProductQuantity(cid, productId, quantity);
+  async getProductsFromCartById(cid) {
+    return await this.cartRepository.getProductsFromCartById(cid);
+  }
+
+
+ async updateProductQuantity(cid, productId, quantity) {
+   return await this.cartRepository.updateProductQuantity(cid, productId, quantity);
   }
 
   async insertArray(cid, arrayOfProducts) {

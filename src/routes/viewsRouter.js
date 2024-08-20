@@ -118,7 +118,8 @@ router
     const totalQuantity = await cartService.getTotalQuantityInCart(cart._id);
     const totalAmount = await cartService.amountEachProductInCart(cart._id);
     const today = new Date();
-    const formattedDate = today.toLocaleDateString();
+    const formattedDate = today.toLocaleDateString();// 
+    
     renderWithLayout(res, "purchase", {
       title: "purchase",
       cart,

@@ -16,14 +16,17 @@ export default class CartRepository {
       const cart = await cartModel
         .findById(cid)
         .populate({
-          path:"products._id",
+          path: "products._id",
           model: productModel,
         })
-        .lean();
-      const cartDTO = new CartDTO(cart);
-      return cartDTO;
+        .lean();       
+      return cart;
     } catch (error) {
-      throw new Error("Error al obtener el carrito");
+      if (error.name === "CastError") {
+        throw new Error(`Invalid cart ID: ${cid}`);
+      } else {
+        throw new Error(`Error getting cart: ${error.message}`);
+      }
     }
   }
 
@@ -55,6 +58,19 @@ export default class CartRepository {
       return new CartDTO(cart);
     } catch (error) {
       throw new Error("Error al añadir un producto al carrito");
+    }
+  }
+
+  async reduceStock(pid, quantity) {
+    try {
+      const product = await productModel.findById(pid);
+      if (!product) {
+        throw new Error("Producto no encontrado");
+      }
+      product.stock -= quantity;
+      await product.save();
+    } catch (error) {
+      throw new Error("Error al reducir el stock del producto");
     }
   }
 
@@ -90,6 +106,21 @@ export default class CartRepository {
       return new CartDTO(cart);
     } catch (error) {
       throw new Error("Error al actualizar el carrito");
+    }
+  }
+
+  async getProductsFromCartById(cid) {
+    try {
+      const cart = await cartModel
+        .findById(cid)
+        .populate("products._id")
+        .lean();
+      if (!cart) {
+        throw new Error("Carrito no encontrado");
+      }
+      return new CartDTO(cart);
+    } catch (error) {
+      throw new Error("Error al obtener los productos del carrito");
     }
   }
 
@@ -157,7 +188,9 @@ export default class CartRepository {
 
       let totalAmount = 0;
       for (const product of cart.products) {
-        const productData = await productModel.findOne({ _id: product._id }).lean();
+        const productData = await productModel
+          .findOne({ _id: product._id })
+          .lean();
         totalAmount += productData.price * product.quantity;
       }
 

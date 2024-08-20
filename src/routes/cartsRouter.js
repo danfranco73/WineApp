@@ -54,7 +54,7 @@ router
     const { cid, pid } = req.params;
     const cart = await cartManager.addProductToCart(cid, pid);
     console.log(cart);
-    
+
     return res.send({
       status: "success",
       payload: cart,
@@ -115,12 +115,15 @@ router
 
   // purchase the cart
   .get("/:cid/purchase", async (req, res) => {
-    const { cid } = req.params.cid;
-    console.log(cid);
-
-    const ticket = await cartManager.purchaseCart({_id:cid});
+    const user = req.session.user;
+    const purchaser = user._id;
+    const cid = user.cart;
+    // console.log(cid, purchaser); ok
+    const ticket = await cartManager.purchaseCart(cid, purchaser);
+    console.log(ticket);
     return res.send({
       status: "success",
+      message: "Purchase completed",
       payload: ticket,
     });
   });

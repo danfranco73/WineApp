@@ -10,6 +10,13 @@ async getAll() {
     return await productModel.create(product);
   }
 
+  async reduceStock(pid, quantity) {
+    return await productModel.findByIdAndUpdate(pid, {
+      $inc: { stock: -quantity },
+    });
+  }
+
+
   async getById(pid) {
     return await productModel.findById(pid).lean();
   }

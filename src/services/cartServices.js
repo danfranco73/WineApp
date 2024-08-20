@@ -21,6 +21,11 @@ export default class CartService {
   async addProductToCart(cid, pid) {
     return await this.carts.addProductByID(cid, pid);
   }
+
+  async reduceStock (pid, quantity) {
+    return await this.carts.reduceStock(pid, quantity);
+  }
+  
   // deleting a product from a cart
   async deleteProductFromCart(cid, pid) {
     return await this.carts.deleteProductInCart(cid, pid);
@@ -29,6 +34,10 @@ export default class CartService {
   async updateCart(cid, products) {
     return await this.carts.updateCart(cid, products);
   }
+  async getProductsFromCartById(cid) {
+    return await this.carts.getProductsFromCartById(cid);
+  }
+
   // updating a product quantity in a cart
   async updateProductQuantity(cid, productId, quantity) {
     return await this.carts.updateProductQuantity(cid, productId, quantity);

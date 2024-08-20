@@ -44,6 +44,14 @@ export default class ProductController {
     }
   };
 
+  async reduceStock (pid, quantity) {
+    try {
+      return await this.productService.reduceStock(pid, quantity);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async deleteProduct (pid){
     try {
       const product = await this.productService.getProductById(pid);

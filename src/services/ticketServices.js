@@ -1,6 +1,6 @@
 import TicketDao from "../dao/ticketDAO.js";
 import TicketDTO from "../dao/dto/ticketDTO.js";
-import userModel from "../dao/models/userModel.js";
+
 
 class TicketService {
   constructor() {
@@ -28,20 +28,16 @@ class TicketService {
     return tickets.map((ticket) => new TicketDTO(ticket));
   }
 
-  async createTicket(email, amount, products) {
-    const user = await userModel.findOne({ email });
-    if (!user) throw new Error("Purchaser not found");
-
+  async createTicket({ purchaser, products }) {
     const code = this.generateTicketCode();
     const ticketData = {
       code,
-      purchaseDateTime: new Date(),
-      amount,
-      purchaser: email,
+      purchaseDateTime: new Date(),      
+      purchaser,
       products,
     };
     const newTicket = await this.ticketService.createTicket(ticketData);
-    return new TicketDTO(newTicket);
+    return newTicket;
   }
   generateTicketCode() {
     return Math.floor(Math.random() * 1000) + 1;

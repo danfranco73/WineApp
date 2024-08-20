@@ -9,26 +9,22 @@ document.addEventListener("DOMContentLoaded", function () {
     purchaseModal.style.display = "block";
     setTimeout(function () {
       purchaseModal.style.display = "none";
-    }, 3000);
+    }, 2000);
   }
 
   submitPaymentButton.addEventListener("click", function () {
-    showModal();
-    fetch(`/api/carts/${cartId}/clear`, {
-      method: "DELETE",
+    fetch(`api/carts/${cartId}/purchase`, {
+      method: "GET",
     })
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
-          window.location.reload();
           window.location.href = "/home";
+          showModal();
         }
       });
   });
 
   // show the prducts in cart-summary class
   const cartSummary = document.querySelector(".cart-summary");
-
-
-
 });
