@@ -8,6 +8,7 @@ const program = new Command();
 program
     .option('-pr, --prod', 'enviroment')
     .option('-p, --port <type>', 'Port')
+    
     .option('-m, --mongodb_url <type>', 'MongoDB URL')
     .option('-mu, --mongodb_user <type>', 'MongoDB User')
     .option('-mp, --mongodb_pass <type>', 'MongoDB Pass')
@@ -37,6 +38,8 @@ export default {
     APP_NAME: "WineApp",
     SERVER: "local",
     PORT: process.env.PORT,
+    MONGO_USER: process.MONGO_USER,
+    MONGO_USER_PASS: process.MONGO_USER_PASS,
     MONGODB_URL: process.env.MONGODB_URI,
     MONGODB_USER: process.env.MONGODB_USER,
     MONGODB_PASS: process.env.MONGODB_PASS,
